@@ -19,8 +19,36 @@
 */
 
 #include "Curly.hpp"
+#include <cstring>
 #include <iostream>
+#include <memory>
 #include <curl/curl.h>
+
+size_t writeCallbackString(char *ptr, size_t size, size_t nmemb, void *userdata)
+{
+  const size_t actualSize = size * nmemb;
+  if (userdata == nullptr)
+  {
+    std::cerr << "Error: write callback received NULL pointer!" << std::endl;
+    return 0;
+  }
+
+  const auto cBufferSize = actualSize+1;
+  std::unique_ptr<char[]> tmpBuffer(new char[cBufferSize]);
+  std::memcpy(tmpBuffer.get(), ptr, actualSize);
+  tmpBuffer.get()[actualSize] = '\0';
+
+  std::string data = std::string(tmpBuffer.get());
+  while (data.size() < actualSize)
+  {
+    data.append(1, '\0');
+    data += tmpBuffer.get()[data.size()];
+  } //while
+
+  std::string * theString = reinterpret_cast<std::string*>(userdata);
+  theString->append(data);
+  return actualSize;
+}
 
 Curly::Curly()
 : m_URL(""),
@@ -96,7 +124,6 @@ bool Curly::perform(std::string& response)
   }
 
   //construct fields for post request
-  // -- hostname
   #ifdef DEBUG_MODE
   std::clog << "curl_easy_escape(...)..." << std::endl;
   #endif
@@ -146,6 +173,26 @@ bool Curly::perform(std::string& response)
     }
   } //if post fields exist
 
+  //set write callback
+  retCode = curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, writeCallbackString);
+  if (retCode != CURLE_OK)
+  {
+    std::cerr << "curl_easy_setopt() of Curly::perform could not set write function! Error: "
+              << curl_easy_strerror(retCode) << std::endl;
+    curl_easy_cleanup(handle);
+    return false;
+  }
+  //provide string stream for the data
+  std::string string_data("");
+  retCode = curl_easy_setopt(handle, CURLOPT_WRITEDATA, (void *)&string_data);
+  if (retCode != CURLE_OK)
+  {
+    std::cerr << "curl_easy_setopt() of Curly::perform could not set write data! Error: "
+              << curl_easy_strerror(retCode) << std::endl;
+    curl_easy_cleanup(handle);
+    return false;
+  }
+
   //send
   #ifdef DEBUG_MODE
   std::clog << "calling cURL easy perform..." << std::endl;
@@ -191,9 +238,9 @@ bool Curly::perform(std::string& response)
   else
     m_LastContentType = std::string(m_LastContentType);
 
-  #warning TODO!
-
   curl_easy_cleanup(handle);
+  #warning TODO!
+  response = string_data;
   return true;
 }
 

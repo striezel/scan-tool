@@ -34,8 +34,11 @@ int main()
     std::cout << "Error: Request could not be performed." << std::endl;
     return 1;
   }
+  if (response.empty())
+    response = "(empty)";
   std::cout << "Request was successful!" << std::endl
             << "Code: " << cURL.getResponseCode() << std::endl
-            << "Content-Type: " << cURL.getContentType() << std::endl;
+            << "Content-Type: " << cURL.getContentType() << std::endl
+            << "Response text: " << response << std::endl;
   return 0;
 }

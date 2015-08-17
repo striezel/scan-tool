@@ -24,6 +24,13 @@
 #include <string>
 #include <unordered_map>
 
+extern "C"
+{
+  /** \brief write callback for cURL functions
+   */
+  size_t writeCallbackString(char *ptr, size_t size, size_t nmemb, void *userdata);
+} //extern C
+
 class Curly
 {
   public:
