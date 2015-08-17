@@ -1,5 +1,8 @@
 # scan-tool
 
+scan-tool is (or better: will be) a tool that scans selected files for
+malicious content.
+
 TODO
 
 # Building from source
