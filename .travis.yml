@@ -1,0 +1,24 @@
+language: cpp
+compiler:
+  - gcc
+sudo: false
+os:
+  - linux
+before_install:
+  - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi  
+script:
+  - mkdir ./build
+  - cd ./build
+  - cmake ../
+  - make -j2
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - g++-4.8
+    - gcc-4.8
+    - libcurl3-gnutls
+    - libcurl4-gnutls-dev
+notifications:
+  email: false

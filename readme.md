@@ -9,18 +9,18 @@ TODO
 
 ### Prerequisites
 
-To build the scan-tool from source you need a C++ compiler and CMake 2.8 or
-later.
+To build the scan-tool from source you need a C++ compiler, CMake 2.8 or later
+and the cURL library.
 It also helps to have Git, a distributed version control system, on your build
 system to get the latest source code directly from the Git repository.
 
-All three can usually be installed be typing
+All of that can usually be installed be typing
 
-    apt-get install cmake g++ git
+    apt-get install cmake g++ git libcurl4-gnutls-dev
 
 or
 
-    yum install cmake gcc-c++ git
+    yum install cmake gcc-c++ git libcurl-devel
 
 into a root terminal.
 
