@@ -5,9 +5,9 @@ malicious content.
 
 TODO
 
-# Building from source
+## Building from source
 
-## Prerequisites
+### Prerequisites
 
 To build the scan-tool from source you need a C++ compiler and CMake 2.8 or
 later.
@@ -24,7 +24,7 @@ or
 
 into a root terminal.
 
-## Getting the source code
+### Getting the source code
 
 Get the source directly from Git by cloning the Git repository and change to
 the directory after the repository is completely cloned:
@@ -35,7 +35,7 @@ the directory after the repository is completely cloned:
 That's it, you should now have the current source code of scan-tool on your
 machine.
 
-## Build process
+### Build process
 
 The build process is relatively easy, because CMake does all the preparations.
 Starting in the root directory of the source, you can do the following steps:
@@ -48,7 +48,7 @@ Starting in the root directory of the source, you can do the following steps:
 In the repository's current state, CMake will not find anythin to build.
 This will change in the future.
 
-# Copyright and Licensing
+## Copyright and Licensing
 
 Copyright 2015 Thoronador
 
