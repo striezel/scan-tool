@@ -239,8 +239,7 @@ bool Curly::perform(std::string& response)
     m_LastContentType = std::string(m_LastContentType);
 
   curl_easy_cleanup(handle);
-  #warning TODO!
-  response = string_data;
+  response = std::move(string_data);
   return true;
 }
 
