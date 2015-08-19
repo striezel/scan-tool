@@ -19,6 +19,8 @@
 */
 
 #include <iostream>
+#include <string>
+#include <unordered_set>
 #include "Curly.hpp"
 #include "ScannerVirusTotal.hpp"
 
@@ -26,7 +28,10 @@ const int rcInvalidParameter = 1;
 
 int main(int argc, char ** argv)
 {
+  //string that will hold the API key
   std::string key = "";
+  //resources that will be queried
+  std::unordered_set<std::string> resources = std::unordered_set<std::string>();
 
   if ((argc>1) and (argv!=NULL))
   {
@@ -52,6 +57,27 @@ int main(int argc, char ** argv)
             return rcInvalidParameter;
           }
         }//API key
+        else if ((param=="--res") or (param=="--resource"))
+        {
+          //enough parameters?
+          if ((i+1<argc) and (argv[i+1]!=NULL))
+          {
+            const std::string next_resource = std::string(argv[i+1]);
+            ++i; //skip next parameter, because it's used as resource identifier already
+            if (resources.find(next_resource) == resources.end())
+            {
+              std::cout << "Adding resource " << next_resource
+                        << " to list of requests." << std::endl;
+            }
+            resources.insert(next_resource);
+          }
+          else
+          {
+            std::cout << "Error: You have to enter some text after \""
+                      << param <<"\"." << std::endl;
+            return rcInvalidParameter;
+          }
+        }//resource
         else
         {
           //unknown or wrong parameter
@@ -75,27 +101,37 @@ int main(int argc, char ** argv)
               << "Use --apikey to specifiy the VirusTotal API key." << std::endl;
     return rcInvalidParameter;
   }
+  if (resources.empty())
+  {
+    std::cout << "No resources were given. Adding an example resource to for "
+              << "demonstration purposes." << std::endl;
+    //use SHA256 hash as resource identifier
+    const std::string resource = "8d44a0cce1e229179fb1369842750d537606793bcb63686ce25f9e9c13885295";
+    resources.insert(resource);
+  } //if not resources
 
   ScannerVirusTotal scanVT(key);
-  //use SHA256 hash as resource identifier
-  const std::string resource = "8d44a0cce1e229179fb1369842750d537606793bcb63686ce25f9e9c13885295";
-  ScannerVirusTotal::Report report;
-  if (!scanVT.getReport(resource, report))
+  //iterate over all resources
+  for(const std::string& i : resources)
   {
-    std::cout << "Error: Could not retrieve report!" << std::endl;
-    return 1;
-  }
-
-  std::cout << "Report data:" << std::endl
-            << "  response code: " << report.response_code << std::endl
-            << "  verbose message: " << report.verbose_msg << std::endl
-            << "  resource: " << report.resource << std::endl
-            << "  scan_id: " << report.scan_id << std::endl
-            << "  scan_date: " << report.scan_date << std::endl
-            << "  scan engines: " << report.total << std::endl
-            << "  engines that detected a threat: " << report.positives << std::endl
-            << "  permalink: " << report.permalink << std::endl
-            << "  SHA256: " << report.sha256 << std::endl;
+    ScannerVirusTotal::Report report;
+    if (!scanVT.getReport(i, report))
+    {
+      std::cout << "Error: Could not retrieve report!" << std::endl;
+      return 1;
+    }
+    std::cout << std::endl;
+    std::cout << "Report data for " << i << ":" << std::endl
+              << "  response code: " << report.response_code << std::endl
+              << "  verbose message: " << report.verbose_msg << std::endl
+              << "  resource: " << report.resource << std::endl
+              << "  scan_id: " << report.scan_id << std::endl
+              << "  scan_date: " << report.scan_date << std::endl
+              << "  scan engines: " << report.total << std::endl
+              << "  engines that detected a threat: " << report.positives << std::endl
+              << "  permanent link: " << report.permalink << std::endl
+              << "  SHA256: " << report.sha256 << std::endl;
+  } //for (range-based)
 
   return 0;
 }

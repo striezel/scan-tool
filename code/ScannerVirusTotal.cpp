@@ -110,7 +110,7 @@ void ScannerVirusTotal::setApiKey(const std::string& apikey)
 std::chrono::seconds ScannerVirusTotal::timeBetweenConsecutiveRequests() const
 {
   /* The public API allows four requests per minute, so we can perform one
-     request every 15 seconds.
+     request every 15 seconds without hitting the rate limit.
   */
   return std::chrono::seconds(15);
 }
@@ -148,12 +148,12 @@ bool ScannerVirusTotal::getReport(const std::string& resource, Report& report)
               << cURL.getResponseCode() << "!" << std::endl;
     return false;
   }
-
+  #ifdef SCAN_TOOL_DEBUG
   std::cout << "Request was successful!" << std::endl
             << "Code: " << cURL.getResponseCode() << std::endl
             << "Content-Type: " << cURL.getContentType() << std::endl
             << "Response text: " << response << std::endl;
-
+  #endif
   Json::Value root; // will contain the root value after parsing.
   Json::Reader jsonReader;
   const bool success = jsonReader.parse(response, root, false);
@@ -163,6 +163,7 @@ bool ScannerVirusTotal::getReport(const std::string& resource, Report& report)
     return false;
   }
 
+  #ifdef SCAN_TOOL_DEBUG
   const Json::Value response_code = root["response_code"];
   const Json::Value verbose_msg = root["verbose_msg"];
   if (!response_code.empty() && response_code.isInt())
@@ -173,6 +174,7 @@ bool ScannerVirusTotal::getReport(const std::string& resource, Report& report)
   {
     std::cout << "verbose_msg: " << verbose_msg.asString() << std::endl;
   }
+  #endif
   report = reportFromJSONRoot(root);
   return true;
 }
