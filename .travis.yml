@@ -20,5 +20,7 @@ addons:
     - gcc-4.8
     - libcurl3-gnutls
     - libcurl4-gnutls-dev
+    - libjsoncpp0
+    - libjsoncpp-dev
 notifications:
   email: false

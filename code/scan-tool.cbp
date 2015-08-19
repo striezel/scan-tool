@@ -36,6 +36,7 @@
 		</Compiler>
 		<Linker>
 			<Add library="curl" />
+			<Add library="jsoncpp" />
 		</Linker>
 		<Unit filename="Curly.cpp" />
 		<Unit filename="Curly.hpp" />

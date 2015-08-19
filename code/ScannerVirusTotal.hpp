@@ -27,6 +27,30 @@
 class ScannerVirusTotal: public Scanner
 {
   public:
+    struct Report
+    {
+      ///default constructor
+      Report();
+
+      int response_code;       /**< response code from VirusTotal API */
+      std::string verbose_msg; /**< message from VirusTotal API */
+
+      std::string resource; /**< name of the resource */
+
+      std::string scan_id;   /**< scan ID */
+      std::string scan_date; /**< date when the scan was performed */
+
+      int total;     /**< total number of scan engines */
+      int positives; /**< number of engines that detected a virus */
+
+      std::string permalink; /**< permanent link to the scan result */
+
+      //hashes
+      std::string md5;    /**< MD5 hash of the file */
+      std::string sha1;   /**< SHA1 hash of the file */
+      std::string sha256; /**< SHA256 hash of the file */
+    }; //struct
+
     /** \brief default constructor
      *
      * \param apikey   the VirusTotal API key used for scanning
@@ -52,8 +76,11 @@ class ScannerVirusTotal: public Scanner
     /** \brief retrieves a scan report
      *
      * \param resource   resource identifier
+     * \param report     reference to a Report structure where the report's data will be stored
+     * \return Returns true, if the report could be retrieved.
+     *         Returns false, if retrieval failed.
      */
-    void getReport(const std::string& resource);
+    bool getReport(const std::string& resource, Report& report);
   private:
     std::string m_apikey; /**< holds the VirusTotal API key */
 }; //class

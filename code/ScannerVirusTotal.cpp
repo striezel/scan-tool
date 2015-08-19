@@ -19,8 +19,81 @@
 */
 
 #include "ScannerVirusTotal.hpp"
-#include "Curly.hpp"
 #include <iostream>
+#include <jsoncpp/json/reader.h>
+#include "Curly.hpp"
+
+ScannerVirusTotal::Report::Report()
+: response_code(-1),
+  verbose_msg(""),
+  resource(""),
+  scan_id(""),
+  scan_date(""),
+  total(-1),
+  positives(-1),
+  permalink(""),
+  md5(""), sha1(""), sha256("")
+{
+}
+
+ScannerVirusTotal::Report reportFromJSONRoot(const Json::Value& root)
+{
+  ScannerVirusTotal::Report report;
+  const Json::Value response_code = root["response_code"];
+  const Json::Value verbose_msg = root["verbose_msg"];
+  if (!response_code.empty() && response_code.isInt())
+    report.response_code = response_code.asInt();
+  else
+    report.response_code = 0;
+  if (!verbose_msg.empty() && verbose_msg.isString())
+    report.verbose_msg = verbose_msg.asString();
+  Json::Value val = root["resource"];
+  if (!val.empty() && val.isString())
+    report.resource = val.asString();
+  else
+    report.resource = "";
+  val = root["scan_id"];
+  if (!val.empty() && val.isString())
+    report.scan_id = val.asString();
+  else
+    report.scan_id = "";
+  val = root["scan_date"];
+  if (!val.empty() && val.isString())
+    report.scan_date = val.asString();
+  else
+    report.scan_date = "";
+  val = root["total"];
+  if (!val.empty() && val.isInt())
+    report.total = val.asInt();
+  else
+    report.total = -1;
+  val = root["positives"];
+  if (!val.empty() && val.isInt())
+    report.positives = val.asInt();
+  else
+    report.positives = -1;
+  val = root["permalink"];
+  if (!val.empty() && val.isString())
+    report.permalink = val.asString();
+  else
+    report.permalink = "";
+  val = root["md5"];
+  if (!val.empty() && val.isString())
+    report.md5 = val.asString();
+  else
+    report.md5 = "";
+  val = root["sha1"];
+  if (!val.empty() && val.isString())
+    report.sha1 = val.asString();
+  else
+    report.sha1 = "";
+  val = root["sha256"];
+  if (!val.empty() && val.isString())
+    report.sha256 = val.asString();
+  else
+    report.sha256 = "";
+  return std::move(report);
+}
 
 ScannerVirusTotal::ScannerVirusTotal(const std::string& apikey, const bool honourTimeLimits)
 : Scanner(honourTimeLimits),
@@ -42,7 +115,7 @@ std::chrono::seconds ScannerVirusTotal::timeBetweenConsecutiveRequests() const
   return std::chrono::seconds(15);
 }
 
-void ScannerVirusTotal::getReport(const std::string& resource)
+bool ScannerVirusTotal::getReport(const std::string& resource, Report& report)
 {
   waitForLimitExpiration();
   //send request
@@ -55,24 +128,51 @@ void ScannerVirusTotal::getReport(const std::string& resource)
   if (!cURL.perform(response))
   {
     std::cerr << "Error in ScannerVirusTotal::getReport(): Request could not be performed." << std::endl;
-    return;
+    return false;
   }
   requestWasNow();
 
   if (cURL.getResponseCode() == 204)
   {
     std::cerr << "Error in ScannerVirusTotal::getReport(): Rate limit exceeded!" << std::endl;
-    return;
+    return false;
   }
   if (cURL.getResponseCode() == 403)
   {
     std::cerr << "Error in ScannerVirusTotal::getReport(): Access denied!" << std::endl;
-    return;
+    return false;
+  }
+  if (cURL.getResponseCode() != 200)
+  {
+    std::cerr << "Error in ScannerVirusTotal::getReport(): Unexpected HTTP status code "
+              << cURL.getResponseCode() << "!" << std::endl;
+    return false;
   }
 
   std::cout << "Request was successful!" << std::endl
             << "Code: " << cURL.getResponseCode() << std::endl
             << "Content-Type: " << cURL.getContentType() << std::endl
             << "Response text: " << response << std::endl;
-  #warning TODO!
+
+  Json::Value root; // will contain the root value after parsing.
+  Json::Reader jsonReader;
+  const bool success = jsonReader.parse(response, root, false);
+  if (!success)
+  {
+    std::cerr << "Error in ScannerVirusTotal::getReport(): Unable to parse JSON data!" << std::endl;
+    return false;
+  }
+
+  const Json::Value response_code = root["response_code"];
+  const Json::Value verbose_msg = root["verbose_msg"];
+  if (!response_code.empty() && response_code.isInt())
+  {
+    std::cout << "response_code: " << response_code.asInt() << std::endl;
+  }
+  if (!verbose_msg.empty() && verbose_msg.isString())
+  {
+    std::cout << "verbose_msg: " << verbose_msg.asString() << std::endl;
+  }
+  report = reportFromJSONRoot(root);
+  return true;
 }

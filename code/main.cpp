@@ -79,7 +79,23 @@ int main(int argc, char ** argv)
   ScannerVirusTotal scanVT(key);
   //use SHA256 hash as resource identifier
   const std::string resource = "8d44a0cce1e229179fb1369842750d537606793bcb63686ce25f9e9c13885295";
-  scanVT.getReport(resource);
+  ScannerVirusTotal::Report report;
+  if (!scanVT.getReport(resource, report))
+  {
+    std::cout << "Error: Could not retrieve report!" << std::endl;
+    return 1;
+  }
+
+  std::cout << "Report data:" << std::endl
+            << "  response code: " << report.response_code << std::endl
+            << "  verbose message: " << report.verbose_msg << std::endl
+            << "  resource: " << report.resource << std::endl
+            << "  scan_id: " << report.scan_id << std::endl
+            << "  scan_date: " << report.scan_date << std::endl
+            << "  scan engines: " << report.total << std::endl
+            << "  engines that detected a threat: " << report.positives << std::endl
+            << "  permalink: " << report.permalink << std::endl
+            << "  SHA256: " << report.sha256 << std::endl;
 
   return 0;
 }
