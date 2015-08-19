@@ -26,7 +26,7 @@ const int rcInvalidParameter = 1;
 
 int main(int argc, char ** argv)
 {
-  std::string key = "1234";
+  std::string key = "";
 
   if ((argc>1) and (argv!=NULL))
   {
@@ -68,6 +68,13 @@ int main(int argc, char ** argv)
       ++i;//on to next parameter
     }//while
   }//if arguments present
+
+  if (key.empty())
+  {
+    std::cout << "Error: This program won't work properly without an API key! "
+              << "Use --apikey to specifiy the VirusTotal API key." << std::endl;
+    return rcInvalidParameter;
+  }
 
   ScannerVirusTotal scanVT(key);
   //use SHA256 hash as resource identifier

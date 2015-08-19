@@ -59,6 +59,17 @@ void ScannerVirusTotal::getReport(const std::string& resource)
   }
   requestWasNow();
 
+  if (cURL.getResponseCode() == 204)
+  {
+    std::cerr << "Error in ScannerVirusTotal::getReport(): Rate limit exceeded!" << std::endl;
+    return;
+  }
+  if (cURL.getResponseCode() == 403)
+  {
+    std::cerr << "Error in ScannerVirusTotal::getReport(): Access denied!" << std::endl;
+    return;
+  }
+
   std::cout << "Request was successful!" << std::endl
             << "Code: " << cURL.getResponseCode() << std::endl
             << "Content-Type: " << cURL.getContentType() << std::endl
