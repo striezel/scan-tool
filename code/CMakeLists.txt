@@ -7,6 +7,8 @@ project(scan-tool)
 
 set(scan-tool_sources
     Curly.cpp
+    Scanner.cpp
+    ScannerVirusTotal.cpp
     main.cpp)
 
 if (CMAKE_COMPILER_IS_GNUCC)

@@ -20,25 +20,59 @@
 
 #include <iostream>
 #include "Curly.hpp"
+#include "ScannerVirusTotal.hpp"
 
-int main()
+const int rcInvalidParameter = 1;
+
+int main(int argc, char ** argv)
 {
-  std::cout << "Hello world!" << std::endl;
+  std::string key = "1234";
 
-  Curly cURL;
-  cURL.setURL("http://www.example.com/");
-  cURL.addPostField("foo", "bar");
-  std::string response = "";
-  if (!cURL.perform(response))
+  if ((argc>1) and (argv!=NULL))
   {
-    std::cout << "Error: Request could not be performed." << std::endl;
-    return 1;
-  }
-  if (response.empty())
-    response = "(empty)";
-  std::cout << "Request was successful!" << std::endl
-            << "Code: " << cURL.getResponseCode() << std::endl
-            << "Content-Type: " << cURL.getContentType() << std::endl
-            << "Response text: " << response << std::endl;
+    int i=1;
+    while (i<argc)
+    {
+      if (argv[i]!=NULL)
+      {
+        const std::string param = std::string(argv[i]);
+        if ((param=="--key") or (param=="--apikey"))
+        {
+          //enough parameters?
+          if ((i+1<argc) and (argv[i+1]!=NULL))
+          {
+            key = std::string(argv[i+1]);
+            ++i; //skip next parameter, because it's used as API key already
+            std::cout << "API key was set to \"" << key << "\"." << std::endl;
+          }
+          else
+          {
+            std::cout << "Error: You have to enter some text after \""
+                      << param <<"\"." << std::endl;
+            return rcInvalidParameter;
+          }
+        }//API key
+        else
+        {
+          //unknown or wrong parameter
+          std::cout << "Invalid parameter given: \"" << param << "\"." << std::endl;
+                    //<< "Use --help to get a list of valid parameters.\n";
+          return rcInvalidParameter;
+        }
+      }//parameter exists
+      else
+      {
+        std::cout << "Parameter at index " << i << " is NULL." << std::endl;
+        return rcInvalidParameter;
+      }
+      ++i;//on to next parameter
+    }//while
+  }//if arguments present
+
+  ScannerVirusTotal scanVT(key);
+  //use SHA256 hash as resource identifier
+  const std::string resource = "8d44a0cce1e229179fb1369842750d537606793bcb63686ce25f9e9c13885295";
+  scanVT.getReport(resource);
+
   return 0;
 }

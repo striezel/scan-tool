@@ -19,6 +19,8 @@
 */
 
 #include "ScannerVirusTotal.hpp"
+#include "Curly.hpp"
+#include <iostream>
 
 ScannerVirusTotal::ScannerVirusTotal(const std::string& apikey, const bool honourTimeLimits)
 : Scanner(honourTimeLimits),
@@ -38,4 +40,28 @@ std::chrono::seconds ScannerVirusTotal::timeBetweenConsecutiveRequests() const
      request every 15 seconds.
   */
   return std::chrono::seconds(15);
+}
+
+void ScannerVirusTotal::getReport(const std::string& resource)
+{
+  waitForLimitExpiration();
+  //send request
+  Curly cURL;
+  cURL.setURL("https://www.virustotal.com/vtapi/v2/file/report");
+  cURL.addPostField("resource", resource);
+  cURL.addPostField("apikey", m_apikey);
+
+  std::string response = "";
+  if (!cURL.perform(response))
+  {
+    std::cerr << "Error in ScannerVirusTotal::getReport(): Request could not be performed." << std::endl;
+    return;
+  }
+  requestWasNow();
+
+  std::cout << "Request was successful!" << std::endl
+            << "Code: " << cURL.getResponseCode() << std::endl
+            << "Content-Type: " << cURL.getContentType() << std::endl
+            << "Response text: " << response << std::endl;
+  #warning TODO!
 }

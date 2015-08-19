@@ -30,7 +30,7 @@ class Scanner
      *
      * \param honourTimeLimits   whether or not time limits should be honoured
      */
-    Scanner(const bool honourTimeLimits);
+    Scanner(const bool honourTimeLimits = true);
 
 
     ///virtual destructor
@@ -64,6 +64,16 @@ class Scanner
      * \return Returns the time of the last request.
      */
     std::chrono::steady_clock::time_point lastRequestTime() const;
+
+
+    /** \brief sets the time of the last request to now
+     */
+    void requestWasNow();
+
+
+    /** \brief waits until the time limit has expired, if the scanner honours a time limit
+     */
+    void waitForLimitExpiration();
   private:
     bool m_HonourLimit; /**< whether to honour time limits */
     std::chrono::steady_clock::time_point m_LastRequest; /**< time of the last request */

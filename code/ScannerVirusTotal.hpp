@@ -32,7 +32,7 @@ class ScannerVirusTotal: public Scanner
      * \param apikey   the VirusTotal API key used for scanning
      * \param honourTimeLimits   whether or not time limits should be honoured
      */
-    ScannerVirusTotal(const std::string& apikey, const bool honourTimeLimits);
+    ScannerVirusTotal(const std::string& apikey, const bool honourTimeLimits = true);
 
 
     /** \brief sets a new API key
@@ -47,6 +47,13 @@ class ScannerVirusTotal: public Scanner
      * \return Returns the minimum interval between two consecutive requests.
      */
     virtual std::chrono::seconds timeBetweenConsecutiveRequests() const override;
+
+
+    /** \brief retrieves a scan report
+     *
+     * \param resource   resource identifier
+     */
+    void getReport(const std::string& resource);
   private:
     std::string m_apikey; /**< holds the VirusTotal API key */
 }; //class
