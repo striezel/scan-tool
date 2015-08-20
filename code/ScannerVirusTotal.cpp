@@ -178,3 +178,86 @@ bool ScannerVirusTotal::getReport(const std::string& resource, Report& report)
   report = reportFromJSONRoot(root);
   return true;
 }
+
+bool ScannerVirusTotal::rescan(const std::string& resource, std::string& scan_id)
+{
+  waitForLimitExpiration();
+  //send request
+  Curly cURL;
+  cURL.setURL("https://www.virustotal.com/vtapi/v2/file/rescan");
+  cURL.addPostField("resource", resource);
+  cURL.addPostField("apikey", m_apikey);
+
+  std::string response = "";
+  if (!cURL.perform(response))
+  {
+    std::cerr << "Error in ScannerVirusTotal::rescan(): Request could not be performed." << std::endl;
+    return false;
+  }
+  requestWasNow();
+
+  if (cURL.getResponseCode() == 204)
+  {
+    std::cerr << "Error in ScannerVirusTotal::rescan(): Rate limit exceeded!" << std::endl;
+    return false;
+  }
+  if (cURL.getResponseCode() == 403)
+  {
+    std::cerr << "Error in ScannerVirusTotal::rescan(): Access denied!" << std::endl;
+    return false;
+  }
+  if (cURL.getResponseCode() != 200)
+  {
+    std::cerr << "Error in ScannerVirusTotal::rescan(): Unexpected HTTP status code "
+              << cURL.getResponseCode() << "!" << std::endl;
+    return false;
+  }
+
+  #ifdef SCAN_TOOL_DEBUG
+  std::cout << "Request was successful!" << std::endl
+            << "Code: " << cURL.getResponseCode() << std::endl
+            << "Content-Type: " << cURL.getContentType() << std::endl
+            << "Response text: " << response << std::endl;
+  #endif
+  Json::Value root; // will contain the root value after parsing.
+  Json::Reader jsonReader;
+  const bool success = jsonReader.parse(response, root, false);
+  if (!success)
+  {
+    std::cerr << "Error in ScannerVirusTotal::rescan(): Unable to parse JSON data!" << std::endl;
+    return false;
+  }
+
+  const Json::Value response_code = root["response_code"];
+  const Json::Value retrieved_scan_id = root["scan_id"];
+  #ifdef SCAN_TOOL_DEBUG
+  const Json::Value verbose_msg = root["verbose_msg"];
+  if (!response_code.empty() && response_code.isInt())
+  {
+    std::cout << "response_code: " << response_code.asInt() << std::endl;
+  }
+  if (!verbose_msg.empty() && verbose_msg.isString())
+  {
+    std::cout << "verbose_msg: " << verbose_msg.asString() << std::endl;
+  }
+  if (!retrieved_scan_id.empty() && retrieved_scan_id.isString())
+  {
+    std::cout << "scan_id: " << retrieved_scan_id.asString() << std::endl;
+  }
+  #endif
+  if (!retrieved_scan_id.empty() && retrieved_scan_id.isString())
+  {
+    scan_id = retrieved_scan_id.asString();
+  }
+  else
+    scan_id = "";
+  if (!response_code.empty() && response_code.isInt())
+  {
+    //Response code 1 means resource is queued for rescan.
+    //Response code 0 means resource is not present in file store.
+    //Response code -1 means that some kind of error occurred.
+    return ((response_code.asInt() == 1) && !scan_id.empty());
+  }
+  //No response_code element: something is wrong with the API.
+  return false;
+}

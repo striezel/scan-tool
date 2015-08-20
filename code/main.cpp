@@ -32,6 +32,8 @@ int main(int argc, char ** argv)
   std::string key = "";
   //resources that will be queried
   std::unordered_set<std::string> resources_report = std::unordered_set<std::string>();
+  //resources for which a rescan will be requested
+  std::unordered_set<std::string> resources_rescan = std::unordered_set<std::string>();
 
   if ((argc>1) and (argv!=NULL))
   {
@@ -57,7 +59,7 @@ int main(int argc, char ** argv)
             return rcInvalidParameter;
           }
         }//API key
-        else if ((param=="--res") or (param=="--resource"))
+        else if ((param=="--report") or (param=="--resource"))
         {
           //enough parameters?
           if ((i+1<argc) and (argv[i+1]!=NULL))
@@ -74,10 +76,31 @@ int main(int argc, char ** argv)
           else
           {
             std::cout << "Error: You have to enter some text after \""
-                      << param <<"\"." << std::endl;
+                      << param << "\"." << std::endl;
             return rcInvalidParameter;
           }
-        }//resource
+        }//resource report
+        else if ((param=="--re") or (param=="--rescan"))
+        {
+          //enough parameters?
+          if ((i+1<argc) and (argv[i+1]!=NULL))
+          {
+            const std::string next_resource = std::string(argv[i+1]);
+            ++i; //Skip next parameter, because it's used as resource identifier already
+            if (resources_rescan.find(next_resource) == resources_rescan.end())
+            {
+              std::cout << "Adding resource " << next_resource
+                        << " to list of rescan requests." << std::endl;
+            }
+            resources_rescan.insert(next_resource);
+          }
+          else
+          {
+            std::cout << "Error: You have to enter some text after \""
+                      << param << "\"." << std::endl;
+            return rcInvalidParameter;
+          }
+        }//rescan
         else
         {
           //unknown or wrong parameter
@@ -101,7 +124,7 @@ int main(int argc, char ** argv)
               << "Use --apikey to specifiy the VirusTotal API key." << std::endl;
     return rcInvalidParameter;
   }
-  if (resources_report.empty())
+  if (resources_report.empty() && resources_rescan.empty())
   {
     std::cout << "No resources for report retrieval were given. Adding an example resource to for "
               << "demonstration purposes." << std::endl;
@@ -111,6 +134,21 @@ int main(int argc, char ** argv)
   } //if not resources
 
   ScannerVirusTotal scanVT(key);
+
+  //iterate over all resources for rescan requests
+  for(const std::string& i : resources_rescan)
+  {
+    std::string scan_id = "";
+    if (!scanVT.rescan(i, scan_id))
+    {
+      std::cout << "Error: Could not initiate rescan for \""
+                << i << "\"!" << std::endl;
+      return 1;
+    }
+    std::cout << "Rescan for \"" << i << "\" initiated. "
+              << "Scan-ID for later retrieval is " << scan_id << "." << std::endl;
+  } //for (range-based)
+
   //iterate over all resources for report requests
   for(const std::string& i : resources_report)
   {
