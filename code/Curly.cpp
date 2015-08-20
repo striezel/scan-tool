@@ -53,6 +53,7 @@ size_t writeCallbackString(char *ptr, size_t size, size_t nmemb, void *userdata)
 Curly::Curly()
 : m_URL(""),
   m_PostFields(std::unordered_map<std::string, std::string>()),
+  m_Files(std::unordered_set<std::string>()),
   m_LastResponseCode(0),
   m_LastContentType("")
 {
@@ -92,6 +93,12 @@ bool Curly::removePostField(const std::string& name)
   return (m_PostFields.erase(name) > 0);
 }
 
+bool Curly::addFile(const std::string& filename)
+{
+  m_Files.insert(filename);
+  return true;
+}
+
 bool Curly::perform(std::string& response)
 {
   //"minimum" URL should be something like "http://a.bc"
@@ -128,37 +135,40 @@ bool Curly::perform(std::string& response)
   std::clog << "curl_easy_escape(...)..." << std::endl;
   #endif
   std::string postfields("");
-  auto iter = m_PostFields.begin();
-  while (iter != m_PostFields.end())
+  if (m_Files.empty())
   {
-    //escape key
-    char * c_str = curl_easy_escape(handle, iter->first.c_str(), iter->first.length());
-    if (c_str == nullptr)
+    auto iter = m_PostFields.begin();
+    while (iter != m_PostFields.end())
     {
-      //escaping failed!
-      std::cerr << "cURL error: escaping of post values failed!" << std::endl;
-      curl_easy_cleanup(handle);
-      return false;
-    }
-    if (!postfields.empty())
-      postfields += "&"+std::string(c_str);
-    else
-      postfields += std::string(c_str);
-    curl_free(c_str);
-    //escape value
-    c_str = curl_easy_escape(handle, iter->second.c_str(), iter->second.length());
-    if (c_str == nullptr)
-    {
-      //escaping failed!
-      std::cerr << "cURL error: escaping of post values failed!" << std::endl;
-      curl_easy_cleanup(handle);
-      return false;
-    }
-    postfields += "=" + std::string(c_str);
-    curl_free(c_str);
-    //... and go on with next field
-    ++iter;
-  } //while
+      //escape key
+      char * c_str = curl_easy_escape(handle, iter->first.c_str(), iter->first.length());
+      if (c_str == nullptr)
+      {
+        //escaping failed!
+        std::cerr << "cURL error: escaping of post values failed!" << std::endl;
+        curl_easy_cleanup(handle);
+        return false;
+      }
+      if (!postfields.empty())
+        postfields += "&"+std::string(c_str);
+      else
+        postfields += std::string(c_str);
+      curl_free(c_str);
+      //escape value
+      c_str = curl_easy_escape(handle, iter->second.c_str(), iter->second.length());
+      if (c_str == nullptr)
+      {
+        //escaping failed!
+        std::cerr << "cURL error: escaping of post values failed!" << std::endl;
+        curl_easy_cleanup(handle);
+        return false;
+      }
+      postfields += "=" + std::string(c_str);
+      curl_free(c_str);
+      //... and go on with next field
+      ++iter;
+    } //while
+  } //no files
 
   // --set post fields
   if (!postfields.empty())
@@ -173,12 +183,59 @@ bool Curly::perform(std::string& response)
     }
   } //if post fields exist
 
+  //multipart/formdata
+  struct curl_httppost* formFirst = nullptr;
+  struct curl_httppost* formLast = nullptr;
+  if (!m_Files.empty())
+  {
+    std::string copyname = "file";
+    auto fileIter = m_Files.begin();
+    while (fileIter != m_Files.end())
+    {
+      CURLFORMcode errCode = curl_formadd(&formFirst, &formLast,
+                             CURLFORM_COPYNAME, copyname.c_str(),
+                             CURLFORM_FILE, fileIter->c_str(),
+                             CURLFORM_END);
+      if (errCode != CURL_FORMADD_OK)
+      {
+        std::cerr << "cURL error: could not add file to multipart/formdata!"
+                  << std::endl;
+        curl_formfree(formFirst);
+        curl_easy_cleanup(handle);
+        return false;
+      }
+      ++fileIter;
+      copyname += "1";
+    } //while
+
+    //add normal post fields
+    auto pfIter = m_PostFields.begin();
+    while (pfIter != m_PostFields.end())
+    {
+      CURLFORMcode errCode = curl_formadd(&formFirst, &formLast,
+                             CURLFORM_COPYNAME, pfIter->first.c_str(),
+                             CURLFORM_COPYCONTENTS, pfIter->second.c_str(),
+                             CURLFORM_END);
+      if (errCode != CURL_FORMADD_OK)
+      {
+        std::cerr << "cURL error: could not add file to multipart/formdata!"
+                  << std::endl;
+        curl_formfree(formFirst);
+        curl_easy_cleanup(handle);
+        return false;
+      }
+      ++pfIter;
+    } //while post fields
+    curl_easy_setopt(handle, CURLOPT_HTTPPOST, formFirst);
+  } //if files are there
+
   //set write callback
   retCode = curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, writeCallbackString);
   if (retCode != CURLE_OK)
   {
     std::cerr << "curl_easy_setopt() of Curly::perform could not set write function! Error: "
               << curl_easy_strerror(retCode) << std::endl;
+    curl_formfree(formFirst);
     curl_easy_cleanup(handle);
     return false;
   }
@@ -189,6 +246,7 @@ bool Curly::perform(std::string& response)
   {
     std::cerr << "curl_easy_setopt() of Curly::perform could not set write data! Error: "
               << curl_easy_strerror(retCode) << std::endl;
+    curl_formfree(formFirst);
     curl_easy_cleanup(handle);
     return false;
   }
@@ -202,6 +260,7 @@ bool Curly::perform(std::string& response)
   {
     std::cerr << "curl_easy_perform() of Curly::perform failed! Error: "
               << curl_easy_strerror(retCode) << std::endl;
+    curl_formfree(formFirst);
     curl_easy_cleanup(handle);
     return false;
   }
@@ -211,6 +270,9 @@ bool Curly::perform(std::string& response)
     std::clog << "POST request data was sent to server." << std::endl;
   }
   #endif
+  //free multipart/formdata, if any data was given
+  curl_formfree(formFirst);
+  formFirst = nullptr;
 
   //get response code
   retCode = curl_easy_getinfo(handle, CURLINFO_RESPONSE_CODE, &m_LastResponseCode);

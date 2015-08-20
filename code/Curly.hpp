@@ -23,6 +23,7 @@
 
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 
 extern "C"
 {
@@ -96,6 +97,16 @@ class Curly
     bool removePostField(const std::string& name);
 
 
+    /** \brief adds a file to the request
+     *
+     * \param filename  name of the local file to use in the post request
+     * \param
+     * \return Returns true, if a file was appended.
+     * Returns false, if operation failed.
+     */
+    bool addFile(const std::string& filename);
+
+
     /** \brief performs the (POST) request
      *
      * \param response  reference to a string that will be filled with the
@@ -128,6 +139,7 @@ class Curly
   private:
     std::string m_URL;
     std::unordered_map<std::string, std::string> m_PostFields;
+    std::unordered_set<std::string> m_Files;
     long m_LastResponseCode;
     std::string m_LastContentType;
 }; //class Curly
