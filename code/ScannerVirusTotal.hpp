@@ -22,6 +22,7 @@
 #define SCANNERVIRUSTOTAL_HPP
 
 #include <string>
+#include <vector>
 #include "Scanner.hpp"
 
 class ScannerVirusTotal: public Scanner
@@ -29,6 +30,19 @@ class ScannerVirusTotal: public Scanner
   public:
     struct Report
     {
+      struct Engine
+      {
+        ///default constructor
+        Engine();
+
+        std::string engine;  /**< name of the antivirus engine */
+        bool detected;       /**< whether the engine detected a virus */
+        std::string version; /**< version of the antivirus engine */
+        std::string result;  /**< name of the detected malware */
+        std::string update;  /**< last update of the antivirus engine */
+      }; //struct Engine
+
+
       ///default constructor
       Report();
 
@@ -42,6 +56,7 @@ class ScannerVirusTotal: public Scanner
 
       int total;     /**< total number of scan engines */
       int positives; /**< number of engines that detected a virus */
+      std::vector<Engine> scans; /**< results of individual scan engines */
 
       std::string permalink; /**< permanent link to the scan result */
 
@@ -49,7 +64,7 @@ class ScannerVirusTotal: public Scanner
       std::string md5;    /**< MD5 hash of the file */
       std::string sha1;   /**< SHA1 hash of the file */
       std::string sha256; /**< SHA256 hash of the file */
-    }; //struct
+    }; //struct Report
 
     /** \brief default constructor
      *

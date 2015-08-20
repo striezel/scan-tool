@@ -169,6 +169,15 @@ int main(int argc, char ** argv)
               << "  engines that detected a threat: " << report.positives << std::endl
               << "  permanent link: " << report.permalink << std::endl
               << "  SHA256: " << report.sha256 << std::endl;
+    for (const ScannerVirusTotal::Report::Engine eng : report.scans)
+    {
+      std::cout << "    Engine " << eng.engine << " (version " << eng.version
+                << " of " << eng.update << ")";
+      if (eng.detected)
+        std::cout << " detected " << eng.result << std::endl;
+      else
+        std::cout << " found nothing." << std::endl;
+    } //for (inner, range-based)
   } //for (range-based)
 
   return 0;

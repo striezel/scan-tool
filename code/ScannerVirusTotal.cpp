@@ -23,6 +23,15 @@
 #include <jsoncpp/json/reader.h>
 #include "Curly.hpp"
 
+ScannerVirusTotal::Report::Engine::Engine()
+: engine(""),
+  detected(false),
+  version(""),
+  result(""),
+  update("")
+{
+}
+
 ScannerVirusTotal::Report::Report()
 : response_code(-1),
   verbose_msg(""),
@@ -31,6 +40,7 @@ ScannerVirusTotal::Report::Report()
   scan_date(""),
   total(-1),
   positives(-1),
+  scans(std::vector<Engine>()),
   permalink(""),
   md5(""), sha1(""), sha256("")
 {
@@ -92,6 +102,50 @@ ScannerVirusTotal::Report reportFromJSONRoot(const Json::Value& root)
     report.sha256 = val.asString();
   else
     report.sha256 = "";
+  const Json::Value scans = root["scans"];
+  if (!scans.empty() && scans.isObject())
+  {
+    report.scans.clear();
+    const auto members = scans.getMemberNames();
+    auto iter = members.cbegin();
+    const auto itEnd = members.cend();
+    while (iter != itEnd)
+    {
+      ScannerVirusTotal::Report::Engine data;
+      data.engine = *iter;
+
+      const Json::Value engVal = scans.get(*iter, Json::Value());
+      //detected
+      Json::Value val = engVal["detected"];
+      if (!val.empty() && val.isBool())
+        data.detected = val.asBool();
+      else
+        data.detected = "";
+      //version
+      val = engVal["version"];
+      if (!val.empty() && val.isString())
+        data.version = val.asString();
+      else
+        data.version = "";
+      //result
+      val = engVal["result"];
+      if (!val.empty() && val.isString())
+        data.result = val.asString();
+      else
+        data.result = "";
+      //update
+      val = engVal["update"];
+      if (!val.empty() && val.isString())
+        data.update = val.asString();
+      else
+        data.update = "";
+      report.scans.push_back(std::move(data));
+      ++iter;
+    } //while
+  } //if "scans" is present
+  else
+    report.scans = std::move(std::vector<ScannerVirusTotal::Report::Engine>());
+
   return std::move(report);
 }
 
