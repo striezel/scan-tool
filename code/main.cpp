@@ -31,7 +31,7 @@ int main(int argc, char ** argv)
   //string that will hold the API key
   std::string key = "";
   //resources that will be queried
-  std::unordered_set<std::string> resources = std::unordered_set<std::string>();
+  std::unordered_set<std::string> resources_report = std::unordered_set<std::string>();
 
   if ((argc>1) and (argv!=NULL))
   {
@@ -64,12 +64,12 @@ int main(int argc, char ** argv)
           {
             const std::string next_resource = std::string(argv[i+1]);
             ++i; //skip next parameter, because it's used as resource identifier already
-            if (resources.find(next_resource) == resources.end())
+            if (resources_report.find(next_resource) == resources_report.end())
             {
               std::cout << "Adding resource " << next_resource
-                        << " to list of requests." << std::endl;
+                        << " to list of report requests." << std::endl;
             }
-            resources.insert(next_resource);
+            resources_report.insert(next_resource);
           }
           else
           {
@@ -101,18 +101,18 @@ int main(int argc, char ** argv)
               << "Use --apikey to specifiy the VirusTotal API key." << std::endl;
     return rcInvalidParameter;
   }
-  if (resources.empty())
+  if (resources_report.empty())
   {
-    std::cout << "No resources were given. Adding an example resource to for "
+    std::cout << "No resources for report retrieval were given. Adding an example resource to for "
               << "demonstration purposes." << std::endl;
     //use SHA256 hash as resource identifier
     const std::string resource = "8d44a0cce1e229179fb1369842750d537606793bcb63686ce25f9e9c13885295";
-    resources.insert(resource);
+    resources_report.insert(resource);
   } //if not resources
 
   ScannerVirusTotal scanVT(key);
-  //iterate over all resources
-  for(const std::string& i : resources)
+  //iterate over all resources for report requests
+  for(const std::string& i : resources_report)
   {
     ScannerVirusTotal::Report report;
     if (!scanVT.getReport(i, report))
