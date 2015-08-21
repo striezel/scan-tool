@@ -21,8 +21,8 @@
 #include <iostream>
 #include <string>
 #include <unordered_set>
-#include "Curly.hpp"
-#include "ScannerVirusTotal.hpp"
+#include "../code/Curly.hpp"
+#include "../code/ScannerVirusTotal.hpp"
 
 const int rcInvalidParameter = 1;
 

@@ -2,12 +2,12 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="scan-tool" />
+		<Option title="scan-tool-playground" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Debug">
-				<Option output="bin/Debug/scan-tool" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/Debug/scan-tool-playground" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Debug/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
@@ -17,7 +17,7 @@
 				</Compiler>
 			</Target>
 			<Target title="Release">
-				<Option output="bin/Release/scan-tool" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/Release/scan-tool-playground" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Release/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
@@ -39,12 +39,12 @@
 			<Add library="curl" />
 			<Add library="jsoncpp" />
 		</Linker>
-		<Unit filename="Curly.cpp" />
-		<Unit filename="Curly.hpp" />
-		<Unit filename="Scanner.cpp" />
-		<Unit filename="Scanner.hpp" />
-		<Unit filename="ScannerVirusTotal.cpp" />
-		<Unit filename="ScannerVirusTotal.hpp" />
+		<Unit filename="../code/Curly.cpp" />
+		<Unit filename="../code/Curly.hpp" />
+		<Unit filename="../code/Scanner.cpp" />
+		<Unit filename="../code/Scanner.hpp" />
+		<Unit filename="../code/ScannerVirusTotal.cpp" />
+		<Unit filename="../code/ScannerVirusTotal.hpp" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />
