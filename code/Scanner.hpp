@@ -29,8 +29,9 @@ class Scanner
     /** \brief default constructor
      *
      * \param honourTimeLimits   whether or not time limits should be honoured
+     * \param _silent            whether or not output to the standard output should be reduced
      */
-    Scanner(const bool honourTimeLimits = true);
+    Scanner(const bool honourTimeLimits = true, const bool _silent=false);
 
 
     ///virtual destructor
@@ -50,6 +51,22 @@ class Scanner
       * \param doHonour   new value that determines whether time limits matter
       */
     void honourTimeLimit(const bool doHonour);
+
+
+    /** \brief checks whether the scanner is silent or not
+     *
+     * \return Returns true, if the scanner is silent.
+     * \remarks "Silent" means that the Scanner produces as little output as
+     * possible on the standard output - except for hard errors.
+     */
+    bool silent() const;
+
+
+    /** \brief set the new silence mode
+     *
+     * \param silent  If true, the scanner will be silent.
+     */
+    void silence(const bool silent);
 
 
     /** \brief duration between consecutive requests, if time limit is respected
@@ -76,6 +93,7 @@ class Scanner
     void waitForLimitExpiration();
   private:
     bool m_HonourLimit; /**< whether to honour time limits */
+    bool m_Silent; /**< whether to be silent */
     std::chrono::steady_clock::time_point m_LastRequest; /**< time of the last request */
 }; //class
 

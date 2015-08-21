@@ -149,8 +149,8 @@ ScannerVirusTotal::Report reportFromJSONRoot(const Json::Value& root)
   return std::move(report);
 }
 
-ScannerVirusTotal::ScannerVirusTotal(const std::string& apikey, const bool honourTimeLimits)
-: Scanner(honourTimeLimits),
+ScannerVirusTotal::ScannerVirusTotal(const std::string& apikey, const bool honourTimeLimits, const bool silent)
+: Scanner(honourTimeLimits, silent),
   m_apikey(apikey)
 {
 }

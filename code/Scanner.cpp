@@ -22,8 +22,9 @@
 #include <iostream>
 #include <thread>
 
-Scanner::Scanner(const bool honourTimeLimits)
+Scanner::Scanner(const bool honourTimeLimits, const bool _silent)
 : m_HonourLimit(honourTimeLimits),
+  m_Silent(_silent),
   //We assume that time limit will not be higher than 24 hours.
   m_LastRequest(std::chrono::steady_clock::now() - std::chrono::hours(24))
 { }
@@ -36,6 +37,16 @@ bool Scanner::honoursTimeLimit() const
 void Scanner::honourTimeLimit(const bool doHonour)
 {
   m_HonourLimit = doHonour;
+}
+
+bool Scanner::silent() const
+{
+  return m_Silent;
+}
+
+void Scanner::silence(const bool silent)
+{
+  m_Silent = silent;
 }
 
 std::chrono::steady_clock::time_point Scanner::lastRequestTime() const
@@ -58,8 +69,11 @@ void Scanner::waitForLimitExpiration()
   if (m_LastRequest + timeBetweenConsecutiveRequests() > now_steady)
   {
     const auto duration = m_LastRequest + timeBetweenConsecutiveRequests() - now_steady;
-    std::clog << "Waiting " << std::chrono::duration_cast<std::chrono::seconds>(duration).count()
-              << " second(s) for time limit to expire..." << std::endl;
+    if (!m_Silent)
+    {
+      std::clog << "Waiting " << std::chrono::duration_cast<std::chrono::seconds>(duration).count()
+                << " second(s) for time limit to expire..." << std::endl;
+    }
     std::this_thread::sleep_for(duration);
   } //if waiting is required
 }

@@ -71,8 +71,9 @@ class ScannerVirusTotal: public Scanner
      *
      * \param apikey   the VirusTotal API key used for scanning
      * \param honourTimeLimits   whether or not time limits should be honoured
+     * \param silent             whether or not output to the standard output should be reduced
      */
-    ScannerVirusTotal(const std::string& apikey, const bool honourTimeLimits = true);
+    ScannerVirusTotal(const std::string& apikey, const bool honourTimeLimits = true, const bool silent = false);
 
 
     /** \brief sets a new API key
