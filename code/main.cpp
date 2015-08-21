@@ -34,6 +34,8 @@ int main(int argc, char ** argv)
   std::unordered_set<std::string> resources_report = std::unordered_set<std::string>();
   //resources for which a rescan will be requested
   std::unordered_set<std::string> resources_rescan = std::unordered_set<std::string>();
+  //files for which an upload and scan
+  std::unordered_set<std::string> files_scan = std::unordered_set<std::string>();
 
   if ((argc>1) and (argv!=NULL))
   {
@@ -101,6 +103,27 @@ int main(int argc, char ** argv)
             return rcInvalidParameter;
           }
         }//rescan
+        else if ((param=="--file") or (param=="--scan"))
+        {
+          //enough parameters?
+          if ((i+1<argc) and (argv[i+1]!=NULL))
+          {
+            const std::string next_files = std::string(argv[i+1]);
+            ++i; //Skip next parameter, because it's used as filename already.
+            if (files_scan.find(next_files) == files_scan.end())
+            {
+              std::cout << "Adding files " << next_files
+                        << " to list of scan files." << std::endl;
+            }
+            files_scan.insert(next_files);
+          }
+          else
+          {
+            std::cout << "Error: You have to enter some text after \""
+                      << param << "\"." << std::endl;
+            return rcInvalidParameter;
+          }
+        }//scan file
         else
         {
           //unknown or wrong parameter
@@ -124,7 +147,7 @@ int main(int argc, char ** argv)
               << "Use --apikey to specifiy the VirusTotal API key." << std::endl;
     return rcInvalidParameter;
   }
-  if (resources_report.empty() && resources_rescan.empty())
+  if (resources_report.empty() && resources_rescan.empty() && files_scan.empty())
   {
     std::cout << "No resources for report retrieval were given. Adding an example resource to for "
               << "demonstration purposes." << std::endl;
@@ -178,6 +201,20 @@ int main(int argc, char ** argv)
       else
         std::cout << " found nothing." << std::endl;
     } //for (inner, range-based)
+  } //for (range-based)
+
+  //iterate over all files for scan requests
+  for(const std::string& i : files_scan)
+  {
+    std::string scan_id = "";
+    if (!scanVT.scan(i, scan_id))
+    {
+      std::cout << "Error: Could not initiate scan for \""
+                << i << "\"!" << std::endl;
+      return 1;
+    }
+    std::cout << "Scan for " << i << " initiated. "
+              << "Scan-ID for later retrieval is " << scan_id << "." << std::endl;
   } //for (range-based)
 
   return 0;

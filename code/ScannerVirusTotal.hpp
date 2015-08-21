@@ -28,6 +28,7 @@
 class ScannerVirusTotal: public Scanner
 {
   public:
+    ///structure for detection report
     struct Report
     {
       struct Engine
@@ -111,6 +112,21 @@ class ScannerVirusTotal: public Scanner
      * and over again.
      */
     bool rescan(const std::string& resource, std::string& scan_id);
+
+
+    /** \brief upload a file and request a scan of the file
+     *
+     * \param filename   name of the (local) file that shall be uploaded and scanned
+     * \param scan_id    the scan_id (resource) which can be used to query the report later
+     * \return Returns true, if the scan was initiated.
+     *         Returns false, if request failed.
+     * \remarks Files sent using the API have the lowest scanning priority.
+     * Depending on VirusTotal's load, it may take several hours before the
+     * file is scanned, so query the report at regular intervals until the
+     * result shows up and do not keep sending the file rescan requests over
+     * and over again.
+     */
+    bool scan(const std::string& filename, std::string& scan_id);
   private:
     std::string m_apikey; /**< holds the VirusTotal API key */
 }; //class
