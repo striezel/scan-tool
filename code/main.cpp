@@ -19,6 +19,7 @@
 */
 
 #include <iostream>
+#include <map>
 #include <string>
 #include <unordered_set>
 #include "Curly.hpp"
@@ -51,7 +52,7 @@ void showHelp()
 
 void showVersion()
 {
-  std::cout << "scan-tool, version 0.02, 2015-08-22\n";
+  std::cout << "scan-tool, version 0.03, 2015-08-22\n";
 }
 
 int main(int argc, char ** argv)
@@ -181,6 +182,11 @@ int main(int argc, char ** argv)
   //create scanner: pass API key, honour time limits, set silent mode
   ScannerVirusTotal scanVT(key, true, silent);
 
+  //maps sha256 hashes to corresponding report
+  std::map<std::string, ScannerVirusTotal::Report> mapHashToReport;
+  //maps filename to hash
+  std::map<std::string, std::string> mapFileToHash;
+
   //iterate over all files for scan requests
   for(const std::string& i : files_scan)
   {
@@ -191,8 +197,9 @@ int main(int argc, char ** argv)
                 << "!" << std::endl;
       return rcFileError;
     } //if no hash
+    const std::string hashString = fileHash.toHexString();
     ScannerVirusTotal::Report report;
-    if (scanVT.getReport(fileHash.toHexString(), report))
+    if (scanVT.getReport(hashString, report))
     {
       if (report.response_code == 1)
       {
@@ -206,11 +213,17 @@ int main(int argc, char ** argv)
         {
           std::clog << i << " might be infected, got " << report.positives
                     << " positives." << std::endl;
+          //add file to list of infected files
+          mapFileToHash[i] = hashString;
+          mapHashToReport[hashString] = report;
         }
         else if (report.positives > maybeLimit)
         {
           std::clog << i << " is INFECTED, got " << report.positives
                     << " positives." << std::endl;
+          //add file to list of infected files
+          mapFileToHash[i] = hashString;
+          mapHashToReport[hashString] = report;
         }
       } //if file was in report database
       else if (report.response_code == 0)
@@ -240,6 +253,24 @@ int main(int argc, char ** argv)
       std::clog << "Warning: Could not get report for file " << i << "!" << std::endl;
     }
   } //for (range-based)
+
+  //list possibly infected files
+  if (mapFileToHash.size() > 0)
+  {
+    std::clog << "Possibly infected files: " << mapFileToHash.size() << std::endl;
+    for (const auto& i : mapFileToHash)
+    {
+      std::clog << i.first << " may be infected!" << std::endl;
+      const ScannerVirusTotal::Report& repVT = mapHashToReport[i.second];
+      std::clog << repVT.positives << " out of " << repVT.total
+                << " scanners detected a threat." << std::endl;
+      for (const auto& engine : repVT.scans)
+      {
+        std::clog << "    " << engine.engine << " detected " << engine.result << std::endl;
+      } //for engine
+      std::clog << std::endl;
+    } //for i
+  } //if infected files exist in map
 
   return 0;
 }
