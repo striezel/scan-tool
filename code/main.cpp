@@ -52,7 +52,7 @@ void showHelp()
 
 void showVersion()
 {
-  std::cout << "scan-tool, version 0.03, 2015-08-22\n";
+  std::cout << "scan-tool, version 0.04, 2015-08-22\n";
 }
 
 int main(int argc, char ** argv)
@@ -266,7 +266,8 @@ int main(int argc, char ** argv)
                 << " scanners detected a threat." << std::endl;
       for (const auto& engine : repVT.scans)
       {
-        std::clog << "    " << engine.engine << " detected " << engine.result << std::endl;
+        if (engine.detected)
+          std::clog << "    " << engine.engine << " detected " << engine.result << std::endl;
       } //for engine
       std::clog << std::endl;
     } //for i
