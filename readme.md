@@ -31,6 +31,7 @@ the directory after the repository is completely cloned:
 
     git clone https://github.com/Thoronador/scan-tool.git ./scan-tool
     cd scan-tool
+    git submodule update --init
 
 That's it, you should now have the current source code of scan-tool on your
 machine.
