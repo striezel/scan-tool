@@ -1,5 +1,8 @@
 # ChangeLog for scan-tool
 
+## Version 0.05 (2015-08-22)
+  - raise default limit for false positives from 2 to 3
+
 ## Version 0.04 (2015-08-22)
   - fix listing of infected files to only include the engines that detected a
     threat and not the engines that found nothing

@@ -45,14 +45,14 @@ void showHelp()
             << "  --apikey KEY     - sets the API key for VirusTotal\n"
             << "  --silent         - produce less text on the standard output\n"
             << "  --maybe N        - sets the limit for false positives to N. N must be an\n"
-            << "                     unsigned integer value. Default is 2.\n"
+            << "                     unsigned integer value. Default is 3.\n"
             << "  FILE             - file that shall be scanned. Can be repeated multiple\n"
             << "                     times, if you want to scan several files.\n";
 }
 
 void showVersion()
 {
-  std::cout << "scan-tool, version 0.04, 2015-08-22\n";
+  std::cout << "scan-tool, version 0.05, 2015-08-22\n";
 }
 
 int main(int argc, char ** argv)
@@ -177,7 +177,7 @@ int main(int argc, char ** argv)
   } //if no requests
 
   if (maybeLimit <= 0)
-    maybeLimit = 2;
+    maybeLimit = 3;
 
   //create scanner: pass API key, honour time limits, set silent mode
   ScannerVirusTotal scanVT(key, true, silent);
