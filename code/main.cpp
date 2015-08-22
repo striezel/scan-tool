@@ -53,7 +53,7 @@ void showHelp()
 
 void showVersion()
 {
-  std::cout << "scan-tool, version 0.07, 2015-08-22\n";
+  std::cout << "scan-tool, version 0.08, 2015-08-23\n";
 }
 
 int main(int argc, char ** argv)
@@ -353,7 +353,10 @@ int main(int argc, char ** argv)
       std::clog << i.first << " may be infected!" << std::endl;
       const ScannerVirusTotal::Report& repVT = mapHashToReport[i.second];
       std::clog << repVT.positives << " out of " << repVT.total
-                << " scanners detected a threat." << std::endl;
+                << " scanners detected a threat";
+      if (!repVT.scan_date.empty())
+        std::clog << " (date: " << repVT.scan_date << ")";
+      std::clog << "." << std::endl;
       for (const auto& engine : repVT.scans)
       {
         if (engine.detected)

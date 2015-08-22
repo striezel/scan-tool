@@ -1,5 +1,8 @@
 # ChangeLog for scan-tool
 
+## Version 0.08 (2015-08-23)
+  - show scan date in list of infected files
+
 ## Version 0.07 (2015-08-22)
   - make progam even less verbose when run with --silent option
 
