@@ -51,7 +51,7 @@ void showHelp()
 
 void showVersion()
 {
-  std::cout << "scan-tool, version 0.01, 2015-08-22\n";
+  std::cout << "scan-tool, version 0.02, 2015-08-22\n";
 }
 
 int main(int argc, char ** argv)
@@ -178,7 +178,8 @@ int main(int argc, char ** argv)
   if (maybeLimit <= 0)
     maybeLimit = 2;
 
-  ScannerVirusTotal scanVT(key, silent);
+  //create scanner: pass API key, honour time limits, set silent mode
+  ScannerVirusTotal scanVT(key, true, silent);
 
   //iterate over all files for scan requests
   for(const std::string& i : files_scan)
