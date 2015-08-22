@@ -53,7 +53,7 @@ void showHelp()
 
 void showVersion()
 {
-  std::cout << "scan-tool, version 0.06, 2015-08-22\n";
+  std::cout << "scan-tool, version 0.07, 2015-08-22\n";
 }
 
 int main(int argc, char ** argv)
@@ -94,8 +94,10 @@ int main(int argc, char ** argv)
           {
             key = std::string(argv[i+1]);
             ++i; //Skip next parameter, because it's used as API key already.
+            #ifdef SCAN_TOOL_DEBUG
             if (!silent)
               std::cout << "API key was set to \"" << key << "\"." << std::endl;
+            #endif
           }
           else
           {
@@ -216,16 +218,18 @@ int main(int argc, char ** argv)
         }
         else if (report.positives <= maybeLimit)
         {
-          std::clog << i << " might be infected, got " << report.positives
-                    << " positives." << std::endl;
+          if (!silent)
+            std::clog << i << " might be infected, got " << report.positives
+                      << " positives." << std::endl;
           //add file to list of infected files
           mapFileToHash[i] = hashString;
           mapHashToReport[hashString] = report;
         }
         else if (report.positives > maybeLimit)
         {
-          std::clog << i << " is INFECTED, got " << report.positives
-                    << " positives." << std::endl;
+          if (!silent)
+            std::clog << i << " is INFECTED, got " << report.positives
+                      << " positives." << std::endl;
           //add file to list of infected files
           mapFileToHash[i] = hashString;
           mapHashToReport[hashString] = report;
@@ -259,7 +263,8 @@ int main(int argc, char ** argv)
     }
     else
     {
-      std::clog << "Warning: Could not get report for file " << i << "!" << std::endl;
+      if (!silent)
+        std::clog << "Warning: Could not get report for file " << i << "!" << std::endl;
     }
   } //for (range-based)
 
@@ -293,8 +298,9 @@ int main(int argc, char ** argv)
           }
           else if (report.positives <= maybeLimit)
           {
-            std::clog << filename << " might be infected, got " << report.positives
-                      << " positives." << std::endl;
+            if (!silent)
+              std::clog << filename << " might be infected, got " << report.positives
+                        << " positives." << std::endl;
             //if hash is not given, recalculate it
             if (report.sha256.empty())
             {
@@ -306,8 +312,9 @@ int main(int argc, char ** argv)
           }
           else if (report.positives > maybeLimit)
           {
-            std::clog << filename << " is INFECTED, got " << report.positives
-                      << " positives." << std::endl;
+            if (!silent)
+              std::clog << filename << " is INFECTED, got " << report.positives
+                        << " positives." << std::endl;
             //add file to list of infected files
             mapFileToHash[filename] = report.sha256;
             mapHashToReport[report.sha256] = report;
@@ -330,8 +337,9 @@ int main(int argc, char ** argv)
       } //if report could be retrieved
       else
       {
-        std::clog << "Warning: Could not get queued scan report for scan ID "
-                  << scan_id << " / file " << filename << "!" << std::endl;
+        if (!silent)
+          std::clog << "Warning: Could not get queued scan report for scan ID "
+                    << scan_id << " / file " << filename << "!" << std::endl;
       } //else
     } //for (range-based)
   } //if some scans are/were queued

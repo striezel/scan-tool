@@ -1,5 +1,8 @@
 # ChangeLog for scan-tool
 
+## Version 0.07 (2015-08-22)
+  - make progam even less verbose when run with --silent option
+
 ## Version 0.06 (2015-08-22)
   - retrieve reports of files that were queued for scan at the end, before the
     final result listing is shown
