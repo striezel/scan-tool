@@ -1,5 +1,9 @@
 # ChangeLog for scan-tool
 
+## Version 0.06 (2015-08-22)
+  - retrieve reports of files that were queued for scan at the end, before the
+    final result listing is shown
+
 ## Version 0.05 (2015-08-22)
   - raise default limit for false positives from 2 to 3
 

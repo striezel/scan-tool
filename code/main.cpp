@@ -21,6 +21,7 @@
 #include <iostream>
 #include <map>
 #include <string>
+#include <thread>
 #include <unordered_set>
 #include "Curly.hpp"
 #include "ScannerVirusTotal.hpp"
@@ -52,7 +53,7 @@ void showHelp()
 
 void showVersion()
 {
-  std::cout << "scan-tool, version 0.05, 2015-08-22\n";
+  std::cout << "scan-tool, version 0.06, 2015-08-22\n";
 }
 
 int main(int argc, char ** argv)
@@ -63,7 +64,7 @@ int main(int argc, char ** argv)
   bool silent = false;
   // limit for "maybe infected"; higher count means infected
   int maybeLimit = 0;
-  //files that will be checkes
+  //files that will be checked
   std::unordered_set<std::string> files_scan = std::unordered_set<std::string>();
 
   if ((argc>1) and (argv!=NULL))
@@ -182,10 +183,14 @@ int main(int argc, char ** argv)
   //create scanner: pass API key, honour time limits, set silent mode
   ScannerVirusTotal scanVT(key, true, silent);
 
-  //maps sha256 hashes to corresponding report
+  //maps sha256 hashes to corresponding report; key = SHA256 hash, value = scan report
   std::map<std::string, ScannerVirusTotal::Report> mapHashToReport;
-  //maps filename to hash
+  //maps filename to hash; key = file name, value = SHA256 hash
   std::map<std::string, std::string> mapFileToHash;
+  //list of queued scan requests; key = scan_id, value = file name
+  std::unordered_map<std::string, std::string> queued_scans = std::unordered_map<std::string, std::string>();
+  //time when last scan was queued
+  std::chrono::steady_clock::time_point lastQueuedScanTime = std::chrono::steady_clock::now() - std::chrono::hours(24);
 
   //iterate over all files for scan requests
   for(const std::string& i : files_scan)
@@ -236,6 +241,10 @@ int main(int argc, char ** argv)
                     << std::endl;
           return rcScanError;
         }
+        //remember time of last scan request
+        lastQueuedScanTime = std::chrono::steady_clock::now();
+        //add scan ID to list of queued scans for later retrieval
+        queued_scans[scan_id] = i;
         if (!silent)
           std::clog << "Info: File " << i << " was queued for scan. Scan ID is "
                     << scan_id << "." << std::endl;
@@ -253,6 +262,79 @@ int main(int argc, char ** argv)
       std::clog << "Warning: Could not get report for file " << i << "!" << std::endl;
     }
   } //for (range-based)
+
+  //try to retrieve queued scans
+  if (!queued_scans.empty())
+  {
+    const auto duration = std::chrono::steady_clock::now() - lastQueuedScanTime;
+    if (duration < std::chrono::seconds(60))
+    {
+      if (!silent)
+        std::cout << "Giving VirusTotal some extra seconds to finish queued scans."
+                  << std::endl;
+      // Wait until 60 seconds since last queued scan are expired.
+      std::this_thread::sleep_for(std::chrono::seconds(60) - duration);
+    } //if not enough time elapsed
+
+    for (const auto& queueElement : queued_scans)
+    {
+      const std::string& scan_id = queueElement.first;
+      const std::string& filename = queueElement.second;
+      ScannerVirusTotal::Report report;
+      if (scanVT.getReport(scan_id, report))
+      {
+        if (report.response_code == 1)
+        {
+          //got report
+          if (report.positives == 0)
+          {
+            if (!silent)
+              std::cout << filename << " OK" << std::endl;
+          }
+          else if (report.positives <= maybeLimit)
+          {
+            std::clog << filename << " might be infected, got " << report.positives
+                      << " positives." << std::endl;
+            //if hash is not given, recalculate it
+            if (report.sha256.empty())
+            {
+              report.sha256 = SHA256::computeFromFile(filename).toHexString();
+            } //if hash is not present
+            //add file to list of infected files
+            mapFileToHash[filename] = report.sha256;
+            mapHashToReport[report.sha256] = report;
+          }
+          else if (report.positives > maybeLimit)
+          {
+            std::clog << filename << " is INFECTED, got " << report.positives
+                      << " positives." << std::endl;
+            //add file to list of infected files
+            mapFileToHash[filename] = report.sha256;
+            mapHashToReport[report.sha256] = report;
+          } //else
+        } //if file was in report database
+        else if (report.response_code == -2)
+        {
+          /* Response code -2 means that this stuff is still queued for
+             analysis. Most likely any of the following items will still be
+             queued, too, so we break out of the for loop here.
+          */
+          break;
+        }
+        else
+        {
+          std::cerr << "Error: Got unexpected response code (" << report.response_code
+                    << ") from API. No further report retrieval of queued scans." << std::endl;
+          break;
+        } //else
+      } //if report could be retrieved
+      else
+      {
+        std::clog << "Warning: Could not get queued scan report for scan ID "
+                  << scan_id << " / file " << filename << "!" << std::endl;
+      } //else
+    } //for (range-based)
+  } //if some scans are/were queued
 
   //list possibly infected files
   if (mapFileToHash.size() > 0)
