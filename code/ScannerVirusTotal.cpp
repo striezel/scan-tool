@@ -120,7 +120,7 @@ ScannerVirusTotal::Report reportFromJSONRoot(const Json::Value& root)
       if (!val.empty() && val.isBool())
         data.detected = val.asBool();
       else
-        data.detected = "";
+        data.detected = false;
       //version
       val = engVal["version"];
       if (!val.empty() && val.isString())
