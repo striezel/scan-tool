@@ -53,7 +53,7 @@ void showHelp()
 
 void showVersion()
 {
-  std::cout << "scan-tool, version 0.09, 2015-08-24\n";
+  std::cout << "scan-tool, version 0.10, 2015-08-24\n";
 }
 
 int main(int argc, char ** argv)
@@ -375,6 +375,10 @@ int main(int argc, char ** argv)
       std::clog << std::endl;
     } //for i
   } //if infected files exist in map
+  else
+  {
+    std::cout << "All of the given files seem to be OK." << std::endl;
+  }
 
   return 0;
 }

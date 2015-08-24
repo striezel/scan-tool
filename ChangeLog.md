@@ -1,5 +1,8 @@
 # ChangeLog for scan-tool
 
+## Version 0.10 (2015-08-24)
+  - show OK message, if no infected files were found
+
 ## Version 0.09 (2015-08-24)
   - implement check for maximum file size limit
 
