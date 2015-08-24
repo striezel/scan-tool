@@ -22,6 +22,7 @@
 #define SCANNER_HPP
 
 #include <chrono>
+#include <cstdint>
 
 class Scanner
 {
@@ -91,6 +92,13 @@ class Scanner
     /** \brief waits until the time limit has expired, if the scanner honours a time limit
      */
     void waitForLimitExpiration();
+
+
+     /** \brief returns the maximum file size that is allowed to be scanned
+      *
+      * \return maximum size in bytes that can still be scanned
+      */
+    virtual int64_t maxScanSize() const = 0;
   private:
     bool m_HonourLimit; /**< whether to honour time limits */
     bool m_Silent; /**< whether to be silent */

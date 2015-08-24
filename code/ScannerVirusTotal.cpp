@@ -347,6 +347,11 @@ bool ScannerVirusTotal::scan(const std::string& filename, std::string& scan_id)
     std::cerr << "Error in ScannerVirusTotal::scan(): Access denied!" << std::endl;
     return false;
   }
+  if (cURL.getResponseCode() == 413)
+  {
+    std::cerr << "Error in ScannerVirusTotal::scan(): Code 413, Request entity is too large!" << std::endl;
+    return false;
+  }
   if (cURL.getResponseCode() != 200)
   {
     std::cerr << "Error in ScannerVirusTotal::scan(): Unexpected HTTP status code "
@@ -399,4 +404,10 @@ bool ScannerVirusTotal::scan(const std::string& filename, std::string& scan_id)
   }
   //No response_code element: something is wrong with the API.
   return false;
+}
+
+int64_t ScannerVirusTotal::maxScanSize() const
+{
+  //Maximum allowed scan size is 32 MB.
+  return 32 * 1024 * 1024;
 }

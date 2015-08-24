@@ -53,7 +53,7 @@ void showHelp()
 
 void showVersion()
 {
-  std::cout << "scan-tool, version 0.08, 2015-08-23\n";
+  std::cout << "scan-tool, version 0.09, 2015-08-24\n";
 }
 
 int main(int argc, char ** argv)
@@ -238,20 +238,30 @@ int main(int argc, char ** argv)
       else if (report.response_code == 0)
       {
         //no data present for file
-        std::string scan_id = "";
-        if (!scanVT.scan(i, scan_id))
+        const int64_t fileSize = libthoro::filesystem::File::getSize64(i);
+        if ((fileSize <= scanVT.maxScanSize()) && (fileSize >= 0))
         {
-          std::cerr << "Error: Could not submit file " << i << " for scanning."
-                    << std::endl;
-          return rcScanError;
+          std::string scan_id = "";
+          if (!scanVT.scan(i, scan_id))
+          {
+            std::cerr << "Error: Could not submit file " << i << " for scanning."
+                      << std::endl;
+            return rcScanError;
+          }
+          //remember time of last scan request
+          lastQueuedScanTime = std::chrono::steady_clock::now();
+          //add scan ID to list of queued scans for later retrieval
+          queued_scans[scan_id] = i;
+          if (!silent)
+            std::clog << "Info: File " << i << " was queued for scan. Scan ID is "
+                      << scan_id << "." << std::endl;
+        } //if file size is below limit
+        else
+        {
+          //File is too large.
+          std::cout << "Warning: File " << i << " exceeds maximum file size "
+                    << "for scan! File will be skipped." << std::endl;
         }
-        //remember time of last scan request
-        lastQueuedScanTime = std::chrono::steady_clock::now();
-        //add scan ID to list of queued scans for later retrieval
-        queued_scans[scan_id] = i;
-        if (!silent)
-          std::clog << "Info: File " << i << " was queued for scan. Scan ID is "
-                    << scan_id << "." << std::endl;
       } //else
       else
       {
@@ -345,7 +355,7 @@ int main(int argc, char ** argv)
   } //if some scans are/were queued
 
   //list possibly infected files
-  if (mapFileToHash.size() > 0)
+  if (!mapFileToHash.empty())
   {
     std::clog << "Possibly infected files: " << mapFileToHash.size() << std::endl;
     for (const auto& i : mapFileToHash)

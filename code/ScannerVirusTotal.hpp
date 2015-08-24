@@ -128,6 +128,13 @@ class ScannerVirusTotal: public Scanner
      * and over again.
      */
     bool scan(const std::string& filename, std::string& scan_id);
+
+
+    /** \brief returns the maximum file size that is allowed to be scanned
+      *
+      * \return maximum size in bytes that can still be scanned
+      */
+    virtual int64_t maxScanSize() const override;
   private:
     std::string m_apikey; /**< holds the VirusTotal API key */
 }; //class

@@ -1,5 +1,8 @@
 # ChangeLog for scan-tool
 
+## Version 0.09 (2015-08-24)
+  - implement check for maximum file size limit
+
 ## Version 0.08 (2015-08-23)
   - show scan date in list of infected files
 
