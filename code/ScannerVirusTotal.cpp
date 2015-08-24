@@ -326,7 +326,7 @@ bool ScannerVirusTotal::scan(const std::string& filename, std::string& scan_id)
   Curly cURL;
   cURL.setURL("https://www.virustotal.com/vtapi/v2/file/scan");
   cURL.addPostField("apikey", m_apikey);
-  if (!cURL.addFile(filename))
+  if (!cURL.addFile(filename, "file"))
     return false;
 
   std::string response = "";

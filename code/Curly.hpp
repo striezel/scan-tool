@@ -23,7 +23,6 @@
 
 #include <string>
 #include <unordered_map>
-#include <unordered_set>
 
 extern "C"
 {
@@ -100,11 +99,11 @@ class Curly
     /** \brief adds a file to the request
      *
      * \param filename  name of the local file to use in the post request
-     * \param
+     * \param field     name of the form field that contains the file
      * \return Returns true, if a file was appended.
      * Returns false, if operation failed.
      */
-    bool addFile(const std::string& filename);
+    bool addFile(const std::string& filename, const std::string& field);
 
 
     /** \brief performs the (POST) request
@@ -137,9 +136,9 @@ class Curly
      */
     const std::string& getContentType() const;
   private:
-    std::string m_URL;
+    std::string m_URL; /**< URL for the request */
     std::unordered_map<std::string, std::string> m_PostFields;
-    std::unordered_set<std::string> m_Files;
+    std::unordered_map<std::string, std::string> m_Files; /**< added files; key = field name, value = file name */
     long m_LastResponseCode;
     std::string m_LastContentType;
 }; //class Curly

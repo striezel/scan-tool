@@ -53,7 +53,7 @@ size_t writeCallbackString(char *ptr, size_t size, size_t nmemb, void *userdata)
 Curly::Curly()
 : m_URL(""),
   m_PostFields(std::unordered_map<std::string, std::string>()),
-  m_Files(std::unordered_set<std::string>()),
+  m_Files(std::unordered_map<std::string, std::string>()),
   m_LastResponseCode(0),
   m_LastContentType("")
 {
@@ -72,7 +72,8 @@ const std::string& Curly::getURL() const
 
 void Curly::addPostField(const std::string& name, const std::string& value)
 {
-  m_PostFields[name] = value;
+  if (!name.empty())
+    m_PostFields[name] = value;
 }
 
 bool Curly::hasPostField(const std::string& name) const
@@ -93,9 +94,11 @@ bool Curly::removePostField(const std::string& name)
   return (m_PostFields.erase(name) > 0);
 }
 
-bool Curly::addFile(const std::string& filename)
+bool Curly::addFile(const std::string& filename, const std::string& field)
 {
-  m_Files.insert(filename);
+  if (field.empty())
+    return false;
+  m_Files[field] = filename;
   return true;
 }
 
@@ -188,13 +191,12 @@ bool Curly::perform(std::string& response)
   struct curl_httppost* formLast = nullptr;
   if (!m_Files.empty())
   {
-    std::string copyname = "file";
     auto fileIter = m_Files.begin();
     while (fileIter != m_Files.end())
     {
       CURLFORMcode errCode = curl_formadd(&formFirst, &formLast,
-                             CURLFORM_COPYNAME, copyname.c_str(),
-                             CURLFORM_FILE, fileIter->c_str(),
+                             CURLFORM_COPYNAME, fileIter->first.c_str(),
+                             CURLFORM_FILE, fileIter->second.c_str(),
                              CURLFORM_END);
       if (errCode != CURL_FORMADD_OK)
       {
@@ -205,7 +207,6 @@ bool Curly::perform(std::string& response)
         return false;
       }
       ++fileIter;
-      copyname += "1";
     } //while
 
     //add normal post fields

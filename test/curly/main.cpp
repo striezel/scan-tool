@@ -89,6 +89,60 @@ int main()
     }
   } //for
 
+
+  // **** test for file submission capability ****
+  //add the file
+  if (!post.addFile("/dev/null", "fieldname"))
+  {
+    std::cout << "Error: could not add file to request data!" << std::endl;
+    return 1;
+  }
+  response.clear();
+  if (!post.perform(response))
+  {
+    std::cout << "Error: Could not perform post request!" << std::endl;
+    return 1;
+  }
+  //check HTTP status code
+  if (post.getResponseCode() != 200)
+  {
+    std::cout << "Error: HTTP status code is not 200, it is "
+              << post.getResponseCode() << " instead!" << std::endl;
+    return 1;
+  }
+  //check content type
+  if (post.getContentType() != "application/json" && !post.getContentType().empty())
+  {
+    std::cout << "Error: Content type is not application/json, it is "
+              << post.getContentType() << " instead!" << std::endl;
+    return 1;
+  }
+
+  std::cout << "Response (2nd):" << std::endl << response << std::endl << std::endl;
+
+  expectedSubstrings = {
+      std::string("\"args\": {}"),
+      "\"data\": \"\"",
+      "\"files\": {\n",
+      "\"fieldname\": \"\"",
+      "\"form\": {",
+      "\"foo\": \"bar\",",
+      "\"ping\": \"pong\"",
+      "\"Host\": \"httpbin.org\"",
+      "\"url\": \"https://httpbin.org/post\""
+  };
+
+  for (const auto & item : expectedSubstrings)
+  {
+    if (response.find(item) == std::string::npos)
+    {
+      std::cout << "Error: Expected and actual response do not match!" << std::endl
+                << "Expected response to contain \"" << item << "\", but it does not."
+                << std::endl;
+    return 1;
+    }
+  } //for
+
   std::cout << "Curly is fine." << std::endl;
   return 0;
 }
