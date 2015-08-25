@@ -71,9 +71,14 @@ void Scanner::waitForLimitExpiration()
     const auto duration = m_LastRequest + timeBetweenConsecutiveRequests() - now_steady;
     if (!m_Silent)
     {
-      std::clog << "Waiting " << std::chrono::duration_cast<std::chrono::seconds>(duration).count()
-                << " second(s) for time limit to expire..." << std::endl;
-    }
+      std::clog << "Waiting ";
+      if (duration >= std::chrono::seconds(2))
+        std::clog << std::chrono::duration_cast<std::chrono::seconds>(duration).count()
+                  << " seconds for time limit to expire..." << std::endl;
+      else
+        std::clog << std::chrono::duration_cast<std::chrono::milliseconds>(duration).count()
+                  << " millisecond(s) for time limit to expire..." << std::endl;
+    } //if not silent
     std::this_thread::sleep_for(duration);
   } //if waiting is required
 }
