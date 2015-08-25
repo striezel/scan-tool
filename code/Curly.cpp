@@ -72,7 +72,8 @@ const std::string& Curly::getURL() const
 
 void Curly::addPostField(const std::string& name, const std::string& value)
 {
-  if (!name.empty())
+  //No empty names, and avoid conflict with file field names.
+  if (!name.empty() && (m_Files.find(name) == m_Files.end()))
     m_PostFields[name] = value;
 }
 
@@ -96,8 +97,13 @@ bool Curly::removePostField(const std::string& name)
 
 bool Curly::addFile(const std::string& filename, const std::string& field)
 {
+  //No empty field names!
   if (field.empty())
     return false;
+  //Avoid name conflict with post fields.
+  if (m_PostFields.find(field) != m_PostFields.end())
+    return false;
+  //Add file.
   m_Files[field] = filename;
   return true;
 }
