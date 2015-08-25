@@ -57,6 +57,8 @@
 		<Unit filename="Scanner.hpp" />
 		<Unit filename="ScannerVirusTotal.cpp" />
 		<Unit filename="ScannerVirusTotal.hpp" />
+		<Unit filename="ScannerVirusTotalHoneypot.cpp" />
+		<Unit filename="ScannerVirusTotalHoneypot.hpp" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />
