@@ -97,8 +97,8 @@ bool Curly::removePostField(const std::string& name)
 
 bool Curly::addFile(const std::string& filename, const std::string& field)
 {
-  //No empty field names!
-  if (field.empty())
+  //No empty field or file names!
+  if (field.empty() || filename.empty())
     return false;
   //Avoid name conflict with post fields.
   if (m_PostFields.find(field) != m_PostFields.end())
