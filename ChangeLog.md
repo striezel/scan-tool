@@ -1,5 +1,9 @@
 # ChangeLog for scan-tool
 
+## Version 0.11 (2015-08-27)
+  - list files that could not be scanned in time at the end, because they may
+    be potentially unsafe/infected
+
 ## Version 0.10 (2015-08-24)
   - show OK message, if no infected files were found
 

@@ -53,7 +53,7 @@ void showHelp()
 
 void showVersion()
 {
-  std::cout << "scan-tool, version 0.10, 2015-08-24\n";
+  std::cout << "scan-tool, version 0.11, 2015-08-27\n";
 }
 
 int main(int argc, char ** argv)
@@ -291,10 +291,11 @@ int main(int argc, char ** argv)
       std::this_thread::sleep_for(std::chrono::seconds(60) - duration);
     } //if not enough time elapsed
 
-    for (const auto& queueElement : queued_scans)
+    auto qsIter = queued_scans.begin();
+    while (qsIter != queued_scans.end())
     {
-      const std::string& scan_id = queueElement.first;
-      const std::string& filename = queueElement.second;
+      const std::string& scan_id = qsIter->first;
+      const std::string& filename = qsIter->second;
       ScannerVirusTotalV2::Report report;
       if (scanVT.getReport(scan_id, report))
       {
@@ -344,14 +345,17 @@ int main(int argc, char ** argv)
                     << ") from API. No further report retrieval of queued scans." << std::endl;
           break;
         } //else
+        queued_scans.erase(qsIter);
+        qsIter = queued_scans.begin();
       } //if report could be retrieved
       else
       {
         if (!silent)
           std::clog << "Warning: Could not get queued scan report for scan ID "
                     << scan_id << " / file " << filename << "!" << std::endl;
+        ++qsIter;
       } //else
-    } //for (range-based)
+    } //while
   } //if some scans are/were queued
 
   //list possibly infected files
@@ -379,6 +383,17 @@ int main(int argc, char ** argv)
   {
     std::cout << "All of the given files seem to be OK." << std::endl;
   }
+
+  //list files which are queued for scan but could not be scanned in time
+  if (!queued_scans.empty())
+  {
+    std::cout << std::endl << queued_scans.size() << " file(s) could not be scanned yet."
+              << std::endl;
+    for(auto& qElem : queued_scans)
+    {
+      std::cout << "  " << qElem.second << " (scan ID " << qElem.first << std::endl;
+    } //for (range-based)
+  } //if there are some queued scans
 
   return 0;
 }
