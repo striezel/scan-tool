@@ -55,8 +55,8 @@
 		<Unit filename="Curly.hpp" />
 		<Unit filename="Scanner.cpp" />
 		<Unit filename="Scanner.hpp" />
-		<Unit filename="ScannerVirusTotal.cpp" />
-		<Unit filename="ScannerVirusTotal.hpp" />
+		<Unit filename="ScannerVirusTotalV2.cpp" />
+		<Unit filename="ScannerVirusTotalV2.hpp" />
 		<Unit filename="ScannerVirusTotalHoneypot.cpp" />
 		<Unit filename="ScannerVirusTotalHoneypot.hpp" />
 		<Unit filename="main.cpp" />

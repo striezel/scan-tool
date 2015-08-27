@@ -8,7 +8,7 @@ project(scan-tool-playground)
 set(scan-tool-playground_sources
     ../code/Curly.cpp
     ../code/Scanner.cpp
-    ../code/ScannerVirusTotal.cpp
+    ../code/ScannerVirusTotalV2.cpp
     main.cpp)
 
 if (CMAKE_COMPILER_IS_GNUCC)

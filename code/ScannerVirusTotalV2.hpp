@@ -25,7 +25,7 @@
 #include <vector>
 #include "Scanner.hpp"
 
-class ScannerVirusTotal: public Scanner
+class ScannerVirusTotalV2: public Scanner
 {
   public:
     ///structure for detection report
@@ -73,7 +73,7 @@ class ScannerVirusTotal: public Scanner
      * \param honourTimeLimits   whether or not time limits should be honoured
      * \param silent             whether or not output to the standard output should be reduced
      */
-    ScannerVirusTotal(const std::string& apikey, const bool honourTimeLimits = true, const bool silent = false);
+    ScannerVirusTotalV2(const std::string& apikey, const bool honourTimeLimits = true, const bool silent = false);
 
 
     /** \brief sets a new API key

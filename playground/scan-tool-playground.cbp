@@ -43,8 +43,8 @@
 		<Unit filename="../code/Curly.hpp" />
 		<Unit filename="../code/Scanner.cpp" />
 		<Unit filename="../code/Scanner.hpp" />
-		<Unit filename="../code/ScannerVirusTotal.cpp" />
-		<Unit filename="../code/ScannerVirusTotal.hpp" />
+		<Unit filename="../code/ScannerVirusTotalV2.cpp" />
+		<Unit filename="../code/ScannerVirusTotalV2.hpp" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />

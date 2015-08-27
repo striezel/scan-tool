@@ -22,7 +22,7 @@
 #include <string>
 #include <unordered_set>
 #include "../code/Curly.hpp"
-#include "../code/ScannerVirusTotal.hpp"
+#include "../code/ScannerVirusTotalV2.hpp"
 
 const int rcInvalidParameter = 1;
 
@@ -156,7 +156,7 @@ int main(int argc, char ** argv)
     resources_report.insert(resource);
   } //if not resources
 
-  ScannerVirusTotal scanVT(key);
+  ScannerVirusTotalV2 scanVT(key);
 
   //iterate over all resources for rescan requests
   for(const std::string& i : resources_rescan)
@@ -175,7 +175,7 @@ int main(int argc, char ** argv)
   //iterate over all resources for report requests
   for(const std::string& i : resources_report)
   {
-    ScannerVirusTotal::Report report;
+    ScannerVirusTotalV2::Report report;
     if (!scanVT.getReport(i, report))
     {
       std::cout << "Error: Could not retrieve report!" << std::endl;
@@ -192,7 +192,7 @@ int main(int argc, char ** argv)
               << "  engines that detected a threat: " << report.positives << std::endl
               << "  permanent link: " << report.permalink << std::endl
               << "  SHA256: " << report.sha256 << std::endl;
-    for (const ScannerVirusTotal::Report::Engine eng : report.scans)
+    for (const ScannerVirusTotalV2::Report::Engine eng : report.scans)
     {
       std::cout << "    Engine " << eng.engine << " (version " << eng.version
                 << " of " << eng.update << ")";

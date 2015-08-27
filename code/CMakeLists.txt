@@ -14,7 +14,7 @@ set(scan-tool_sources
     ../libthoro/hash/sha256/sha256.cpp
     Curly.cpp
     Scanner.cpp
-    ScannerVirusTotal.cpp
+    ScannerVirusTotalV2.cpp
     main.cpp)
 
 if (CMAKE_COMPILER_IS_GNUCC)

@@ -18,12 +18,12 @@
  -------------------------------------------------------------------------------
 */
 
-#include "ScannerVirusTotal.hpp"
+#include "ScannerVirusTotalV2.hpp"
 #include <iostream>
 #include <jsoncpp/json/reader.h>
 #include "Curly.hpp"
 
-ScannerVirusTotal::Report::Engine::Engine()
+ScannerVirusTotalV2::Report::Engine::Engine()
 : engine(""),
   detected(false),
   version(""),
@@ -32,7 +32,7 @@ ScannerVirusTotal::Report::Engine::Engine()
 {
 }
 
-ScannerVirusTotal::Report::Report()
+ScannerVirusTotalV2::Report::Report()
 : response_code(-1),
   verbose_msg(""),
   resource(""),
@@ -46,9 +46,9 @@ ScannerVirusTotal::Report::Report()
 {
 }
 
-ScannerVirusTotal::Report reportFromJSONRoot(const Json::Value& root)
+ScannerVirusTotalV2::Report reportFromJSONRoot(const Json::Value& root)
 {
-  ScannerVirusTotal::Report report;
+  ScannerVirusTotalV2::Report report;
   const Json::Value response_code = root["response_code"];
   const Json::Value verbose_msg = root["verbose_msg"];
   if (!response_code.empty() && response_code.isInt())
@@ -111,7 +111,7 @@ ScannerVirusTotal::Report reportFromJSONRoot(const Json::Value& root)
     const auto itEnd = members.cend();
     while (iter != itEnd)
     {
-      ScannerVirusTotal::Report::Engine data;
+      ScannerVirusTotalV2::Report::Engine data;
       data.engine = *iter;
 
       const Json::Value engVal = scans.get(*iter, Json::Value());
@@ -144,24 +144,24 @@ ScannerVirusTotal::Report reportFromJSONRoot(const Json::Value& root)
     } //while
   } //if "scans" is present
   else
-    report.scans = std::move(std::vector<ScannerVirusTotal::Report::Engine>());
+    report.scans = std::move(std::vector<ScannerVirusTotalV2::Report::Engine>());
 
   return std::move(report);
 }
 
-ScannerVirusTotal::ScannerVirusTotal(const std::string& apikey, const bool honourTimeLimits, const bool silent)
+ScannerVirusTotalV2::ScannerVirusTotalV2(const std::string& apikey, const bool honourTimeLimits, const bool silent)
 : Scanner(honourTimeLimits, silent),
   m_apikey(apikey)
 {
 }
 
-void ScannerVirusTotal::setApiKey(const std::string& apikey)
+void ScannerVirusTotalV2::setApiKey(const std::string& apikey)
 {
   if (!apikey.empty())
     m_apikey = apikey;
 }
 
-std::chrono::seconds ScannerVirusTotal::timeBetweenConsecutiveRequests() const
+std::chrono::seconds ScannerVirusTotalV2::timeBetweenConsecutiveRequests() const
 {
   /* The public API allows four requests per minute, so we can perform one
      request every 15 seconds without hitting the rate limit.
@@ -169,7 +169,7 @@ std::chrono::seconds ScannerVirusTotal::timeBetweenConsecutiveRequests() const
   return std::chrono::seconds(15);
 }
 
-bool ScannerVirusTotal::getReport(const std::string& resource, Report& report)
+bool ScannerVirusTotalV2::getReport(const std::string& resource, Report& report)
 {
   waitForLimitExpiration();
   //send request
@@ -181,24 +181,24 @@ bool ScannerVirusTotal::getReport(const std::string& resource, Report& report)
   std::string response = "";
   if (!cURL.perform(response))
   {
-    std::cerr << "Error in ScannerVirusTotal::getReport(): Request could not be performed." << std::endl;
+    std::cerr << "Error in ScannerVirusTotalV2::getReport(): Request could not be performed." << std::endl;
     return false;
   }
   requestWasNow();
 
   if (cURL.getResponseCode() == 204)
   {
-    std::cerr << "Error in ScannerVirusTotal::getReport(): Rate limit exceeded!" << std::endl;
+    std::cerr << "Error in ScannerVirusTotalV2::getReport(): Rate limit exceeded!" << std::endl;
     return false;
   }
   if (cURL.getResponseCode() == 403)
   {
-    std::cerr << "Error in ScannerVirusTotal::getReport(): Access denied!" << std::endl;
+    std::cerr << "Error in ScannerVirusTotalV2::getReport(): Access denied!" << std::endl;
     return false;
   }
   if (cURL.getResponseCode() != 200)
   {
-    std::cerr << "Error in ScannerVirusTotal::getReport(): Unexpected HTTP status code "
+    std::cerr << "Error in ScannerVirusTotalV2::getReport(): Unexpected HTTP status code "
               << cURL.getResponseCode() << "!" << std::endl;
     return false;
   }
@@ -213,7 +213,7 @@ bool ScannerVirusTotal::getReport(const std::string& resource, Report& report)
   const bool success = jsonReader.parse(response, root, false);
   if (!success)
   {
-    std::cerr << "Error in ScannerVirusTotal::getReport(): Unable to parse JSON data!" << std::endl;
+    std::cerr << "Error in ScannerVirusTotalV2::getReport(): Unable to parse JSON data!" << std::endl;
     return false;
   }
 
@@ -233,7 +233,7 @@ bool ScannerVirusTotal::getReport(const std::string& resource, Report& report)
   return true;
 }
 
-bool ScannerVirusTotal::rescan(const std::string& resource, std::string& scan_id)
+bool ScannerVirusTotalV2::rescan(const std::string& resource, std::string& scan_id)
 {
   waitForLimitExpiration();
   //send request
@@ -245,24 +245,24 @@ bool ScannerVirusTotal::rescan(const std::string& resource, std::string& scan_id
   std::string response = "";
   if (!cURL.perform(response))
   {
-    std::cerr << "Error in ScannerVirusTotal::rescan(): Request could not be performed." << std::endl;
+    std::cerr << "Error in ScannerVirusTotalV2::rescan(): Request could not be performed." << std::endl;
     return false;
   }
   requestWasNow();
 
   if (cURL.getResponseCode() == 204)
   {
-    std::cerr << "Error in ScannerVirusTotal::rescan(): Rate limit exceeded!" << std::endl;
+    std::cerr << "Error in ScannerVirusTotalV2::rescan(): Rate limit exceeded!" << std::endl;
     return false;
   }
   if (cURL.getResponseCode() == 403)
   {
-    std::cerr << "Error in ScannerVirusTotal::rescan(): Access denied!" << std::endl;
+    std::cerr << "Error in ScannerVirusTotalV2::rescan(): Access denied!" << std::endl;
     return false;
   }
   if (cURL.getResponseCode() != 200)
   {
-    std::cerr << "Error in ScannerVirusTotal::rescan(): Unexpected HTTP status code "
+    std::cerr << "Error in ScannerVirusTotalV2::rescan(): Unexpected HTTP status code "
               << cURL.getResponseCode() << "!" << std::endl;
     return false;
   }
@@ -278,7 +278,7 @@ bool ScannerVirusTotal::rescan(const std::string& resource, std::string& scan_id
   const bool success = jsonReader.parse(response, root, false);
   if (!success)
   {
-    std::cerr << "Error in ScannerVirusTotal::rescan(): Unable to parse JSON data!" << std::endl;
+    std::cerr << "Error in ScannerVirusTotalV2::rescan(): Unable to parse JSON data!" << std::endl;
     return false;
   }
 
@@ -316,7 +316,7 @@ bool ScannerVirusTotal::rescan(const std::string& resource, std::string& scan_id
   return false;
 }
 
-bool ScannerVirusTotal::scan(const std::string& filename, std::string& scan_id)
+bool ScannerVirusTotalV2::scan(const std::string& filename, std::string& scan_id)
 {
   if (filename.empty())
     return false;
@@ -332,29 +332,29 @@ bool ScannerVirusTotal::scan(const std::string& filename, std::string& scan_id)
   std::string response = "";
   if (!cURL.perform(response))
   {
-    std::cerr << "Error in ScannerVirusTotal::scan(): Request could not be performed." << std::endl;
+    std::cerr << "Error in ScannerVirusTotalV2::scan(): Request could not be performed." << std::endl;
     return false;
   }
   requestWasNow();
 
   if (cURL.getResponseCode() == 204)
   {
-    std::cerr << "Error in ScannerVirusTotal::scan(): Rate limit exceeded!" << std::endl;
+    std::cerr << "Error in ScannerVirusTotalV2::scan(): Rate limit exceeded!" << std::endl;
     return false;
   }
   if (cURL.getResponseCode() == 403)
   {
-    std::cerr << "Error in ScannerVirusTotal::scan(): Access denied!" << std::endl;
+    std::cerr << "Error in ScannerVirusTotalV2::scan(): Access denied!" << std::endl;
     return false;
   }
   if (cURL.getResponseCode() == 413)
   {
-    std::cerr << "Error in ScannerVirusTotal::scan(): Code 413, Request entity is too large!" << std::endl;
+    std::cerr << "Error in ScannerVirusTotalV2::scan(): Code 413, Request entity is too large!" << std::endl;
     return false;
   }
   if (cURL.getResponseCode() != 200)
   {
-    std::cerr << "Error in ScannerVirusTotal::scan(): Unexpected HTTP status code "
+    std::cerr << "Error in ScannerVirusTotalV2::scan(): Unexpected HTTP status code "
               << cURL.getResponseCode() << "!" << std::endl;
     return false;
   }
@@ -370,7 +370,7 @@ bool ScannerVirusTotal::scan(const std::string& filename, std::string& scan_id)
   const bool success = jsonReader.parse(response, root, false);
   if (!success)
   {
-    std::cerr << "Error in ScannerVirusTotal::scan(): Unable to parse JSON data!" << std::endl;
+    std::cerr << "Error in ScannerVirusTotalV2::scan(): Unable to parse JSON data!" << std::endl;
     return false;
   }
 
@@ -406,7 +406,7 @@ bool ScannerVirusTotal::scan(const std::string& filename, std::string& scan_id)
   return false;
 }
 
-int64_t ScannerVirusTotal::maxScanSize() const
+int64_t ScannerVirusTotalV2::maxScanSize() const
 {
   //Maximum allowed scan size is 32 MB.
   return 32 * 1024 * 1024;

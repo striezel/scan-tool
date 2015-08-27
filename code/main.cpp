@@ -24,7 +24,7 @@
 #include <thread>
 #include <unordered_set>
 #include "Curly.hpp"
-#include "ScannerVirusTotal.hpp"
+#include "ScannerVirusTotalV2.hpp"
 #include "../libthoro/common/StringUtils.h"
 #include "../libthoro/filesystem/FileFunctions.hpp"
 #include "../libthoro/hash/sha256/FileSourceUtility.hpp"
@@ -183,10 +183,10 @@ int main(int argc, char ** argv)
     maybeLimit = 3;
 
   //create scanner: pass API key, honour time limits, set silent mode
-  ScannerVirusTotal scanVT(key, true, silent);
+  ScannerVirusTotalV2 scanVT(key, true, silent);
 
   //maps sha256 hashes to corresponding report; key = SHA256 hash, value = scan report
-  std::map<std::string, ScannerVirusTotal::Report> mapHashToReport;
+  std::map<std::string, ScannerVirusTotalV2::Report> mapHashToReport;
   //maps filename to hash; key = file name, value = SHA256 hash
   std::map<std::string, std::string> mapFileToHash;
   //list of queued scan requests; key = scan_id, value = file name
@@ -205,7 +205,7 @@ int main(int argc, char ** argv)
       return rcFileError;
     } //if no hash
     const std::string hashString = fileHash.toHexString();
-    ScannerVirusTotal::Report report;
+    ScannerVirusTotalV2::Report report;
     if (scanVT.getReport(hashString, report))
     {
       if (report.response_code == 1)
@@ -295,7 +295,7 @@ int main(int argc, char ** argv)
     {
       const std::string& scan_id = queueElement.first;
       const std::string& filename = queueElement.second;
-      ScannerVirusTotal::Report report;
+      ScannerVirusTotalV2::Report report;
       if (scanVT.getReport(scan_id, report))
       {
         if (report.response_code == 1)
@@ -361,7 +361,7 @@ int main(int argc, char ** argv)
     for (const auto& i : mapFileToHash)
     {
       std::clog << i.first << " may be infected!" << std::endl;
-      const ScannerVirusTotal::Report& repVT = mapHashToReport[i.second];
+      const ScannerVirusTotalV2::Report& repVT = mapHashToReport[i.second];
       std::clog << repVT.positives << " out of " << repVT.total
                 << " scanners detected a threat";
       if (!repVT.scan_date.empty())
