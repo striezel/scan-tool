@@ -24,38 +24,12 @@
 #include <string>
 #include <vector>
 #include "Scanner.hpp"
+#include "Report.hpp"
 
 class ScannerVirusTotalHoneypot: public Scanner
 {
   public:
-    ///structure for detection report
-    struct Report
-    {
-      struct Engine
-      {
-        ///default constructor
-        Engine();
-
-        std::string engine;  /**< name of the antivirus engine */
-        bool detected;       /**< whether the engine detected a virus */
-        std::string result;  /**< name of the detected malware */
-      }; //struct Engine
-
-
-      ///default constructor
-      Report();
-
-      int response_code;       /**< response code from VirusTotal API */
-
-      std::string scan_date; /**< date when the scan was performed */
-
-      int total;     /**< total number of scan engines */
-      int positives; /**< number of engines that detected a virus */
-      std::vector<Engine> scans; /**< results of individual scan engines */
-
-      std::string permalink; /**< permanent link to the scan result */
-    }; //struct Report
-
+    typedef ::Report Report;
 
     /** \brief default constructor
      *
