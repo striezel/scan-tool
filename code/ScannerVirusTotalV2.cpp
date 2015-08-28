@@ -23,29 +23,6 @@
 #include <jsoncpp/json/reader.h>
 #include "Curly.hpp"
 
-ScannerVirusTotalV2::Report::Engine::Engine()
-: engine(""),
-  detected(false),
-  version(""),
-  result(""),
-  update("")
-{
-}
-
-ScannerVirusTotalV2::Report::Report()
-: response_code(-1),
-  verbose_msg(""),
-  resource(""),
-  scan_id(""),
-  scan_date(""),
-  total(-1),
-  positives(-1),
-  scans(std::vector<Engine>()),
-  permalink(""),
-  md5(""), sha1(""), sha256("")
-{
-}
-
 ScannerVirusTotalV2::Report reportFromJSONRoot(const Json::Value& root)
 {
   ScannerVirusTotalV2::Report report;

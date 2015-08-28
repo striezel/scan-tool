@@ -13,6 +13,10 @@ set(scan-tool_sources
     ../libthoro/hash/sha256/MessageSource.cpp
     ../libthoro/hash/sha256/sha256.cpp
     Curly.cpp
+    Engine.cpp
+    EngineV2.cpp
+    Report.cpp
+    ReportV2.cpp
     Scanner.cpp
     ScannerVirusTotalV2.cpp
     main.cpp)

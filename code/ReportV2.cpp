@@ -18,30 +18,14 @@
  -------------------------------------------------------------------------------
 */
 
-#ifndef REPORT_HPP
-#define REPORT_HPP
+#include "ReportV2.hpp"
 
-#include <vector>
-#include "Engine.hpp"
-
-///structure for detection report
-struct Report
+ReportV2::ReportV2()
+: Report(),
+  verbose_msg(""),
+  resource(""),
+  scan_id(""),
+  scans(std::vector<EngineV2>()),
+  md5(""), sha1(""), sha256("")
 {
-  ///default constructor
-  Report();
-
-  ///virtual destructor
-  virtual ~Report() {}
-
-  int response_code;     /**< response code from VirusTotal API */
-
-  std::string scan_date; /**< date when the scan was performed */
-
-  int total;     /**< total number of scan engines */
-  int positives; /**< number of engines that detected a virus */
-  std::vector<Engine> scans; /**< results of individual scan engines */
-
-  std::string permalink; /**< permanent link to the scan result */
-}; //struct Report
-
-#endif // REPORT_HPP
+}

@@ -18,30 +18,18 @@
  -------------------------------------------------------------------------------
 */
 
-#ifndef REPORT_HPP
-#define REPORT_HPP
+#ifndef ENGINEV2_HPP
+#define ENGINEV2_HPP
 
-#include <vector>
 #include "Engine.hpp"
 
-///structure for detection report
-struct Report
+struct EngineV2: public Engine
 {
   ///default constructor
-  Report();
+  EngineV2();
 
-  ///virtual destructor
-  virtual ~Report() {}
+  std::string version; /**< version of the antivirus engine */
+  std::string update;  /**< last update of the antivirus engine */
+}; //struct Engine
 
-  int response_code;     /**< response code from VirusTotal API */
-
-  std::string scan_date; /**< date when the scan was performed */
-
-  int total;     /**< total number of scan engines */
-  int positives; /**< number of engines that detected a virus */
-  std::vector<Engine> scans; /**< results of individual scan engines */
-
-  std::string permalink; /**< permanent link to the scan result */
-}; //struct Report
-
-#endif // REPORT_HPP
+#endif // ENGINEV2_HPP

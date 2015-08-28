@@ -55,8 +55,12 @@
 		<Unit filename="Curly.hpp" />
 		<Unit filename="Engine.cpp" />
 		<Unit filename="Engine.hpp" />
+		<Unit filename="EngineV2.cpp" />
+		<Unit filename="EngineV2.hpp" />
 		<Unit filename="Report.cpp" />
 		<Unit filename="Report.hpp" />
+		<Unit filename="ReportV2.cpp" />
+		<Unit filename="ReportV2.hpp" />
 		<Unit filename="Scanner.cpp" />
 		<Unit filename="Scanner.hpp" />
 		<Unit filename="ScannerVirusTotalHoneypot.cpp" />
