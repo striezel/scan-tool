@@ -21,6 +21,7 @@
 #ifndef REPORT_HPP
 #define REPORT_HPP
 
+#include <memory>
 #include <vector>
 #include "Engine.hpp"
 
@@ -39,7 +40,7 @@ struct Report
 
   int total;     /**< total number of scan engines */
   int positives; /**< number of engines that detected a virus */
-  std::vector<Engine> scans; /**< results of individual scan engines */
+  std::vector<std::shared_ptr<Engine> > scans; /**< results of individual scan engines */
 
   std::string permalink; /**< permanent link to the scan result */
 }; //struct Report

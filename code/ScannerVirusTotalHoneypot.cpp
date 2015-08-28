@@ -67,17 +67,17 @@ ScannerVirusTotalHoneypot::Report honeypotReportFromJSONRoot(const Json::Value& 
       const auto itEnd = members.cend();
       while (iter != itEnd)
       {
-        Engine data;
-        data.engine = *iter;
+        std::shared_ptr<Engine> data = std::make_shared<Engine>();
+        data->engine = *iter;
         const Json::Value virusVal = engines.get(*iter, Json::Value());
         if (!virusVal.empty() && virusVal.isString())
         {
-          data.result = virusVal.asString();
+          data->result = virusVal.asString();
         }
         else
-          data.result = "";
-        data.detected = (!data.result.empty());
-        if (data.detected)
+          data->result = "";
+        data->detected = (!data->result.empty());
+        if (data->detected)
           ++report.positives;
         report.scans.push_back(std::move(data));
         ++iter;

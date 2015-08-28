@@ -33,12 +33,8 @@ struct ReportV2: public Report
   ReportV2();
 
   std::string verbose_msg; /**< message from VirusTotal API */
-
   std::string resource; /**< name of the resource */
-
   std::string scan_id;   /**< scan ID */
-
-  std::vector<EngineV2> scans; /**< results of individual scan engines */
 
   //hashes
   std::string md5;    /**< MD5 hash of the file */

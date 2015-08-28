@@ -25,7 +25,6 @@ ReportV2::ReportV2()
   verbose_msg(""),
   resource(""),
   scan_id(""),
-  scans(std::vector<EngineV2>()),
   md5(""), sha1(""), sha256("")
 {
 }

@@ -373,8 +373,8 @@ int main(int argc, char ** argv)
       std::clog << "." << std::endl;
       for (const auto& engine : repVT.scans)
       {
-        if (engine.detected)
-          std::clog << "    " << engine.engine << " detected " << engine.result << std::endl;
+        if (engine->detected)
+          std::clog << "    " << engine->engine << " detected " << engine->result << std::endl;
       } //for engine
       std::clog << std::endl;
     } //for i
