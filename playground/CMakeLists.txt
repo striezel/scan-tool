@@ -7,6 +7,10 @@ project(scan-tool-playground)
 
 set(scan-tool-playground_sources
     ../code/Curly.cpp
+    ../code/Engine.cpp
+    ../code/EngineV2.cpp
+    ../code/Report.cpp
+    ../code/ReportV2.cpp
     ../code/Scanner.cpp
     ../code/ScannerVirusTotalV2.cpp
     main.cpp)

@@ -41,6 +41,14 @@
 		</Linker>
 		<Unit filename="../code/Curly.cpp" />
 		<Unit filename="../code/Curly.hpp" />
+		<Unit filename="../code/Engine.cpp" />
+		<Unit filename="../code/Engine.hpp" />
+		<Unit filename="../code/EngineV2.cpp" />
+		<Unit filename="../code/EngineV2.hpp" />
+		<Unit filename="../code/Report.cpp" />
+		<Unit filename="../code/Report.hpp" />
+		<Unit filename="../code/ReportV2.cpp" />
+		<Unit filename="../code/ReportV2.hpp" />
 		<Unit filename="../code/Scanner.cpp" />
 		<Unit filename="../code/Scanner.hpp" />
 		<Unit filename="../code/ScannerVirusTotalV2.cpp" />
