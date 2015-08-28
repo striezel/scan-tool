@@ -5,9 +5,9 @@ cmake_minimum_required (VERSION 2.8)
 # tests for class Curly #
 # ##################### #
 
-# ping test server to check availability
-add_test(NAME ping_httpbin
-         COMMAND ping -c 1 httpbin.org)
+## ping test server to check availability
+#add_test(NAME ping_httpbin
+#         COMMAND ping -c 1 httpbin.org)
 
 # test binary for Curly
 project(test_curly)
