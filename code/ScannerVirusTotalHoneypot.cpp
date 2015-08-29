@@ -67,7 +67,7 @@ ScannerVirusTotalHoneypot::Report honeypotReportFromJSONRoot(const Json::Value& 
       const auto itEnd = members.cend();
       while (iter != itEnd)
       {
-        std::shared_ptr<Engine> data = std::make_shared<Engine>();
+        Report::EnginePtr data = std::make_shared<Engine>();
         data->engine = *iter;
         const Json::Value virusVal = engines.get(*iter, Json::Value());
         if (!virusVal.empty() && virusVal.isString())

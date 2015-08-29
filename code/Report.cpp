@@ -25,7 +25,7 @@ Report::Report()
   scan_date(""),
   total(-1),
   positives(-1),
-  scans(std::vector<std::shared_ptr<Engine> >()),
+  scans(std::vector<EnginePtr>()),
   permalink("")
 {
 }

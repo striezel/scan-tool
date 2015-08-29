@@ -28,6 +28,9 @@
 ///structure for detection report
 struct Report
 {
+  //wrap pointer to Engine entry into type name
+  typedef std::shared_ptr<Engine> EnginePtr;
+
   ///default constructor
   Report();
 
@@ -40,7 +43,7 @@ struct Report
 
   int total;     /**< total number of scan engines */
   int positives; /**< number of engines that detected a virus */
-  std::vector<std::shared_ptr<Engine> > scans; /**< results of individual scan engines */
+  std::vector<EnginePtr> scans; /**< results of individual scan engines */
 
   std::string permalink; /**< permanent link to the scan result */
 }; //struct Report
