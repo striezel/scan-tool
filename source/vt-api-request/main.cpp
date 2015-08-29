@@ -54,7 +54,7 @@ void showHelp()
             << "                     Can be repeated multiple times, if you want to scan\n"
             << "                     several files.\n"
             << "  --scan FILE      - same as --file FILE\n";
-
+}
 
 void showVersion()
 {
