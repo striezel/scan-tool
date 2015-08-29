@@ -42,7 +42,7 @@ void showHelp()
             << "                     Can occur multiple times, if more than one report shall\n"
             << "                     be requested.\n"
             << "                     The ID is either a SHA256 hash of a file or a scan ID\n"
-            << "                     That was returned by an earlier request to the API.\n"
+            << "                     that was returned by an earlier request to the API.\n"
             << "  --resource ID    - same as --report ID\n"
             << "  --rescan ID      - request rescan of a resource with the given ID that was\n"
             << "                     uploaded earlier. The ID is a SHA256 hash of the uploaded\n"
@@ -65,7 +65,7 @@ void showHelp()
 
 void showVersion()
 {
-  std::cout << "vt-api-request, version 1.0.0, 2015-08-29\n";
+  std::cout << "vt-api-request, version 1.0.1, 2015-08-30\n";
 }
 
 int main(int argc, char ** argv)
@@ -175,7 +175,7 @@ int main(int argc, char ** argv)
           }
           else
           {
-            std::cout << "Error: You have to enter some text after \""
+            std::cout << "Error: You have to enter a file name after \""
                       << param << "\"." << std::endl;
             return rcInvalidParameter;
           }
