@@ -25,7 +25,9 @@
 #include "../Curly.hpp"
 #include "../ScannerVirusTotalV2.hpp"
 
+//return codes
 const int rcInvalidParameter = 1;
+const int rcScanError = 3; //same as in scan-tool
 
 void showHelp()
 {
@@ -63,7 +65,7 @@ void showHelp()
 
 void showVersion()
 {
-  std::cout << "vt-api-request, version 0.9.1, 2015-08-29\n";
+  std::cout << "vt-api-request, version 1.0.0, 2015-08-29\n";
 }
 
 int main(int argc, char ** argv)
@@ -237,7 +239,7 @@ int main(int argc, char ** argv)
     {
       std::cout << "Error: Could not initiate rescan for \""
                 << i << "\"!" << std::endl;
-      return 1;
+      return rcScanError;
     }
     std::cout << "Rescan for \"" << i << "\" initiated. "
               << "Scan-ID for later retrieval is " << scan_id << "." << std::endl;
@@ -250,7 +252,7 @@ int main(int argc, char ** argv)
     if (!scanVT.getReport(i, report))
     {
       std::cout << "Error: Could not retrieve report!" << std::endl;
-      return 1;
+      return rcScanError;
     }
     std::cout << std::endl;
     std::cout << "Report data for " << i << ":" << std::endl
@@ -283,7 +285,7 @@ int main(int argc, char ** argv)
     {
       std::cout << "Error: Could not initiate scan for \""
                 << i << "\"!" << std::endl;
-      return 1;
+      return rcScanError;
     }
     std::cout << "Scan for " << i << " initiated. "
               << "Scan-ID for later retrieval is " << scan_id << "." << std::endl;
