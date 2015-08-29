@@ -15,7 +15,7 @@ project(test_curly)
 #add_definitions(-DDEFINE_CONSTANT_HERE -DANOTHER_ONE_THERE -DTHIS_IS_THE_THIRD)
 
 set(test_curly_sources
-    ../../code/Curly.cpp
+    ../../source/Curly.cpp
     main.cpp)
 
 if (CMAKE_COMPILER_IS_GNUCC)

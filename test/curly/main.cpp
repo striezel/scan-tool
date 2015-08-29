@@ -20,7 +20,7 @@
 
 #include <iostream>
 #include <vector>
-#include "../../code/Curly.hpp"
+#include "../../source/Curly.hpp"
 
 int main()
 {

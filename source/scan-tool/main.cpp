@@ -23,12 +23,12 @@
 #include <string>
 #include <thread>
 #include <unordered_set>
-#include "Curly.hpp"
-#include "ScannerVirusTotalV2.hpp"
-#include "../libthoro/common/StringUtils.h"
-#include "../libthoro/filesystem/FileFunctions.hpp"
-#include "../libthoro/hash/sha256/FileSourceUtility.hpp"
-#include "../libthoro/hash/sha256/sha256.hpp"
+#include "../Curly.hpp"
+#include "../ScannerVirusTotalV2.hpp"
+#include "../../libthoro/common/StringUtils.h"
+#include "../../libthoro/filesystem/FileFunctions.hpp"
+#include "../../libthoro/hash/sha256/FileSourceUtility.hpp"
+#include "../../libthoro/hash/sha256/sha256.hpp"
 
 //return codes
 const int rcInvalidParameter = 1;

@@ -6,13 +6,13 @@ project(scan-tool-playground)
 #add_definitions(-DDEFINE_CONSTANT_HERE -DANOTHER_ONE_THERE -DTHIS_IS_THE_THIRD)
 
 set(scan-tool-playground_sources
-    ../code/Curly.cpp
-    ../code/Engine.cpp
-    ../code/EngineV2.cpp
-    ../code/Report.cpp
-    ../code/ReportV2.cpp
-    ../code/Scanner.cpp
-    ../code/ScannerVirusTotalV2.cpp
+    ../source/Curly.cpp
+    ../source/Engine.cpp
+    ../source/EngineV2.cpp
+    ../source/Report.cpp
+    ../source/ReportV2.cpp
+    ../source/Scanner.cpp
+    ../source/ScannerVirusTotalV2.cpp
     main.cpp)
 
 if (CMAKE_COMPILER_IS_GNUCC)

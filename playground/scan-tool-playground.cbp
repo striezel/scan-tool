@@ -39,20 +39,20 @@
 			<Add library="curl" />
 			<Add library="jsoncpp" />
 		</Linker>
-		<Unit filename="../code/Curly.cpp" />
-		<Unit filename="../code/Curly.hpp" />
-		<Unit filename="../code/Engine.cpp" />
-		<Unit filename="../code/Engine.hpp" />
-		<Unit filename="../code/EngineV2.cpp" />
-		<Unit filename="../code/EngineV2.hpp" />
-		<Unit filename="../code/Report.cpp" />
-		<Unit filename="../code/Report.hpp" />
-		<Unit filename="../code/ReportV2.cpp" />
-		<Unit filename="../code/ReportV2.hpp" />
-		<Unit filename="../code/Scanner.cpp" />
-		<Unit filename="../code/Scanner.hpp" />
-		<Unit filename="../code/ScannerVirusTotalV2.cpp" />
-		<Unit filename="../code/ScannerVirusTotalV2.hpp" />
+		<Unit filename="../source/Curly.cpp" />
+		<Unit filename="../source/Curly.hpp" />
+		<Unit filename="../source/Engine.cpp" />
+		<Unit filename="../source/Engine.hpp" />
+		<Unit filename="../source/EngineV2.cpp" />
+		<Unit filename="../source/EngineV2.hpp" />
+		<Unit filename="../source/Report.cpp" />
+		<Unit filename="../source/Report.hpp" />
+		<Unit filename="../source/ReportV2.cpp" />
+		<Unit filename="../source/ReportV2.hpp" />
+		<Unit filename="../source/Scanner.cpp" />
+		<Unit filename="../source/Scanner.hpp" />
+		<Unit filename="../source/ScannerVirusTotalV2.cpp" />
+		<Unit filename="../source/ScannerVirusTotalV2.hpp" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />
