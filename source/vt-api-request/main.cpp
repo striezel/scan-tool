@@ -20,6 +20,7 @@
 
 #include <iostream>
 #include <string>
+#include <thread>
 #include <unordered_set>
 #include "../Curly.hpp"
 #include "../ScannerVirusTotalV2.hpp"
@@ -53,18 +54,24 @@ void showHelp()
             << "                     current load and number of queued scan requests.\n"
             << "                     Can be repeated multiple times, if you want to scan\n"
             << "                     several files.\n"
-            << "  --scan FILE      - same as --file FILE\n";
+            << "  --scan FILE      - same as --file FILE\n"
+            << "  --initial-wait   - wait a few seconds before the first request, so that the\n"
+            << "                     API rate limit will not be exceeded, if this program was\n"
+            << "                     invoked more than once in a row.\n"
+            << "  --wait           - same as --initial-wait\n" ;
 }
 
 void showVersion()
 {
-  std::cout << "vt-api-request, version 0.9.0, 2015-08-29\n";
+  std::cout << "vt-api-request, version 0.9.1, 2015-08-29\n";
 }
 
 int main(int argc, char ** argv)
 {
   //string that will hold the API key
   std::string key = "";
+  //whether to wait a while before the first request
+  bool initial_wait = false;
   //resources that will be queried
   std::unordered_set<std::string> resources_report = std::unordered_set<std::string>();
   //resources for which a rescan will be requested
@@ -171,6 +178,17 @@ int main(int argc, char ** argv)
             return rcInvalidParameter;
           }
         }//scan file
+        else if ((param=="--initial-wait") or (param=="--wait"))
+        {
+          //Was the parameter already set?
+          if (initial_wait)
+          {
+            std::cout << "Error: Parameter " << param << " must not occur more than once!"
+                      << std::endl;
+            return rcInvalidParameter;
+          }
+          initial_wait = true;
+        } //initial_wait
         else
         {
           //unknown or wrong parameter
@@ -201,6 +219,15 @@ int main(int argc, char ** argv)
   } //if not resources
 
   ScannerVirusTotalV2 scanVT(key);
+
+  //initial wait to avoid exceeding the rate limit
+  if (initial_wait)
+  {
+    const auto duration = scanVT.timeBetweenConsecutiveRequests();
+    std::cout << "Waiting " << std::chrono::duration_cast<std::chrono::milliseconds>(duration).count()
+                  << " millisecond(s) for time limit to expire as requested..." << std::endl;
+    std::this_thread::sleep_for(duration);
+  }
 
   //iterate over all resources for rescan requests
   for(const std::string& i : resources_rescan)
