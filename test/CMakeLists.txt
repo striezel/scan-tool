@@ -7,5 +7,8 @@ add_subdirectory (curly)
 # Recurse into subdirectory for the main executable tests.
 add_subdirectory (scan-tool)
 
-# Recurse into subdirectory for the vt-apirequest executable tests.
+# Recurse into subdirectory for the vt-api-request executable tests.
 add_subdirectory (vt-api-request)
+
+# Recurse into subdirectory for the honeypottery executable tests.
+add_subdirectory (honeypottery)
