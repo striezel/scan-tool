@@ -108,7 +108,7 @@ int main(int argc, char ** argv)
         } //API key
         else if ((param=="--silent") or (param=="-s"))
         {
-          //enough parameters?
+          //Has the silent parameter already been set?
           if (silent)
           {
             std::cout << "Error: Parameter " << param << " must not occur more than once!"
