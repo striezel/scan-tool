@@ -2,12 +2,12 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="scan-tool-playground" />
+		<Option title="vt-api-request" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Debug">
-				<Option output="bin/Debug/scan-tool-playground" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/Debug/vt-api-request" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Debug/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
@@ -17,7 +17,7 @@
 				</Compiler>
 			</Target>
 			<Target title="Release">
-				<Option output="bin/Release/scan-tool-playground" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/Release/vt-api-request" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Release/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
@@ -39,20 +39,20 @@
 			<Add library="curl" />
 			<Add library="jsoncpp" />
 		</Linker>
-		<Unit filename="../source/Curly.cpp" />
-		<Unit filename="../source/Curly.hpp" />
-		<Unit filename="../source/Engine.cpp" />
-		<Unit filename="../source/Engine.hpp" />
-		<Unit filename="../source/EngineV2.cpp" />
-		<Unit filename="../source/EngineV2.hpp" />
-		<Unit filename="../source/Report.cpp" />
-		<Unit filename="../source/Report.hpp" />
-		<Unit filename="../source/ReportV2.cpp" />
-		<Unit filename="../source/ReportV2.hpp" />
-		<Unit filename="../source/Scanner.cpp" />
-		<Unit filename="../source/Scanner.hpp" />
-		<Unit filename="../source/ScannerVirusTotalV2.cpp" />
-		<Unit filename="../source/ScannerVirusTotalV2.hpp" />
+		<Unit filename="../Curly.cpp" />
+		<Unit filename="../Curly.hpp" />
+		<Unit filename="../Engine.cpp" />
+		<Unit filename="../Engine.hpp" />
+		<Unit filename="../EngineV2.cpp" />
+		<Unit filename="../EngineV2.hpp" />
+		<Unit filename="../Report.cpp" />
+		<Unit filename="../Report.hpp" />
+		<Unit filename="../ReportV2.cpp" />
+		<Unit filename="../ReportV2.hpp" />
+		<Unit filename="../Scanner.cpp" />
+		<Unit filename="../Scanner.hpp" />
+		<Unit filename="../ScannerVirusTotalV2.cpp" />
+		<Unit filename="../ScannerVirusTotalV2.hpp" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />

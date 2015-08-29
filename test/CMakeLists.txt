@@ -6,3 +6,6 @@ add_subdirectory (curly)
 
 # Recurse into subdirectory for the main executable tests.
 add_subdirectory (scan-tool)
+
+# Recurse into subdirectory for the vt-apirequest executable tests.
+add_subdirectory (vt-api-request)
