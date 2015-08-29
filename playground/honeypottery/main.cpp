@@ -29,7 +29,7 @@ const int rcScanError = 3; //same as in scan-tool
 
 void showVersion()
 {
-  std::cout << "honeypottery, version 0.0.1, 2015-08-29\n";
+  std::cout << "honeypottery, version 0.0.2, 2015-08-30\n";
 }
 
 void showHelp()
@@ -220,6 +220,5 @@ int main(int argc, char** argv)
     } //for (inner, range-based)
   } //for (range-based)
 
-  std::cout << "Hello world!" << std::endl;
   return 0;
 }
