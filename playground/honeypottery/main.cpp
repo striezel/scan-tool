@@ -45,7 +45,7 @@ void showHelp()
             << "                     Can occur multiple times, if more than one report shall\n"
             << "                     be requested.\n"
             << "                     The ID is either a SHA256 hash of a file or a scan ID\n"
-            << "                     That was returned by an earlier request to the API.\n"
+            << "                     that was returned by an earlier request to the API.\n"
             << "  --resource ID    - same as --report ID\n"
             << "  -- file FILE     - request to scan the file FILE by VirusTotal. FILE must be\n"
             << "                     a local file that can be read by the user that runs this\n"
