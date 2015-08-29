@@ -24,12 +24,12 @@
 #include <string>
 #include <vector>
 #include "Scanner.hpp"
-#include "Report.hpp"
+#include "ReportHoneypot.hpp"
 
 class ScannerVirusTotalHoneypot: public Scanner
 {
   public:
-    typedef ::Report Report;
+    typedef ReportHoneypot Report;
 
     /** \brief default constructor
      *

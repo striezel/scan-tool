@@ -208,7 +208,7 @@ int main(int argc, char ** argv)
     ScannerVirusTotalV2::Report report;
     if (scanVT.getReport(hashString, report))
     {
-      if (report.response_code == 1)
+      if (report.successfulRetrieval())
       {
         //got report
         if (report.positives == 0)
@@ -235,7 +235,7 @@ int main(int argc, char ** argv)
           mapHashToReport[hashString] = report;
         }
       } //if file was in report database
-      else if (report.response_code == 0)
+      else if (report.notFound())
       {
         //no data present for file
         const int64_t fileSize = libthoro::filesystem::File::getSize64(i);
@@ -299,7 +299,7 @@ int main(int argc, char ** argv)
       ScannerVirusTotalV2::Report report;
       if (scanVT.getReport(scan_id, report))
       {
-        if (report.response_code == 1)
+        if (report.successfulRetrieval())
         {
           //got report
           if (report.positives == 0)
@@ -331,7 +331,7 @@ int main(int argc, char ** argv)
             mapHashToReport[report.sha256] = report;
           } //else
         } //if file was in report database
-        else if (report.response_code == -2)
+        else if (report.stillInQueue())
         {
           /* Response code -2 means that this stuff is still queued for
              analysis. Most likely any of the following items will still be

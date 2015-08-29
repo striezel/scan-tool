@@ -59,6 +59,8 @@
 		<Unit filename="EngineV2.hpp" />
 		<Unit filename="Report.cpp" />
 		<Unit filename="Report.hpp" />
+		<Unit filename="ReportHoneypot.cpp" />
+		<Unit filename="ReportHoneypot.hpp" />
 		<Unit filename="ReportV2.cpp" />
 		<Unit filename="ReportV2.hpp" />
 		<Unit filename="Scanner.cpp" />

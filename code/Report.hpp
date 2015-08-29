@@ -37,6 +37,23 @@ struct Report
   ///virtual destructor
   virtual ~Report() {}
 
+
+  /** \brief checks whether the response code indicates, that the requested resource
+   * is present/was found and could be retrieved
+   *
+   * \return Returns true, if the requested item could be retrieved.
+   */
+  virtual bool successfulRetrieval() const = 0;
+
+
+  /** \brief checks whether the response code indicates, that the requested resource
+   * is not present/was not found
+   *
+   * \return Returns true, if the requested item was not found.
+   */
+  virtual bool notFound() const = 0;
+
+
   int response_code;     /**< response code from VirusTotal API */
 
   std::string scan_date; /**< date when the scan was performed */

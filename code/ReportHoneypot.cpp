@@ -18,31 +18,26 @@
  -------------------------------------------------------------------------------
 */
 
-#include "ReportV2.hpp"
+#include "ReportHoneypot.hpp"
 
-ReportV2::ReportV2()
-: Report(),
-  verbose_msg(""),
-  resource(""),
-  scan_id(""),
-  md5(""), sha1(""), sha256("")
+ReportHoneypot::ReportHoneypot()
+: Report()
 {
 }
 
-bool ReportV2::successfulRetrieval() const
+bool ReportHoneypot::successfulRetrieval() const
 {
-  /* Response code 1 means that entry was present and could be retrieved. */
   return (response_code == 1);
 }
 
-bool ReportV2::notFound() const
+bool ReportHoneypot::notFound() const
 {
-  /* Response code 0 means that there was no matching entry. */
   return (response_code == 0);
 }
 
-bool ReportV2::stillInQueue() const
+/*
+bool ReportHoneypot::stillInQueue() const
 {
-  /* Response code -2 means that this stuff is still queued for analysis. */
-  return (response_code == -2);
+  #warning Result code for this state is not known.
 }
+*/

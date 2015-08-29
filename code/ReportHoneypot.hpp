@@ -18,19 +18,17 @@
  -------------------------------------------------------------------------------
 */
 
-#ifndef REPORTV2_HPP
-#define REPORTV2_HPP
+#ifndef REPORTHONEYPOT_HPP
+#define REPORTHONEYPOT_HPP
 
 #include "Report.hpp"
-#include "EngineV2.hpp"
 
 ///structure for detection report
-struct ReportV2: public Report
+struct ReportHoneypot: public Report
 {
-  typedef EngineV2 Engine;
-
   ///default constructor
-  ReportV2();
+  ReportHoneypot();
+
 
   /** \brief checks whether the response code indicates, that the requested resource
    * is present/was found and could be retrieved
@@ -46,24 +44,6 @@ struct ReportV2: public Report
    * \return Returns true, if the requested item was not found.
    */
   virtual bool notFound() const override;
+}; //struct ReportHoneypot
 
-
-  /** \brief checks whether the response code indicates, that the requested resource
-   * is still queued for scanning
-   *
-   * \return Returns true, if the requested item is still queued for analysis.
-   */
-  bool stillInQueue() const /*override*/;
-
-
-  std::string verbose_msg; /**< message from VirusTotal API */
-  std::string resource; /**< name of the resource */
-  std::string scan_id;   /**< scan ID */
-
-  //hashes
-  std::string md5;    /**< MD5 hash of the file */
-  std::string sha1;   /**< SHA1 hash of the file */
-  std::string sha256; /**< SHA256 hash of the file */
-}; //struct Report
-
-#endif // REPORTV2_HPP
+#endif // REPORTHONEYPOT_HPP
