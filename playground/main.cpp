@@ -149,11 +149,8 @@ int main(int argc, char ** argv)
   }
   if (resources_report.empty() && resources_rescan.empty() && files_scan.empty())
   {
-    std::cout << "No resources for report retrieval were given. Adding an example resource to for "
-              << "demonstration purposes." << std::endl;
-    //use SHA256 hash as resource identifier
-    const std::string resource = "8d44a0cce1e229179fb1369842750d537606793bcb63686ce25f9e9c13885295";
-    resources_report.insert(resource);
+    std::cout << "No resources for report retrieval, rescan or file scan were given.Exiting." << std::endl;
+    return rcInvalidParameter;
   } //if not resources
 
   ScannerVirusTotalV2 scanVT(key);
