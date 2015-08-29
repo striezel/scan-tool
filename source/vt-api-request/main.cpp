@@ -26,6 +26,41 @@
 
 const int rcInvalidParameter = 1;
 
+void showHelp()
+{
+  std::cout << "\nvt-api-request [options ...]\n"
+            << "options:\n"
+            << "  --help           - displays this help message and quits\n"
+            << "  -?               - same as --help\n"
+            << "  --version        - displays the version of the program and quits\n"
+            << "  -v               - same as --version\n"
+            << "  --apikey KEY     - sets the API key for VirusTotal\n"
+            << "  --report ID      - request the report with the given ID from VirusTotal.\n"
+            << "                     Can occur multiple times, if more than one report shall\n"
+            << "                     be requested.\n"
+            << "                     The ID is either a SHA256 hash of a file or a scan ID\n"
+            << "                     That was returned by an earlier request to the API.\n"
+            << "  --resource ID    - same as --report ID\n"
+            << "  --rescan ID      - request rescan of a resource with the given ID that was\n"
+            << "                     uploaded earlier. The ID is a SHA256 hash of the uploaded\n"
+            << "                     file. This parameter can occur multiple times.\n"
+            << "  --re ID          - same as --rescan ID\n"
+            << "  -- file FILE     - request to scan the file FILE by VirusTotal. FILE must be\n"
+            << "                     a local file that can be read by the user that runs this\n"
+            << "                     program. The program will print the scan ID of the file\n"
+            << "                     to the standard output. Note that it can take several\n"
+            << "                     hours for VirusTotal to scan this file, depending on the\n"
+            << "                     current load and number of queued scan requests.\n"
+            << "                     Can be repeated multiple times, if you want to scan\n"
+            << "                     several files.\n"
+            << "  --scan FILE      - same as --file FILE\n";
+
+
+void showVersion()
+{
+  std::cout << "vt-api-request, version 0.9.0, 2015-08-29\n";
+}
+
 int main(int argc, char ** argv)
 {
   //string that will hold the API key
@@ -45,7 +80,19 @@ int main(int argc, char ** argv)
       if (argv[i]!=NULL)
       {
         const std::string param = std::string(argv[i]);
-        if ((param=="--key") or (param=="--apikey"))
+        //help parameter
+        if ((param=="--help") or (param=="-?") or (param=="/?"))
+        {
+          showHelp();
+          return 0;
+        }//help
+        //version information requested?
+        else if ((param=="--version") or (param=="-v"))
+        {
+          showVersion();
+          return 0;
+        } //version
+        else if ((param=="--key") or (param=="--apikey"))
         {
           //enough parameters?
           if ((i+1<argc) and (argv[i+1]!=NULL))
@@ -77,7 +124,7 @@ int main(int argc, char ** argv)
           }
           else
           {
-            std::cout << "Error: You have to enter some text after \""
+            std::cout << "Error: You have to enter a resource ID after \""
                       << param << "\"." << std::endl;
             return rcInvalidParameter;
           }
@@ -98,7 +145,7 @@ int main(int argc, char ** argv)
           }
           else
           {
-            std::cout << "Error: You have to enter some text after \""
+            std::cout << "Error: You have to enter a resource ID after \""
                       << param << "\"." << std::endl;
             return rcInvalidParameter;
           }
@@ -108,14 +155,14 @@ int main(int argc, char ** argv)
           //enough parameters?
           if ((i+1<argc) and (argv[i+1]!=NULL))
           {
-            const std::string next_files = std::string(argv[i+1]);
+            const std::string next_file = std::string(argv[i+1]);
             ++i; //Skip next parameter, because it's used as filename already.
-            if (files_scan.find(next_files) == files_scan.end())
+            if (files_scan.find(next_file) == files_scan.end())
             {
-              std::cout << "Adding files " << next_files
+              std::cout << "Adding file " << next_file
                         << " to list of scan files." << std::endl;
             }
-            files_scan.insert(next_files);
+            files_scan.insert(next_file);
           }
           else
           {
@@ -127,8 +174,8 @@ int main(int argc, char ** argv)
         else
         {
           //unknown or wrong parameter
-          std::cout << "Invalid parameter given: \"" << param << "\"." << std::endl;
-                    //<< "Use --help to get a list of valid parameters.\n";
+          std::cout << "Invalid parameter given: \"" << param << "\"." << std::endl
+                    << "Use --help to get a list of valid parameters.\n";
           return rcInvalidParameter;
         }
       }//parameter exists
