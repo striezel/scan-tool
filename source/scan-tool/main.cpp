@@ -57,7 +57,7 @@ void showHelp()
 
 void showVersion()
 {
-  std::cout << "scan-tool, version 0.12, 2015-08-30\n";
+  std::cout << "scan-tool, version 0.13, 2015-08-31\n";
 }
 
 int main(int argc, char ** argv)
@@ -446,7 +446,7 @@ int main(int argc, char ** argv)
               << std::endl;
     for(auto& qElem : queued_scans)
     {
-      std::cout << "  " << qElem.second << " (scan ID " << qElem.first << std::endl;
+      std::cout << "  " << qElem.second << " (scan ID " << qElem.first << ")" << std::endl;
     } //for (range-based)
   } //if there are some queued scans
 

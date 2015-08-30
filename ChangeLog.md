@@ -1,5 +1,8 @@
 # ChangeLog for scan-tool
 
+## Version 0.13 (2015-08-31)
+  - fix missing character in output to stdout
+
 ## Version 0.12 (2015-08-30)
   - add option to read the files that shall be scanned from a text file,
     one per line
