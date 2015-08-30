@@ -1,5 +1,9 @@
 # ChangeLog for scan-tool
 
+## Version 0.12 (2015-08-30)
+  - add option to read the files that shall be scanned from a text file,
+    one per line
+
 ## Version 0.11 (2015-08-27)
   - list files that could not be scanned in time at the end, because they may
     be potentially unsafe/infected

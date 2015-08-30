@@ -18,6 +18,7 @@
  -------------------------------------------------------------------------------
 */
 
+#include <fstream>
 #include <iostream>
 #include <map>
 #include <string>
@@ -48,12 +49,15 @@ void showHelp()
             << "  --maybe N        - sets the limit for false positives to N. N must be an\n"
             << "                     unsigned integer value. Default is 3.\n"
             << "  FILE             - file that shall be scanned. Can be repeated multiple\n"
-            << "                     times, if you want to scan several files.\n";
+            << "                     times, if you want to scan several files.\n"
+            << " --list FILE       - read the files which shall be scanned from the file FILE,\n"
+            << "                     one per line.\n"
+            << " --files FILE      - same as --list FILE\n";
 }
 
 void showVersion()
 {
-  std::cout << "scan-tool, version 0.11, 2015-08-27\n";
+  std::cout << "scan-tool, version 0.12, 2015-08-30\n";
 }
 
 int main(int argc, char ** argv)
@@ -145,6 +149,57 @@ int main(int argc, char ** argv)
             return rcInvalidParameter;
           }
         } //"maybe" limit
+        else if ((param=="--files") or (param=="--list"))
+        {
+          //enough parameters?
+          if ((i+1<argc) and (argv[i+1]!=NULL))
+          {
+            const std::string listFile = std::string(argv[i+1]);
+            ++i; //Skip next parameter, because it's used as list file already.
+            if (!libthoro::filesystem::File::exists(listFile))
+            {
+              std::cout << "Error: File " << listFile << " does not exist!"
+                        << std::endl;
+              return rcFileError;
+            }
+            //open file and read file names
+            std::ifstream inFile;
+            inFile.open(listFile, std::ios_base::in | std::ios_base::binary);
+            if (!inFile.good() || !inFile.is_open())
+            {
+              std::cout << "Error: Could not open file " << listFile << "!"
+                        << std::endl;
+              return rcFileError;
+            }
+            std::string nextFile;
+            while (!inFile.eof())
+            {
+              std::getline(inFile, nextFile, '\n');
+              if (!nextFile.empty())
+              {
+                if (libthoro::filesystem::File::exists(nextFile))
+                {
+                  #ifdef SCAN_TOOL_DEBUG
+                  std::cout << "Info: Adding " << nextFile << " to list of files for scan." << std::endl;
+                  #endif // SCAN_TOOL_DEBUG
+                  files_scan.insert(nextFile);
+                } //if
+                else
+                {
+                  std::cout << "Warning: File " << nextFile << " does not exist, skipping it."
+                            << std::endl;
+                }
+              } //if string not empty
+            } //while
+            inFile.close();
+          } //if
+          else
+          {
+            std::cout << "Error: You have to enter a file name after \""
+                      << param <<"\"." << std::endl;
+            return rcInvalidParameter;
+          } //else
+        } //list of files
         //file for scan
         else if (libthoro::filesystem::File::exists(param))
         {
