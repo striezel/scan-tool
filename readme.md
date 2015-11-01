@@ -53,6 +53,24 @@ Starting in the root directory of the source, you can do the following steps:
     cmake ../
     make -j2
 
+### Test suite
+
+The build commands as described above also create files for a small test suite
+for scan-tool. The test suite uses CTest, which usually comes with CMake.
+To run the test suite, make sure you are still in the build directory that was
+created during the build process and then type:
+
+    ctest -V
+
+If all tests succeeded, the output of the above command should end with
+something like:
+
+    100% tests passed, 0 tests failed out of 13
+
+    Total Test time (real) =   2.53 sec
+
+That's an indication that the basic functionality of scan-tool still works as
+it was intended by the developer.
 
 ## Copyright and Licensing
 
