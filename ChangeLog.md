@@ -1,5 +1,9 @@
 # ChangeLog for scan-tool
 
+## Version 0.14 (2015-11-01)
+  - display size of files that could not be scanned because their file size
+    exceeds the allowed size for scans / uploads
+
 ## Version 0.13 (2015-08-31)
   - fix missing character in output to stdout
 

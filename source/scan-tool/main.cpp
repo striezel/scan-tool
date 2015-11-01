@@ -57,7 +57,7 @@ void showHelp()
 
 void showVersion()
 {
-  std::cout << "scan-tool, version 0.13, 2015-08-31\n";
+  std::cout << "scan-tool, version 0.14, 2015-11-01\n";
 }
 
 int main(int argc, char ** argv)
@@ -314,8 +314,10 @@ int main(int argc, char ** argv)
         else
         {
           //File is too large.
-          std::cout << "Warning: File " << i << " exceeds maximum file size "
-                    << "for scan! File will be skipped." << std::endl;
+          std::cout << "Warning: File " << i << " is "
+                    << libthoro::filesystem::getSizeString(fileSize)
+                    << " and exceeds maximum file size for scan! "
+                    << "File will be skipped." << std::endl;
         }
       } //else
       else
