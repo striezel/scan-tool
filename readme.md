@@ -5,6 +5,13 @@ malicious content.
 
 TODO
 
+## Build status
+
+[![Build Status](https://travis-ci.org/Thoronador/scan-tool.svg?branch=master)]
+(https://travis-ci.org/Thoronador/scan-tool)
+[![Build Status](https://drone.io/github.com/Thoronador/scan-tool/status.png)]
+(https://drone.io/github.com/Thoronador/scan-tool/latest)
+
 ## Building from source
 
 ### Prerequisites
