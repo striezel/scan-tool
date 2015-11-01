@@ -53,8 +53,6 @@ Starting in the root directory of the source, you can do the following steps:
     cmake ../
     make -j2
 
-In the repository's current state, CMake will not find anythin to build.
-This will change in the future.
 
 ## Copyright and Licensing
 
