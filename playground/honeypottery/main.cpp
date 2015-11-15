@@ -29,7 +29,7 @@ const int rcScanError = 3; //same as in scan-tool
 
 void showVersion()
 {
-  std::cout << "honeypottery, version 0.0.2, 2015-08-30\n";
+  std::cout << "honeypottery, version 0.0.3, 2015-11-15\n";
 }
 
 void showHelp()
@@ -47,7 +47,7 @@ void showHelp()
             << "                     The ID is either a SHA256 hash of a file or a scan ID\n"
             << "                     that was returned by an earlier request to the API.\n"
             << "  --resource ID    - same as --report ID\n"
-            << "  -- file FILE     - request to scan the file FILE by VirusTotal. FILE must be\n"
+            << "  --file FILE      - request to scan the file FILE by VirusTotal. FILE must be\n"
             << "                     a local file that can be read by the user that runs this\n"
             << "                     program. The program will print the scan ID of the file\n"
             << "                     to the standard output. Note that it can take several\n"
