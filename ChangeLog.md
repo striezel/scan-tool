@@ -1,5 +1,11 @@
 # ChangeLog for scan-tool
 
+## Version 0.15 (2015-11-15)
+  - Only display size of files that could not be scanned because of their size
+    in non-silent mode.
+  - These files are now displayed at the end of the program execution (after
+    the files that were queued for scan but the scan has not completed yet).
+
 ## Version 0.14 (2015-11-01)
   - display size of files that could not be scanned because their file size
     exceeds the allowed size for scans / uploads

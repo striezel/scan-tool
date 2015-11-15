@@ -18,6 +18,7 @@
  -------------------------------------------------------------------------------
 */
 
+#include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <map>
@@ -57,7 +58,7 @@ void showHelp()
 
 void showVersion()
 {
-  std::cout << "scan-tool, version 0.14, 2015-11-01\n";
+  std::cout << "scan-tool, version 0.15, 2015-11-15\n";
 }
 
 int main(int argc, char ** argv)
@@ -246,6 +247,8 @@ int main(int argc, char ** argv)
   std::map<std::string, std::string> mapFileToHash;
   //list of queued scan requests; key = scan_id, value = file name
   std::unordered_map<std::string, std::string> queued_scans = std::unordered_map<std::string, std::string>();
+  //list of files that exceed the file size for scans
+  std::vector<std::pair<std::string, int64_t> > largeFiles;
   //time when last scan was queued
   std::chrono::steady_clock::time_point lastQueuedScanTime = std::chrono::steady_clock::now() - std::chrono::hours(24);
 
@@ -314,12 +317,15 @@ int main(int argc, char ** argv)
         else
         {
           //File is too large.
-          std::cout << "Warning: File " << i << " is "
-                    << libthoro::filesystem::getSizeString(fileSize)
-                    << " and exceeds maximum file size for scan! "
-                    << "File will be skipped." << std::endl;
-        }
-      } //else
+          if (!silent)
+            std::cout << "Warning: File " << i << " is "
+                      << libthoro::filesystem::getSizeString(fileSize)
+                      << " and exceeds maximum file size for scan! "
+                      << "File will be skipped." << std::endl;
+          //save file name + size for later
+          largeFiles.push_back(std::pair<std::string, int64_t>(i, fileSize));
+        } //else (file too large)
+      } //else if report not found
       else
       {
         //unexpected response code
@@ -451,6 +457,30 @@ int main(int argc, char ** argv)
       std::cout << "  " << qElem.second << " (scan ID " << qElem.first << ")" << std::endl;
     } //for (range-based)
   } //if there are some queued scans
+
+  //list files which were too large to send to scan
+  if (!largeFiles.empty())
+  {
+    //sort them by size (using a lambda expression)
+    std::sort(largeFiles.begin(), largeFiles.end(),
+              [](const std::pair<std::string, int64_t>& a, const std::pair<std::string, int64_t>& b)
+              {
+                   return a.second < b.second;
+              }
+             );
+
+    //list files
+    std::cout << std::endl << largeFiles.size() << " file(s) could not be "
+              << "scanned because of file size restrictions for the scan API."
+              << std::endl;
+    for(const auto& largeElem : largeFiles)
+    {
+      std::cout << "  " << largeElem.first << " has a size of "
+                      << libthoro::filesystem::getSizeString(largeElem.second)
+                      << " and exceeds maximum file size for scan! "
+                      << "File was skipped." << std::endl;
+    } //for (range-based)
+  } //if there are some "large" files
 
   return 0;
 }
