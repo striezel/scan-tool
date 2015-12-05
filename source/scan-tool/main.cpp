@@ -370,10 +370,10 @@ int main(int argc, char ** argv)
             return rcScanError;
           }
           if (!silent)
-            std::clog << "Info: File " << i << " was queued for re-scan, "
-                      << "because latest report is from " << report.scan_date
-                      << " and thus it's older than " << maxAgeInDays
-                      << " days. Scan ID for later retrieval is " << scan_id
+            std::clog << "Info: " << i << " was queued for re-scan, because "
+                      << "report is from " << report.scan_date
+                      << " and thus it is older than " << maxAgeInDays
+                      << " days. Scan ID for retrieval is " << scan_id
                       << "." << std::endl;
         } //if rescan because of old report
       } //if file was in report database
