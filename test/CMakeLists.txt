@@ -12,3 +12,6 @@ add_subdirectory (vt-api-request)
 
 # Recurse into subdirectory for the honeypottery executable tests.
 add_subdirectory (honeypottery)
+
+# Recurse into subdirectory for the date conversion tests.
+add_subdirectory (date)
