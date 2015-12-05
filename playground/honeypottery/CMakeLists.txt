@@ -6,12 +6,14 @@ project(honeypottery)
 #add_definitions(-DDEFINE_CONSTANT_HERE -DANOTHER_ONE_THERE -DTHIS_IS_THE_THIRD)
 
 set(honeypottery_sources
+    ../../libthoro/common/StringUtils.cpp
     ../../source/Curly.cpp
     ../../source/Engine.cpp
     ../../source/Report.cpp
     ../../source/ReportHoneypot.cpp
     ../../source/Scanner.cpp
     ../../source/ScannerVirusTotalHoneypot.cpp
+    ../../source/StringToTimeT.cpp
     main.cpp)
 
 if (CMAKE_COMPILER_IS_GNUCC)

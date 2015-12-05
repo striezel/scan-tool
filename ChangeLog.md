@@ -1,5 +1,9 @@
 # ChangeLog for scan-tool
 
+## Version 0.16 (2015-12-05)
+  - scan-tool: trigger re-scan of a file, if the latest report exeeds a certain
+    maximum age. User can specify the maximum age in days via command line.
+
 ## Version 0.15 (2015-11-15)
   - Only display size of files that could not be scanned because of their size
     in non-silent mode.

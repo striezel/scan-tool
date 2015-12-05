@@ -37,6 +37,13 @@ const int rcInvalidParameter = 1;
 const int rcFileError = 2;
 const int rcScanError = 3;
 
+/* default value for maximum scan report age
+
+   Three months should be a a reasonable default value that does not put too
+   much load on the scanner.
+*/
+const unsigned int cDefaultMaxAge = 90;
+
 void showHelp()
 {
   std::cout << "\nscan-tool [FILE ...]\n"
@@ -53,12 +60,16 @@ void showHelp()
             << "                     times, if you want to scan several files.\n"
             << " --list FILE       - read the files which shall be scanned from the file FILE,\n"
             << "                     one per line.\n"
-            << " --files FILE      - same as --list FILE\n";
+            << " --files FILE      - same as --list FILE\n"
+            << " --max-age N       - specifies the maximum age for retrieved scan reports to\n"
+            << "                     be N days, where N is a positive integer. Files whose\n"
+            << "                     reports are older than N days will be queued for rescan.\n"
+            << "                     Default value is " << cDefaultMaxAge << " days.\n";
 }
 
 void showVersion()
 {
-  std::cout << "scan-tool, version 0.15, 2015-11-15\n";
+  std::cout << "scan-tool, version 0.16, 2015-12-05\n";
 }
 
 int main(int argc, char ** argv)
@@ -69,6 +80,8 @@ int main(int argc, char ** argv)
   bool silent = false;
   // limit for "maybe infected"; higher count means infected
   int maybeLimit = 0;
+  // maximum age of scan reports in days without requesting rescan
+  int maxAgeInDays = 0;
   //files that will be checked
   std::unordered_set<std::string> files_scan = std::unordered_set<std::string>();
 
@@ -201,6 +214,47 @@ int main(int argc, char ** argv)
             return rcInvalidParameter;
           } //else
         } //list of files
+        //age limit for reports
+        else if ((param=="--max-age") or (param=="--age-limit"))
+        {
+          if (maxAgeInDays > 0)
+          {
+            std::cout << "Error: Report age has been specified multiple times." << std::endl;
+            return rcInvalidParameter;
+          }
+          //enough parameters?
+          if ((i+1<argc) and (argv[i+1]!=NULL))
+          {
+            const std::string integer = std::string(argv[i+1]);
+            unsigned int limit = 0;
+            if (!stringToUnsignedInt(integer, limit))
+            {
+              std::cout << "Error: \"" << integer << "\" is not an unsigned integer!" << std::endl;
+              return rcInvalidParameter;
+            }
+            if (limit <= 0)
+            {
+              std::cout << "Error: Report age has to be more than zero days." << std::endl;
+              return rcInvalidParameter;
+            }
+            //Is it more than ca. 100 years?
+            if (limit > 36500)
+            {
+              if (!silent)
+                std::cout << "Warning: Report age was capped to 36500 days." << std::endl;
+              limit = 36500;
+            }
+            //Assign the parameter value.
+            maxAgeInDays = limit;
+            ++i; //Skip next parameter, because it's used as limit already.
+          }
+          else
+          {
+            std::cout << "Error: You have to enter an integer value after \""
+                      << param <<"\"." << std::endl;
+            return rcInvalidParameter;
+          }
+        } //age limit
         //file for scan
         else if (libthoro::filesystem::File::exists(param))
         {
@@ -235,8 +289,19 @@ int main(int argc, char ** argv)
     return 0;
   } //if no requests
 
+  // set "false positive" limit, if it was not set
   if (maybeLimit <= 0)
     maybeLimit = 3;
+  //set maximum report age, if it was not set
+  if (maxAgeInDays <= 0)
+  {
+    maxAgeInDays = cDefaultMaxAge;
+    if (!silent)
+      std::cout << "Information: Maximum report age was set to " << maxAgeInDays
+                << " days." << std::endl;
+  } //if
+
+  const auto ageLimit = std::chrono::system_clock::now() - std::chrono::hours(24*maxAgeInDays);
 
   //create scanner: pass API key, honour time limits, set silent mode
   ScannerVirusTotalV2 scanVT(key, true, silent);
@@ -291,7 +356,26 @@ int main(int argc, char ** argv)
           //add file to list of infected files
           mapFileToHash[i] = hashString;
           mapHashToReport[hashString] = report;
-        }
+        } //else (file is probably infected)
+
+        //check, if rescan is required because of age
+        if (report.hasTime_t()
+            && (std::chrono::system_clock::from_time_t(report.scan_date_t) < ageLimit))
+        {
+          std::string scan_id = "";
+          if (!scanVT.scan(i, scan_id))
+          {
+            std::cerr << "Error: Could not submit file " << i << " for (re-)scanning."
+                      << std::endl;
+            return rcScanError;
+          }
+          if (!silent)
+            std::clog << "Info: File " << i << " was queued for re-scan, "
+                      << "because latest report is from " << report.scan_date
+                      << " and thus it's older than " << maxAgeInDays
+                      << " days. Scan ID for later retrieval is " << scan_id
+                      << "." << std::endl;
+        } //if rescan because of old report
       } //if file was in report database
       else if (report.notFound())
       {

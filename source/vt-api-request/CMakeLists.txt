@@ -6,6 +6,7 @@ project(vt-api-request)
 #add_definitions(-DDEFINE_CONSTANT_HERE -DANOTHER_ONE_THERE -DTHIS_IS_THE_THIRD)
 
 set(vt-api-request_sources
+    ../../libthoro/common/StringUtils.cpp
     ../Curly.cpp
     ../Engine.cpp
     ../EngineV2.cpp
@@ -13,6 +14,7 @@ set(vt-api-request_sources
     ../ReportV2.cpp
     ../Scanner.cpp
     ../ScannerVirusTotalV2.cpp
+    ../StringToTimeT.cpp
     main.cpp)
 
 if (CMAKE_COMPILER_IS_GNUCC)
