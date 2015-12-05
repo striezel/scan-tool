@@ -21,6 +21,7 @@
 #ifndef REPORT_HPP
 #define REPORT_HPP
 
+#include <ctime>
 #include <memory>
 #include <vector>
 #include "Engine.hpp"
@@ -54,9 +55,20 @@ struct Report
   virtual bool notFound() const = 0;
 
 
+  /** \brief checks whether the time_t value in scan_date_t is valid
+   *
+   * \return Returns true, if scan_date_t contains some valid time data.
+   *         Returns false otherwise.
+   * \remarks You should not use the value stored in the scan_date_t member,
+   *          _if_ this function returns false, because its value may be undefined.
+   */
+  bool hasTime_t() const;
+
+
   int response_code;     /**< response code from VirusTotal API */
 
-  std::string scan_date; /**< date when the scan was performed */
+  std::string scan_date; /**< date when the scan was performed, as string */
+  std::time_t scan_date_t; /**< date when the scan was performed, as time_t; use hasTime_t() to check */
 
   int total;     /**< total number of scan engines */
   int positives; /**< number of engines that detected a virus */

@@ -22,6 +22,7 @@
 #include <iostream>
 #include <jsoncpp/json/reader.h>
 #include "Curly.hpp"
+#include "StringToTimeT.hpp"
 
 ScannerVirusTotalV2::Report reportFromJSONRoot(const Json::Value& root)
 {
@@ -46,9 +47,16 @@ ScannerVirusTotalV2::Report reportFromJSONRoot(const Json::Value& root)
     report.scan_id = "";
   val = root["scan_date"];
   if (!val.empty() && val.isString())
+  {
     report.scan_date = val.asString();
+    if (!stringToTimeT(report.scan_date, report.scan_date_t))
+      report.scan_date_t = static_cast<std::time_t>(-1);
+  }
   else
+  {
     report.scan_date = "";
+    report.scan_date_t = static_cast<std::time_t>(-1);
+  }
   val = root["total"];
   if (!val.empty() && val.isInt())
     report.total = val.asInt();

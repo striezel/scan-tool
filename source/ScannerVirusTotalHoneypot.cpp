@@ -22,6 +22,7 @@
 #include <iostream>
 #include <jsoncpp/json/reader.h>
 #include "Curly.hpp"
+#include "StringToTimeT.hpp"
 
 ScannerVirusTotalHoneypot::Report honeypotReportFromJSONRoot(const Json::Value& root)
 {
@@ -47,10 +48,13 @@ ScannerVirusTotalHoneypot::Report honeypotReportFromJSONRoot(const Json::Value& 
       report.scan_date = val.asString();
     else
       report.scan_date = "";
+    if (!stringToTimeT(report.scan_date, report.scan_date_t))
+      report.scan_date_t = static_cast<std::time_t>(-1);
   }
   else
   {
     report.scan_date = "";
+    report.scan_date_t = static_cast<std::time_t>(-1);
     report.scans.clear();
   }
 
