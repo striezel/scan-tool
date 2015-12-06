@@ -1,5 +1,13 @@
 # ChangeLog for scan-tool
 
+## Version 0.17 (2015-12-06)
+  - add signal handlers to show statistics before signal-induced termination
+
+    This way the user can still get a partial(!) summary of the infected files,
+    large files, queued files before the program  exits due to the caught
+    signal. Only SIGINT and SIGTERM are caught in that way. Other signal are
+    unaffected.
+
 ## Version 0.16 (2015-12-05)
   - scan-tool: trigger re-scan of a file, if the latest report exeeds a certain
     maximum age. User can specify the maximum age in days via command line.

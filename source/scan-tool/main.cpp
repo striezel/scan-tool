@@ -18,12 +18,18 @@
  -------------------------------------------------------------------------------
 */
 
+#include <cstdlib> //for std::exit()
 #include <fstream>
 #include <iostream>
 #include <map>
 #include <string>
 #include <thread> //for sleep functionality
 #include <unordered_set>
+#if defined(__linux__) || defined(linux)
+#include <csignal>
+#elif defined(_WIN32)
+#include <Windows.h>
+#endif
 #include "summary.hpp"
 #include "../Curly.hpp"
 #include "../ScannerVirusTotalV2.hpp"
@@ -36,6 +42,8 @@
 const int rcInvalidParameter = 1;
 const int rcFileError = 2;
 const int rcScanError = 3;
+const int rcSignalHandlerError = 4;
+const int rcProgramTerminationBySignal = 5;
 
 /* default value for maximum scan report age
 
@@ -69,8 +77,78 @@ void showHelp()
 
 void showVersion()
 {
-  std::cout << "scan-tool, version 0.16, 2015-12-05\n";
+  std::cout << "scan-tool, version 0.17, 2015-12-06\n";
 }
+
+/* Four variables that will be used in main() but also in signal handling
+   function and are therefore declared as global variables. */
+//maps SHA256 hashes to corresponding report; key = SHA256 hash, value = scan report
+std::map<std::string, ScannerVirusTotalV2::Report> mapHashToReport;
+//maps filename to hash; key = file name, value = SHA256 hash
+std::map<std::string, std::string> mapFileToHash = std::map<std::string, std::string>();
+//list of queued scan requests; key = scan_id, value = file name
+std::unordered_map<std::string, std::string> queued_scans = std::unordered_map<std::string, std::string>();
+//list of files that exceed the file size for scans; ; first = file name, second = file size in octets
+std::vector<std::pair<std::string, int64_t> > largeFiles;
+
+#if defined(__linux__) || defined(linux)
+/** \brief signal handling function for Linux systems
+ *
+ * \param sig   the signal number (e.g. 15 for SIGTERM)
+ * \remarks This function will not return, because it calls std::exit() at
+ *          the end. std::exit() never returns.
+ */
+void linux_signal_handler(int sig)
+{
+  std::clog << "INFO: Caught signal ";
+  switch (sig)
+  {
+    case SIGTERM:
+         std::clog << "SIGTERM";
+         break;
+    case SIGINT:
+         std::clog << "SIGINT";
+         break;
+    default:
+        std::clog << sig;
+        break;
+  } //switch
+  std::clog << "!" << std::endl;
+  //Show the summary, e.g. infected files, too large files, and unfinished
+  // queued scans, because user might want to see that despite termination.
+  showSummary(mapFileToHash, mapHashToReport, queued_scans, largeFiles);
+  std::clog << "Terminating program early due to caught signal." << std::endl;
+  std::exit(rcProgramTerminationBySignal);
+}
+#elif defined(_WIN32)
+/** \brief signal handling function for Windows systems
+ *
+ * \param ctrlSignal   the received control signal
+ * \return Returns false, if signal was not handled.
+ *         Hypothetically returns true, if signal was handled, but in that
+ *         case std::exit() steps in to terminate the program.
+ * \remarks This function will never return true, because it calls std::exit()
+ *          at the end, when a signal is handled. std::exit() never returns.
+ */
+BOOL windows_signal_handler(DWORD ctrlSignal)
+{
+  switch (ctrlSignal)
+  {
+    case CTRL_C_EVENT:
+         std::clog << "INFO: Received Ctrl+C!";
+         //Show the summary, e.g. infected files, too large files, and
+         // unfinished queued scans, because user might want to see that
+         // despite termination.
+         showSummary(mapFileToHash, mapHashToReport, queued_scans, largeFiles);
+         std::clog << "Terminating program early due to caught signal."
+                   << std::endl;
+         std::exit(rcProgramTerminationBySignal);
+         return TRUE; //bogus
+         break;
+  } //switch
+  return FALSE;
+}
+#endif
 
 int main(int argc, char ** argv)
 {
@@ -303,17 +381,40 @@ int main(int argc, char ** argv)
 
   const auto ageLimit = std::chrono::system_clock::now() - std::chrono::hours(24*maxAgeInDays);
 
+  //install signal handlers
+  #if defined(__linux__) || defined(linux)
+  struct sigaction sa;
+
+  sa.sa_handler = linux_signal_handler;
+  sigemptyset(&sa.sa_mask);
+  sa.sa_flags = 0;
+  //Install one for SIGINT ...
+  if (sigaction(SIGINT, &sa, NULL) != 0)
+  {
+    std::clog << "Error: Could not set signal handling function for SIGINT!"
+              << std::endl;
+    return rcSignalHandlerError;
+  }
+  // ... and one for SIGTERM.
+  if (sigaction(SIGTERM, &sa, NULL) != 0)
+  {
+    std::clog << "Error: Could not set signal handling function for SIGTERM!"
+              << std::endl;
+    return rcSignalHandlerError;
+  }
+  #elif defined(_WIN32)
+  if (SetConsoleCtrlHandler((PHANDLER_ROUTINE) windows_signal_handler, TRUE) == 0)
+  {
+    std::clog << "Error: Could not set signal handling function for Ctrl+C!"
+              << std::endl;
+    return rcSignalHandlerError;
+  } //if
+  #else
+    #error Unknown operating system! No known signal handing facility.
+  #endif // defined
+
   //create scanner: pass API key, honour time limits, set silent mode
   ScannerVirusTotalV2 scanVT(key, true, silent);
-
-  //maps SHA256 hashes to corresponding report; key = SHA256 hash, value = scan report
-  std::map<std::string, ScannerVirusTotalV2::Report> mapHashToReport;
-  //maps filename to hash; key = file name, value = SHA256 hash
-  std::map<std::string, std::string> mapFileToHash;
-  //list of queued scan requests; key = scan_id, value = file name
-  std::unordered_map<std::string, std::string> queued_scans = std::unordered_map<std::string, std::string>();
-  //list of files that exceed the file size for scans; ; first = file name, second = file size in octets
-  std::vector<std::pair<std::string, int64_t> > largeFiles;
   //time when last scan was queued
   std::chrono::steady_clock::time_point lastQueuedScanTime = std::chrono::steady_clock::now() - std::chrono::hours(24);
 
