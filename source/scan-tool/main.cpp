@@ -18,13 +18,13 @@
  -------------------------------------------------------------------------------
 */
 
-#include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <map>
 #include <string>
-#include <thread>
+#include <thread> //for sleep functionality
 #include <unordered_set>
+#include "summary.hpp"
 #include "../Curly.hpp"
 #include "../ScannerVirusTotalV2.hpp"
 #include "../../libthoro/common/StringUtils.h"
@@ -306,13 +306,13 @@ int main(int argc, char ** argv)
   //create scanner: pass API key, honour time limits, set silent mode
   ScannerVirusTotalV2 scanVT(key, true, silent);
 
-  //maps sha256 hashes to corresponding report; key = SHA256 hash, value = scan report
+  //maps SHA256 hashes to corresponding report; key = SHA256 hash, value = scan report
   std::map<std::string, ScannerVirusTotalV2::Report> mapHashToReport;
   //maps filename to hash; key = file name, value = SHA256 hash
   std::map<std::string, std::string> mapFileToHash;
   //list of queued scan requests; key = scan_id, value = file name
   std::unordered_map<std::string, std::string> queued_scans = std::unordered_map<std::string, std::string>();
-  //list of files that exceed the file size for scans
+  //list of files that exceed the file size for scans; ; first = file name, second = file size in octets
   std::vector<std::pair<std::string, int64_t> > largeFiles;
   //time when last scan was queued
   std::chrono::steady_clock::time_point lastQueuedScanTime = std::chrono::steady_clock::now() - std::chrono::hours(24);
@@ -505,66 +505,8 @@ int main(int argc, char ** argv)
     } //while
   } //if some scans are/were queued
 
-  //list possibly infected files
-  if (!mapFileToHash.empty())
-  {
-    std::clog << "Possibly infected files: " << mapFileToHash.size() << std::endl;
-    for (const auto& i : mapFileToHash)
-    {
-      std::clog << i.first << " may be infected!" << std::endl;
-      const ScannerVirusTotalV2::Report& repVT = mapHashToReport[i.second];
-      std::clog << repVT.positives << " out of " << repVT.total
-                << " scanners detected a threat";
-      if (!repVT.scan_date.empty())
-        std::clog << " (date: " << repVT.scan_date << ")";
-      std::clog << "." << std::endl;
-      for (const auto& engine : repVT.scans)
-      {
-        if (engine->detected)
-          std::clog << "    " << engine->engine << " detected " << engine->result << std::endl;
-      } //for engine
-      std::clog << std::endl;
-    } //for i
-  } //if infected files exist in map
-  else
-  {
-    std::cout << "All of the given files seem to be OK." << std::endl;
-  }
-
-  //list files which are queued for scan but could not be scanned in time
-  if (!queued_scans.empty())
-  {
-    std::cout << std::endl << queued_scans.size() << " file(s) could not be scanned yet."
-              << std::endl;
-    for(auto& qElem : queued_scans)
-    {
-      std::cout << "  " << qElem.second << " (scan ID " << qElem.first << ")" << std::endl;
-    } //for (range-based)
-  } //if there are some queued scans
-
-  //list files which were too large to send to scan
-  if (!largeFiles.empty())
-  {
-    //sort them by size (using a lambda expression)
-    std::sort(largeFiles.begin(), largeFiles.end(),
-              [](const std::pair<std::string, int64_t>& a, const std::pair<std::string, int64_t>& b)
-              {
-                   return a.second < b.second;
-              }
-             );
-
-    //list files
-    std::cout << std::endl << largeFiles.size() << " file(s) could not be "
-              << "scanned because of file size restrictions for the scan API."
-              << std::endl;
-    for(const auto& largeElem : largeFiles)
-    {
-      std::cout << "  " << largeElem.first << " has a size of "
-                      << libthoro::filesystem::getSizeString(largeElem.second)
-                      << " and exceeds maximum file size for scan! "
-                      << "File was skipped." << std::endl;
-    } //for (range-based)
-  } //if there are some "large" files
+  //show the summary, e.g. infected files, too large files, and unfinished queued scans
+  showSummary(mapFileToHash, mapHashToReport, queued_scans, largeFiles);
 
   return 0;
 }

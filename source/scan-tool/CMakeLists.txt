@@ -20,6 +20,7 @@ set(scan-tool_sources
     ../Scanner.cpp
     ../ScannerVirusTotalV2.cpp
     ../StringToTimeT.cpp
+    summary.cpp
     main.cpp)
 
 if (CMAKE_COMPILER_IS_GNUCC)

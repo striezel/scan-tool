@@ -72,6 +72,8 @@
 		<Unit filename="../StringToTimeT.cpp" />
 		<Unit filename="../StringToTimeT.hpp" />
 		<Unit filename="main.cpp" />
+		<Unit filename="summary.cpp" />
+		<Unit filename="summary.hpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />
