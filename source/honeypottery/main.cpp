@@ -29,7 +29,7 @@ const int rcScanError = 3; //same as in scan-tool
 
 void showVersion()
 {
-  std::cout << "honeypottery, version 0.0.3, 2015-11-15\n";
+  std::cout << "honeypottery, version 0.0.4, 2015-12-06\n";
 }
 
 void showHelp()
@@ -173,7 +173,8 @@ int main(int argc, char** argv)
 
   if (resources_report.empty() && files_scan.empty())
   {
-    std::cout << "No resources for report retrieval or file scan were given.Exiting." << std::endl;
+    std::cout << "No resources for report retrieval or file scan were given. "
+              << "Exiting." << std::endl;
     return rcInvalidParameter;
   } //if no resources given
 

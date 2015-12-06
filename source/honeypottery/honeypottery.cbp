@@ -37,18 +37,22 @@
 			<Add library="curl" />
 			<Add library="jsoncpp" />
 		</Linker>
-		<Unit filename="../../source/Curly.cpp" />
-		<Unit filename="../../source/Curly.hpp" />
-		<Unit filename="../../source/Engine.cpp" />
-		<Unit filename="../../source/Engine.hpp" />
-		<Unit filename="../../source/Report.cpp" />
-		<Unit filename="../../source/Report.hpp" />
-		<Unit filename="../../source/ReportHoneypot.cpp" />
-		<Unit filename="../../source/ReportHoneypot.hpp" />
-		<Unit filename="../../source/Scanner.cpp" />
-		<Unit filename="../../source/Scanner.hpp" />
-		<Unit filename="../../source/ScannerVirusTotalHoneypot.cpp" />
-		<Unit filename="../../source/ScannerVirusTotalHoneypot.hpp" />
+		<Unit filename="../../libthoro/common/StringUtils.cpp" />
+		<Unit filename="../../libthoro/common/StringUtils.h" />
+		<Unit filename="../Curly.cpp" />
+		<Unit filename="../Curly.hpp" />
+		<Unit filename="../Engine.cpp" />
+		<Unit filename="../Engine.hpp" />
+		<Unit filename="../Report.cpp" />
+		<Unit filename="../Report.hpp" />
+		<Unit filename="../ReportHoneypot.cpp" />
+		<Unit filename="../ReportHoneypot.hpp" />
+		<Unit filename="../Scanner.cpp" />
+		<Unit filename="../Scanner.hpp" />
+		<Unit filename="../ScannerVirusTotalHoneypot.cpp" />
+		<Unit filename="../ScannerVirusTotalHoneypot.hpp" />
+		<Unit filename="../StringToTimeT.cpp" />
+		<Unit filename="../StringToTimeT.hpp" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />

@@ -1,5 +1,8 @@
 # ChangeLog for honeypottery
 
+## Version 0.0.4 (2015-12-06)
+  - fix typo in error message
+
 ## Version 0.0.3 (2015-11-15)
   - fix typos in help text
 
