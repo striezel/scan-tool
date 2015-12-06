@@ -21,7 +21,7 @@
 #include <iostream>
 #include <string>
 #include <unordered_set>
-#include "../../source/ScannerVirusTotalHoneypot.hpp"
+#include "../ScannerVirusTotalHoneypot.hpp"
 
 //return codes
 const int rcInvalidParameter = 1;

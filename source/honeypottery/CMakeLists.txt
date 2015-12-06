@@ -7,13 +7,13 @@ project(honeypottery)
 
 set(honeypottery_sources
     ../../libthoro/common/StringUtils.cpp
-    ../../source/Curly.cpp
-    ../../source/Engine.cpp
-    ../../source/Report.cpp
-    ../../source/ReportHoneypot.cpp
-    ../../source/Scanner.cpp
-    ../../source/ScannerVirusTotalHoneypot.cpp
-    ../../source/StringToTimeT.cpp
+    ../Curly.cpp
+    ../Engine.cpp
+    ../Report.cpp
+    ../ReportHoneypot.cpp
+    ../Scanner.cpp
+    ../ScannerVirusTotalHoneypot.cpp
+    ../StringToTimeT.cpp
     main.cpp)
 
 if (CMAKE_COMPILER_IS_GNUCC)
