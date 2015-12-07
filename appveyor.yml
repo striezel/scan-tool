@@ -1,0 +1,39 @@
+# Notes:
+#   - Minimal appveyor.yml file is an empty file. All sections are optional.
+#   - Indent each level of configuration with 2 spaces. Do not use tabs!
+#   - All section names are case-sensitive.
+#   - Section names should be unique on each level.
+
+#---------------------------------#
+#      general configuration      #
+#---------------------------------#
+
+version: 0.23.{build}
+branches:
+  only:
+  - ci-windows
+
+# Do not build on tags (GitHub only).
+skip_tags: true
+
+#---------------------------------#
+#    environment configuration    #
+#---------------------------------#
+
+os:
+  - MinGW
+  - Windows Server 2012 R
+
+# We will need Code::Blocks, Git and 7-Zip.
+install:
+  - cinst codeblocks git 7zip
+
+#---------------------------#
+#    build configuration    #
+#---------------------------#
+build:
+  verbosity: minimal
+
+ build_script:
+  - ps: '& ci\windows\download_dependencies.ps1'
+  - cmd: ci\windows\build.cmd
