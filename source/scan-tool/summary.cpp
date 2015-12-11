@@ -26,7 +26,8 @@
 void showSummary(const std::map<std::string, std::string>& mapFileToHash,
                  std::map<std::string, ScannerVirusTotalV2::Report>& mapHashToReport,
                  const std::unordered_map<std::string, std::string>& queued_scans,
-                 std::vector<std::pair<std::string, int64_t> >& largeFiles)
+                 std::vector<std::pair<std::string, int64_t> >& largeFiles,
+                 std::vector<std::pair<std::string, int64_t> >& largeFilesRescan)
 {
   //list possibly infected files
   if (!mapFileToHash.empty())
@@ -88,4 +89,29 @@ void showSummary(const std::map<std::string, std::string>& mapFileToHash,
                       << "File was skipped." << std::endl;
     } //for (range-based)
   } //if there are some "large" files
+
+  //list files which were too large to send to re-scan
+  if (!largeFilesRescan.empty())
+  {
+    //sort them by size (using a lambda expression)
+    std::sort(largeFilesRescan.begin(), largeFilesRescan.end(),
+              [](const std::pair<std::string, int64_t>& a, const std::pair<std::string, int64_t>& b)
+              {
+                   return a.second < b.second;
+              }
+             );
+
+    //list files
+    std::cout << std::endl << largeFilesRescan.size() << " file(s) could not be "
+              << "rescanned because of file size restrictions for the scan API."
+              << " This means that the report data for these files is probably"
+              << " outdated." << std::endl;
+    for(const auto& largeElemRe : largeFilesRescan)
+    {
+      std::cout << "  " << largeElemRe.first << " has a size of "
+                      << libthoro::filesystem::getSizeString(largeElemRe.second)
+                      << " and exceeds maximum file size for re-scan! "
+                      << "Re-scan was skipped." << std::endl;
+    } //for (range-based)
+  } //if there are some "large" file re-scans
 }

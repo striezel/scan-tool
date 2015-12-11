@@ -1,5 +1,11 @@
 # ChangeLog for scan-tool
 
+## Version 0.18 (2015-12-11)
+  - add file size check to re-scan requests
+
+    Avoids errors due to (re-)scan of files that are too large to be scanned
+    via the API.
+
 ## Version 0.17 (2015-12-06)
   - add signal handlers to show statistics before signal-induced termination
 
