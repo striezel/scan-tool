@@ -1,5 +1,10 @@
 # ChangeLog for scan-tool
 
+## Version 0.19 (2015-12-11)
+  - use std::set instead of std::unordered_set for file list
+
+    Enforces a reproducible order on iteration over file list.
+
 ## Version 0.18 (2015-12-11)
   - add file size check to re-scan requests
 

@@ -22,9 +22,9 @@
 #include <fstream>
 #include <iostream>
 #include <map>
+#include <set>
 #include <string>
 #include <thread> //for sleep functionality
-#include <unordered_set>
 #if defined(__linux__) || defined(linux)
 #include <csignal>
 #elif defined(_WIN32)
@@ -77,7 +77,7 @@ void showHelp()
 
 void showVersion()
 {
-  std::cout << "scan-tool, version 0.18, 2015-12-11\n";
+  std::cout << "scan-tool, version 0.19, 2015-12-12\n";
 }
 
 /* Four variables that will be used in main() but also in signal handling
@@ -165,7 +165,7 @@ int main(int argc, char ** argv)
   // maximum age of scan reports in days without requesting rescan
   int maxAgeInDays = 0;
   //files that will be checked
-  std::unordered_set<std::string> files_scan = std::unordered_set<std::string>();
+  std::set<std::string> files_scan = std::set<std::string>();
 
   if ((argc>1) and (argv!=NULL))
   {
