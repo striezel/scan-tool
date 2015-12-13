@@ -59,10 +59,13 @@ class ScannerVirusTotalV2: public Scanner
      *
      * \param resource   resource identifier
      * \param report     reference to a Report structure where the report's data will be stored
+     * \param useCache   If set to true, the scanner tries to use the cached reports from the cache directory @cacheDir
+     * \param cacheDir   directory of the report cache (is only used, if @useCache is true)
      * \return Returns true, if the report could be retrieved.
      *         Returns false, if retrieval failed.
      */
-    bool getReport(const std::string& resource, Report& report);
+    bool getReport(const std::string& resource, Report& report, const bool useCache,
+                   const std::string& cacheDir);
 
 
     /** \brief requests a re-scan of an already uploaded file

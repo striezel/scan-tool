@@ -34,6 +34,7 @@
 #include "../Curly.hpp"
 #include "../ScannerVirusTotalV2.hpp"
 #include "../../libthoro/common/StringUtils.h"
+#include "../../libthoro/filesystem/DirectoryFunctions.hpp"
 #include "../../libthoro/filesystem/FileFunctions.hpp"
 #include "../../libthoro/hash/sha256/FileSourceUtility.hpp"
 #include "../../libthoro/hash/sha256/sha256.hpp"
@@ -72,12 +73,15 @@ void showHelp()
             << " --max-age N       - specifies the maximum age for retrieved scan reports to\n"
             << "                     be N days, where N is a positive integer. Files whose\n"
             << "                     reports are older than N days will be queued for rescan.\n"
-            << "                     Default value is " << cDefaultMaxAge << " days.\n";
+            << "                     Default value is " << cDefaultMaxAge << " days.\n"
+            << " --cache           - cache API requests locally to avoid requesting reports on\n"
+            << "                     files that have been requested recently. This option is\n"
+            << "                     disabled by default.\n";
 }
 
 void showVersion()
 {
-  std::cout << "scan-tool, version 0.19, 2015-12-12\n";
+  std::cout << "scan-tool, version 0.20, 2015-12-13\n";
 }
 
 /* Four variables that will be used in main() but also in signal handling
@@ -164,6 +168,8 @@ int main(int argc, char ** argv)
   int maybeLimit = 0;
   // maximum age of scan reports in days without requesting rescan
   int maxAgeInDays = 0;
+  // flag for using request cache
+  bool useRequestCache = false;
   //files that will be checked
   std::set<std::string> files_scan = std::set<std::string>();
 
@@ -337,6 +343,16 @@ int main(int argc, char ** argv)
             return rcInvalidParameter;
           }
         } //age limit
+        //use request cache
+        else if ((param=="--cache") or (param=="--request-cache") or (param=="--cache-requests"))
+        {
+          if (useRequestCache)
+          {
+            std::cout << "Error: Request cache was already enabled." << std::endl;
+            return rcInvalidParameter;
+          }
+          useRequestCache = true;
+        } //request cache
         //file for scan
         else if (libthoro::filesystem::File::exists(param))
         {
@@ -384,6 +400,39 @@ int main(int argc, char ** argv)
   } //if
 
   const auto ageLimit = std::chrono::system_clock::now() - std::chrono::hours(24*maxAgeInDays);
+
+  //handle request cache settings
+  std::string requestCacheDirVT = "";
+  if (useRequestCache)
+  {
+    std::string homeDirectory;
+    if (!libthoro::filesystem::Directory::getHome(homeDirectory))
+    {
+      #if defined(__linux__) || defined(linux)
+      //use /tmp as replacement for home directory
+      homeDirectory = "/tmp/";
+      #else
+      std::cerr << "Error: Could not determine location of request cache!" << std::endl;
+      return rcFileError;
+      #endif
+    }
+    // cache directory is ~/.scan-tool/vt-cache/
+    const std::string requestCacheDir = libthoro::filesystem::slashify(homeDirectory)
+                                + ".scan-tool" + libthoro::filesystem::pathDelimiter
+                                + "vt-cache";
+    if (!libthoro::filesystem::Directory::exists(requestCacheDir))
+    {
+      if (!libthoro::filesystem::Directory::createRecursive(requestCacheDir))
+      {
+        std::cerr << "Error: Could not create request cache directory!" << std::endl;
+        return rcFileError;
+      } //if directory could not be created
+    } //if request cache directory does not exist
+    requestCacheDirVT = requestCacheDir;
+    if (!silent)
+      std::clog << "Info: Request cache is enabled. "
+                << "Cache directory is " << requestCacheDirVT << "." << std::endl;
+  } //if useRequestCache
 
   //install signal handlers
   #if defined(__linux__) || defined(linux)
@@ -434,7 +483,7 @@ int main(int argc, char ** argv)
     } //if no hash
     const std::string hashString = fileHash.toHexString();
     ScannerVirusTotalV2::Report report;
-    if (scanVT.getReport(hashString, report))
+    if (scanVT.getReport(hashString, report, useRequestCache, requestCacheDirVT))
     {
       if (report.successfulRetrieval())
       {
@@ -564,7 +613,7 @@ int main(int argc, char ** argv)
       const std::string& scan_id = qsIter->first;
       const std::string& filename = qsIter->second;
       ScannerVirusTotalV2::Report report;
-      if (scanVT.getReport(scan_id, report))
+      if (scanVT.getReport(scan_id, report, false, std::string()))
       {
         if (report.successfulRetrieval())
         {

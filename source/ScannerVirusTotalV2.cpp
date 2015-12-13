@@ -19,10 +19,13 @@
 */
 
 #include "ScannerVirusTotalV2.hpp"
+#include <fstream>
 #include <iostream>
 #include <jsoncpp/json/reader.h>
 #include "Curly.hpp"
 #include "StringToTimeT.hpp"
+#include "../libthoro/filesystem/DirectoryFunctions.hpp"
+#include "../libthoro/filesystem/FileFunctions.hpp"
 
 ScannerVirusTotalV2::Report reportFromJSONRoot(const Json::Value& root)
 {
@@ -154,45 +157,93 @@ std::chrono::seconds ScannerVirusTotalV2::timeBetweenConsecutiveRequests() const
   return std::chrono::seconds(15);
 }
 
-bool ScannerVirusTotalV2::getReport(const std::string& resource, Report& report)
+bool ScannerVirusTotalV2::getReport(const std::string& resource, Report& report, const bool useCache,
+                   const std::string& cacheDir)
 {
   waitForLimitExpiration();
-  //send request
-  Curly cURL;
-  cURL.setURL("https://www.virustotal.com/vtapi/v2/file/report");
-  cURL.addPostField("resource", resource);
-  cURL.addPostField("apikey", m_apikey);
-
   std::string response = "";
-  if (!cURL.perform(response))
+  const std::string cachedFilePath = libthoro::filesystem::slashify(cacheDir)
+                                   + resource + ".json";
+  if (useCache && !cacheDir.empty() && libthoro::filesystem::File::exists(cachedFilePath))
   {
-    std::cerr << "Error in ScannerVirusTotalV2::getReport(): Request could not be performed." << std::endl;
-    return false;
-  }
-  requestWasNow();
+    //try to read JSON data from cached file
+    std::ifstream cachedJSON(cachedFilePath, std::ios_base::in | std::ios_base::binary);
+    if (!cachedJSON.good())
+    {
+      std::cerr << "Error in ScannerVirusTotalV2::getReport(): Cached JSON could not be opened." << std::endl;
+      return false;
+    }
+    std::string temp = "";
+    while (!cachedJSON.eof() && std::getline(cachedJSON, temp, '\0'))
+    {
+      response.append(temp);
+    }
+    //File should be read until EOF, but failbit and badbit should not be set.
+    if (!cachedJSON.eof() || cachedJSON.bad() || cachedJSON.fail())
+    {
+      cachedJSON.close();
+      std::cerr << "Error in ScannerVirusTotalV2::getReport(): "
+                << "Cached JSON could not be read." << std::endl;
+      return false;
+    }
+    cachedJSON.close();
+  } //if cached JSON file shall be used
+  else
+  {
+    //send request via cURL
+    Curly cURL;
+    cURL.setURL("https://www.virustotal.com/vtapi/v2/file/report");
+    cURL.addPostField("resource", resource);
+    cURL.addPostField("apikey", m_apikey);
 
-  if (cURL.getResponseCode() == 204)
-  {
-    std::cerr << "Error in ScannerVirusTotalV2::getReport(): Rate limit exceeded!" << std::endl;
-    return false;
-  }
-  if (cURL.getResponseCode() == 403)
-  {
-    std::cerr << "Error in ScannerVirusTotalV2::getReport(): Access denied!" << std::endl;
-    return false;
-  }
-  if (cURL.getResponseCode() != 200)
-  {
-    std::cerr << "Error in ScannerVirusTotalV2::getReport(): Unexpected HTTP status code "
-              << cURL.getResponseCode() << "!" << std::endl;
-    return false;
-  }
-  #ifdef SCAN_TOOL_DEBUG
-  std::cout << "Request was successful!" << std::endl
-            << "Code: " << cURL.getResponseCode() << std::endl
-            << "Content-Type: " << cURL.getContentType() << std::endl
-            << "Response text: " << response << std::endl;
-  #endif
+    if (!cURL.perform(response))
+    {
+      std::cerr << "Error in ScannerVirusTotalV2::getReport(): Request could not be performed." << std::endl;
+      return false;
+    }
+    requestWasNow();
+
+    if (cURL.getResponseCode() == 204)
+    {
+      std::cerr << "Error in ScannerVirusTotalV2::getReport(): Rate limit exceeded!" << std::endl;
+      return false;
+    }
+    if (cURL.getResponseCode() == 403)
+    {
+      std::cerr << "Error in ScannerVirusTotalV2::getReport(): Access denied!" << std::endl;
+      return false;
+    }
+    if (cURL.getResponseCode() != 200)
+    {
+      std::cerr << "Error in ScannerVirusTotalV2::getReport(): Unexpected HTTP status code "
+                << cURL.getResponseCode() << "!" << std::endl;
+      return false;
+    }
+    #ifdef SCAN_TOOL_DEBUG
+    std::cout << "Request was successful!" << std::endl
+              << "Code: " << cURL.getResponseCode() << std::endl
+              << "Content-Type: " << cURL.getContentType() << std::endl
+              << "Response text: " << response << std::endl;
+    #endif
+    //write JSON data to request cache, if request cache is enabled
+    if (useCache && !cacheDir.empty() && libthoro::filesystem::Directory::exists(cacheDir))
+    {
+      std::ofstream cachedJSON(cachedFilePath, std::ios_base::out | std::ios_base::binary | std::ios_base::trunc);
+      if (!cachedJSON.good())
+      {
+        std::cerr << "Error in ScannerVirusTotalV2::getReport(): JSON data could not be opened for update!" << std::endl;
+        return false;
+      }
+      cachedJSON.write(response.c_str(), response.size());
+      if (!cachedJSON.good())
+      {
+        cachedJSON.close();
+        std::cerr << "Error in ScannerVirusTotalV2::getReport(): JSON data could not be written to cache!" << std::endl;
+        return false;
+      }
+      cachedJSON.close();
+    } //if request cache is enabled
+  } //else (normal, uncached request)
   Json::Value root; // will contain the root value after parsing.
   Json::Reader jsonReader;
   const bool success = jsonReader.parse(response, root, false);

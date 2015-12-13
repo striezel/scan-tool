@@ -7,6 +7,8 @@ project(vt-api-request)
 
 set(vt-api-request_sources
     ../../libthoro/common/StringUtils.cpp
+    ../../libthoro/filesystem/DirectoryFunctions.cpp
+    ../../libthoro/filesystem/FileFunctions.cpp
     ../Curly.cpp
     ../Engine.cpp
     ../EngineV2.cpp

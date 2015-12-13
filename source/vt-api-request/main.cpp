@@ -249,7 +249,7 @@ int main(int argc, char ** argv)
   for(const std::string& i : resources_report)
   {
     ScannerVirusTotalV2::Report report;
-    if (!scanVT.getReport(i, report))
+    if (!scanVT.getReport(i, report, false, std::string()))
     {
       std::cout << "Error: Could not retrieve report!" << std::endl;
       return rcScanError;

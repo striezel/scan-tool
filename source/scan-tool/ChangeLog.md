@@ -1,6 +1,9 @@
 # ChangeLog for scan-tool
 
-## Version 0.19 (2015-12-11)
+## Version 0.20 (2015-12-13)
+  - implement request cache
+
+## Version 0.19 (2015-12-12)
   - use std::set instead of std::unordered_set for file list
 
     Enforces a reproducible order on iteration over file list.
