@@ -31,10 +31,10 @@
 #include <Windows.h>
 #endif
 #include "summary.hpp"
+#include "../CacheManagerVirusTotalV2.hpp"
 #include "../Curly.hpp"
 #include "../ScannerVirusTotalV2.hpp"
 #include "../../libthoro/common/StringUtils.h"
-#include "../../libthoro/filesystem/DirectoryFunctions.hpp"
 #include "../../libthoro/filesystem/FileFunctions.hpp"
 #include "../../libthoro/hash/sha256/FileSourceUtility.hpp"
 #include "../../libthoro/hash/sha256/sha256.hpp"
@@ -405,30 +405,13 @@ int main(int argc, char ** argv)
   std::string requestCacheDirVT = "";
   if (useRequestCache)
   {
-    std::string homeDirectory;
-    if (!libthoro::filesystem::Directory::getHome(homeDirectory))
+    if (!CacheManagerVirusTotalV2::createCacheDirectory())
     {
-      #if defined(__linux__) || defined(linux)
-      //use /tmp as replacement for home directory
-      homeDirectory = "/tmp/";
-      #else
-      std::cerr << "Error: Could not determine location of request cache!" << std::endl;
+      std::cerr << "Error: Could not create request cache directory!" << std::endl;
       return rcFileError;
-      #endif
-    }
+    } //if directory could not be created
     // cache directory is ~/.scan-tool/vt-cache/
-    const std::string requestCacheDir = libthoro::filesystem::slashify(homeDirectory)
-                                + ".scan-tool" + libthoro::filesystem::pathDelimiter
-                                + "vt-cache";
-    if (!libthoro::filesystem::Directory::exists(requestCacheDir))
-    {
-      if (!libthoro::filesystem::Directory::createRecursive(requestCacheDir))
-      {
-        std::cerr << "Error: Could not create request cache directory!" << std::endl;
-        return rcFileError;
-      } //if directory could not be created
-    } //if request cache directory does not exist
-    requestCacheDirVT = requestCacheDir;
+    requestCacheDirVT = CacheManagerVirusTotalV2::getCacheDirectory();
     if (!silent)
       std::clog << "Info: Request cache is enabled. "
                 << "Cache directory is " << requestCacheDirVT << "." << std::endl;
@@ -532,6 +515,10 @@ int main(int argc, char ** argv)
                         << " and thus it is older than " << maxAgeInDays
                         << " days. Scan ID for retrieval is " << scan_id
                         << "." << std::endl;
+            /* Delete a possibly existing cached entry for that file, because
+               it is now potentially outdated, as soon as the next request for
+               that report is performed. */
+            CacheManagerVirusTotalV2::deleteCachedElement(hashString);
           } //if file size is below limit
           else
           {
