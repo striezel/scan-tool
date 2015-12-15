@@ -81,7 +81,7 @@ void showHelp()
 
 void showVersion()
 {
-  std::cout << "scan-tool, version 0.20, 2015-12-13\n";
+  std::cout << "scan-tool, version 0.21, 2015-12-15\n";
 }
 
 /* Four variables that will be used in main() but also in signal handling
@@ -96,6 +96,10 @@ std::unordered_map<std::string, std::string> queued_scans = std::unordered_map<s
 std::vector<std::pair<std::string, int64_t> > largeFiles;
 //list of files that exceed the file size for re-scans; ; first = file name, second = file size in octets
 std::vector<std::pair<std::string, int64_t> > largeFilesRescan;
+// for statistics: total number of files
+std::set<std::string>::size_type totalFiles;
+// for statistics: number of processed files
+std::set<std::string>::size_type processedFiles;
 
 #if defined(__linux__) || defined(linux)
 /** \brief signal handling function for Linux systems
@@ -120,6 +124,8 @@ void linux_signal_handler(int sig)
         break;
   } //switch
   std::clog << "!" << std::endl;
+  std::clog << "Only " << processedFiles << " out of " << totalFiles
+            << " files were processed." << std::endl;
   //Show the summary, e.g. infected files, too large files, and unfinished
   // queued scans, because user might want to see that despite termination.
   showSummary(mapFileToHash, mapHashToReport, queued_scans, largeFiles,
@@ -143,6 +149,8 @@ BOOL windows_signal_handler(DWORD ctrlSignal)
   {
     case CTRL_C_EVENT:
          std::clog << "INFO: Received Ctrl+C!";
+         std::clog << "Only " << processedFiles << " out of " << totalFiles
+                   << " files were processed." << std::endl;
          //Show the summary, e.g. infected files, too large files, and
          // unfinished queued scans, because user might want to see that
          // despite termination.
@@ -417,6 +425,9 @@ int main(int argc, char ** argv)
                 << "Cache directory is " << requestCacheDirVT << "." << std::endl;
   } //if useRequestCache
 
+  totalFiles = files_scan.size();
+  processedFiles = 0;
+
   //install signal handlers
   #if defined(__linux__) || defined(linux)
   struct sigaction sa;
@@ -579,6 +590,8 @@ int main(int argc, char ** argv)
       if (!silent)
         std::clog << "Warning: Could not get report for file " << i << "!" << std::endl;
     }
+    // increase number of processed files
+    ++processedFiles;
   } //for (range-based)
 
   //try to retrieve queued scans

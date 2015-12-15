@@ -52,7 +52,7 @@ class CacheManagerVirusTotalV2
      * \return Returns true, if the cached resource was deleted or did not
      *         exist at the time of the function call.
      *         Returns false, if the cached element could not be deleted and
-     *         is still there or if @resourceID is an invalid resourceID.
+     *         is still there or if @resourceID is an invalid resource ID.
      */
     static bool deleteCachedElement(const std::string& resourceID);
   private:
