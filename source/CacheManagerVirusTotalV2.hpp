@@ -21,6 +21,7 @@
 #ifndef CACHEMANAGERVIRUSTOTALV2_HPP
 #define CACHEMANAGERVIRUSTOTALV2_HPP
 
+#include <cstdint>
 #include <string>
 
 /** CacheManagerVirusTotalV2 can be used to manage the local request cache for
@@ -111,6 +112,17 @@ class CacheManagerVirusTotalV2
      *         is still there or if @resourceID is an invalid resource ID.
      */
     static bool deleteCachedElement(const std::string& resourceID, const std::string& cacheRoot);
+
+
+     /** \brief checks all present cache files for integrity
+      *
+      * \param deleteCorrupted  If set to true, corrupted cache files will be deleted.
+      * \param deleteUnknown    If set to true, all reports of resources that are not
+      *                         known to VT will be deleted.
+      * \return Returns the number of corrupted files that were found.
+      *         Returns zero, if no corrupted files were found.
+      */
+    uint_least32_t checkIntegrity(const bool deleteCorrupted, const bool deleteUnknown) const;
   private:
     std::string m_CacheRoot; /**< path to the chosen root cache directory */
 }; //class

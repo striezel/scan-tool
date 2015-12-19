@@ -67,21 +67,23 @@ void showHelp()
             << "                     unsigned integer value. Default is 3.\n"
             << "  FILE             - file that shall be scanned. Can be repeated multiple\n"
             << "                     times, if you want to scan several files.\n"
-            << " --list FILE       - read the files which shall be scanned from the file FILE,\n"
+            << "  --list FILE      - read the files which shall be scanned from the file FILE,\n"
             << "                     one per line.\n"
-            << " --files FILE      - same as --list FILE\n"
-            << " --max-age N       - specifies the maximum age for retrieved scan reports to\n"
+            << "  --files FILE     - same as --list FILE\n"
+            << "  --max-age N      - specifies the maximum age for retrieved scan reports to\n"
             << "                     be N days, where N is a positive integer. Files whose\n"
             << "                     reports are older than N days will be queued for rescan.\n"
             << "                     Default value is " << cDefaultMaxAge << " days.\n"
-            << " --cache           - cache API requests locally to avoid requesting reports on\n"
+            << "  --cache          - cache API requests locally to avoid requesting reports on\n"
             << "                     files that have been requested recently. This option is\n"
-            << "                     disabled by default.\n";
+            << "                     disabled by default.\n"
+            << "  --integrity      - performs an integrity check of the cached reports and"
+            << "                     removes any corrupted reports. Exits after check.\n";
 }
 
 void showVersion()
 {
-  std::cout << "scan-tool, version 0.22, 2015-12-19\n";
+  std::cout << "scan-tool, version 0.23, 2015-12-20\n";
 }
 
 /* Four variables that will be used in main() but also in signal handling
@@ -361,6 +363,20 @@ int main(int argc, char ** argv)
           }
           useRequestCache = true;
         } //request cache
+        else if ((param == "--integrity") or (param == "-i"))
+        {
+          std::cout << "Checking cache for corrupt files. This may take a while ..."
+                    << std::endl;
+          CacheManagerVirusTotalV2 cacheMgr;
+          const auto corruptFiles = cacheMgr.checkIntegrity(true, true);
+          if (corruptFiles == 0)
+            std::cout << "There seem to be no corrupt files." << std::endl;
+          else if (corruptFiles == 1)
+            std::cout << "There was one corrupt file." << std::endl;
+          else
+            std::cout << "There were " << corruptFiles << " corrupt files." << std::endl;
+          return 0;
+        } //integrity check
         //file for scan
         else if (libthoro::filesystem::File::exists(param))
         {
@@ -565,6 +581,8 @@ int main(int argc, char ** argv)
           if (!silent)
             std::clog << "Info: File " << i << " was queued for scan. Scan ID is "
                       << scan_id << "." << std::endl;
+          //delete previous report, because it contains no relevant data
+          cacheMgr.deleteCachedElement(hashString);
         } //if file size is below limit
         else
         {

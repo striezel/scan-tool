@@ -1,6 +1,7 @@
 # ChangeLog for scan-tool
 
-## Next version (2015-12-??)
+## Version 0.23 (2015-12-20)
+  - implement option to check report cache integrity
   - delete a corrupted cache file automatically when the program encounters
     such a file
 

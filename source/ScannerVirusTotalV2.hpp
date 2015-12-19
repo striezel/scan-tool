@@ -23,6 +23,7 @@
 
 #include <string>
 #include <vector>
+#include <jsoncpp/json/reader.h>
 #include "Scanner.hpp"
 #include "ReportV2.hpp"
 
@@ -106,5 +107,12 @@ class ScannerVirusTotalV2: public Scanner
   private:
     std::string m_apikey; /**< holds the VirusTotal API key */
 }; //class
+
+/** \brief gets a report from a JSON object
+ *
+ * \param root  the root element of the JSON
+ * \return Returns the report. Might be only partially filled.
+ */
+ScannerVirusTotalV2::Report reportFromJSONRoot(const Json::Value& root);
 
 #endif // SCANNERVIRUSTOTAL_HPP

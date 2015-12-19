@@ -18,6 +18,10 @@ add_test(NAME scan-tool_help_question_mark
 add_test(NAME scan-tool_help_question_mark_win
          COMMAND $<TARGET_FILE:scan-tool> /?)
 
+# cache integrity check
+add_test(NAME scan-tool_integrity_check
+         COMMAND $<TARGET_FILE:scan-tool> --integrity)
+
 # parameter to show version number
 add_test(NAME scan-tool_version
          COMMAND $<TARGET_FILE:scan-tool> --version)

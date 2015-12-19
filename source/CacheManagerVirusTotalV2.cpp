@@ -19,6 +19,8 @@
 */
 
 #include "CacheManagerVirusTotalV2.hpp"
+#include "ScannerVirusTotalV2.hpp"
+#include "../libthoro/common/StringUtils.h"
 #include "../libthoro/filesystem/DirectoryFunctions.hpp"
 #include "../libthoro/filesystem/FileFunctions.hpp"
 #include "../libthoro/hash/sha256/sha256.hpp"
@@ -130,4 +132,88 @@ bool CacheManagerVirusTotalV2::deleteCachedElement(const std::string& resourceID
     return true;
   //File exists, delete it.
   return libthoro::filesystem::File::remove(cachedFile);
+}
+
+uint_least32_t CacheManagerVirusTotalV2::checkIntegrity(const bool deleteCorrupted, const bool deleteUnknown) const
+{
+  // Does the cache exist? If not, exit.
+  if (!libthoro::filesystem::Directory::exists(m_CacheRoot))
+    return 0;
+
+  uint_least32_t corrupted = 0;
+
+  const std::vector<std::string> sub = { std::string("0"), "1", "2", "3", "4",
+                        "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"};
+  for (const auto & d : sub)
+  {
+    const auto files = libthoro::filesystem::getDirectoryFileList(
+                           libthoro::filesystem::slashify(m_CacheRoot) + d);
+    #ifdef SCAN_TOOL_DEBUG
+    std::clog << "Found " << files.size() << " files in "
+              << libthoro::filesystem::slashify(m_CacheRoot) + d << "." << std::endl;
+    #endif // SCAN_TOOL_DEBUG
+    for (auto const & file : files)
+    {
+      if (!file.isDirectory && stringEndsWith(file.fileName, ".json")
+          && SHA256::isValidHash(file.fileName.substr(0, 64)))
+      {
+        const auto fileName = libthoro::filesystem::slashify(m_CacheRoot) + d
+              + libthoro::filesystem::pathDelimiter + file.fileName;
+        const auto fileSize = libthoro::filesystem::File::getSize64(fileName);
+        //check, if file is way too large for a proper cache file
+        if (fileSize >= 1024*1024*4)
+        {
+          //Several kilobytes are alright, but not megabytes.
+          ++corrupted;
+          std::clog << "Info: JSON file " << fileName
+                    << " is too large for a cached response!" << std::endl;
+          if (deleteCorrupted)
+            libthoro::filesystem::File::remove(fileName);
+        } //if file is too large
+        else
+        {
+          std::string content = "";
+          if (libthoro::filesystem::File::readIntoString(fileName, content))
+          {
+            Json::Value root; // will contain the root value after parsing.
+            Json::Reader jsonReader;
+            const bool success = jsonReader.parse(content, root, false);
+            if (!success)
+            {
+              std::clog << "Info: JSON data from " << fileName << " could not be parsed!" << std::endl;
+              ++corrupted;
+              if (deleteCorrupted)
+                libthoro::filesystem::File::remove(fileName);
+            } //if parsing failed
+            else
+            {
+              if (deleteUnknown)
+              {
+                const auto report = reportFromJSONRoot(root);
+                //response code zero means: file not known to VirusTotal
+                if ((report.response_code == 0)
+                    && report.verbose_msg == "The requested resource is not among the finished, queued or pending scans")
+                {
+                  std::cout << "Info: " << fileName << " contains no relevant data." << std::endl;
+                  libthoro::filesystem::File::remove(fileName);
+                } //if report can be deleted
+              } //if cached files of unknown resources shall be deleted
+            } //else (JSON parsing was successful)
+          } //if file was read
+          else
+          {
+            std::cout << "Error: Could not read file " << fileName << "!" << std::endl;
+          }
+        } //else (file size might be OK)
+      } //if JSON file with correct name
+      else
+      {
+        if (!file.isDirectory)
+        {
+          std::cout << "Info: File " << file.fileName << " has incorrect naming scheme." << std::endl;
+        }
+      }
+    } //for (inner)
+  } //for
+  return corrupted;
 }
