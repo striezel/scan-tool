@@ -116,7 +116,12 @@ std::string CacheManagerVirusTotalV2::getPathForCachedElement(const std::string&
 
 bool CacheManagerVirusTotalV2::deleteCachedElement(const std::string& resourceID)
 {
-  const std::string cachedFile = getPathForCachedElement(resourceID);
+  return deleteCachedElement(resourceID, m_CacheRoot);
+}
+
+bool CacheManagerVirusTotalV2::deleteCachedElement(const std::string& resourceID, const std::string& cacheRoot)
+{
+  const std::string cachedFile = getPathForCachedElement(resourceID, cacheRoot);
   //An empty string indicates invalid resource ID.
   if (cachedFile.empty())
     return false;

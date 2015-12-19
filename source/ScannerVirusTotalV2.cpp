@@ -251,6 +251,14 @@ bool ScannerVirusTotalV2::getReport(const std::string& resource, Report& report,
   if (!success)
   {
     std::cerr << "Error in ScannerVirusTotalV2::getReport(): Unable to parse JSON data!" << std::endl;
+    /* If JSON data came from a cached file, then delete the file, because it
+       is most likely corrupted, e.g. disk corruption or content manipulation.
+    */
+    if (useCache && !cacheDir.empty() && !cachedFilePath.empty()
+      && libthoro::filesystem::File::exists(cachedFilePath))
+    {
+      CacheManagerVirusTotalV2::deleteCachedElement(resource, cacheDir);
+    } //if
     return false;
   }
 

@@ -98,6 +98,19 @@ class CacheManagerVirusTotalV2
      *         is still there or if @resourceID is an invalid resource ID.
      */
     bool deleteCachedElement(const std::string& resourceID);
+
+
+    /** \brief tries to delete the cached element for a given resource ID,
+     *         using a custom cache root directory
+     *
+     * \param resourceID  the resource ID, i.e. a SHA256 hash
+     * \param cacheRoot   the cache's root directory
+     * \return Returns true, if the cached resource was deleted or did not
+     *         exist at the time of the function call.
+     *         Returns false, if the cached element could not be deleted and
+     *         is still there or if @resourceID is an invalid resource ID.
+     */
+    static bool deleteCachedElement(const std::string& resourceID, const std::string& cacheRoot);
   private:
     std::string m_CacheRoot; /**< path to the chosen root cache directory */
 }; //class

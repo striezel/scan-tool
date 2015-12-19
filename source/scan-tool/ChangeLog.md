@@ -1,5 +1,9 @@
 # ChangeLog for scan-tool
 
+## Next version (2015-12-??)
+  - delete a corrupted cache file automatically when the program encounters
+    such a file
+
 ## Version 0.22 (2015-12-19)
   - change directory structure of request cache
 
