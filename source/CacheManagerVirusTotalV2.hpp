@@ -28,22 +28,65 @@
 class CacheManagerVirusTotalV2
 {
   public:
-    /** \brief gets the path of the cache directory
+    /** \brief default constructor
      *
-     * \return Returns the path to the cache directory.
+     * \param cacheRoot  path to the root directory of the cache;
+     *                   an empty string will result in the default path for
+     *                   the cache directory
+     */
+    CacheManagerVirusTotalV2(const std::string& cacheRoot = "");
+
+
+    /** \brief gets the path of the default cache directory
+     *
+     * \return Returns the path to the default cache directory.
+     * \remarks The directory does not necessarily need to exist.
+     */
+    static std::string getDefaultCacheDirectory();
+
+
+    /** \brief gets the path of the current cache directory
+     *
+     * \return Returns the path to the current cache directory.
      * \remarks The directory does not necessarily need to exist.
      *          Use createCacheDirectory() to create it.
      */
-    static std::string getCacheDirectory();
+    const std::string& getCacheDirectory() const;
 
 
     /** \brief Tries to create the cache directory, if it does not exist yet.
      *
      * \return Returns true, if the cache directory was created or already
-     *         existed, before the function was called.
+     *         existed before the function was called.
      *         Returns false, if the cache directory could not be created.
      */
-    static bool createCacheDirectory();
+    bool createCacheDirectory();
+
+
+    /** \brief Gets the hypothetical path for a cached element.
+     *
+     * \param resourceID  the resource ID, i.e. a SHA256 hash
+     * \return Returns the full path to the file for the cached element.
+     * Returns an empty string, if @resourceID is an invalid resource ID.
+     * \remarks The function just returns a file path. It does not check, if
+     *          the corresponding file exists. Therefore you cannot make any
+     *          assumptions about the existence of the file.
+     */
+    std::string getPathForCachedElement(const std::string& resourceID) const;
+
+
+    /** \brief Gets the hypothetical path for a cached element,
+     *         using a custom cache root directory.
+     *
+     * \param resourceID  the resource ID, i.e. a SHA256 hash
+     * \param cacheRoot   the cache's root directory
+     * \return Returns the full path to the file for the cached element.
+     * Returns an empty string, if @resourceID is an invalid resource ID.
+     * \remarks The function just returns a file path. It does not check, if
+     *          the corresponding file exists. Therefore you cannot make any
+     *          assumptions about the existence of the file.
+     */
+    static std::string getPathForCachedElement(const std::string& resourceID, const std::string& cacheRoot);
 
 
     /** \brief tries to delete the cached element for a given resource ID
@@ -54,8 +97,9 @@ class CacheManagerVirusTotalV2
      *         Returns false, if the cached element could not be deleted and
      *         is still there or if @resourceID is an invalid resource ID.
      */
-    static bool deleteCachedElement(const std::string& resourceID);
+    bool deleteCachedElement(const std::string& resourceID);
   private:
+    std::string m_CacheRoot; /**< path to the chosen root cache directory */
 }; //class
 
 #endif // CACHEMANAGERVIRUSTOTALV2_HPP

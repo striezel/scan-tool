@@ -45,6 +45,10 @@
 		<Unit filename="../../libthoro/filesystem/DirectoryFunctions.hpp" />
 		<Unit filename="../../libthoro/filesystem/FileFunctions.cpp" />
 		<Unit filename="../../libthoro/filesystem/FileFunctions.hpp" />
+		<Unit filename="../../libthoro/hash/sha256/sha256.cpp" />
+		<Unit filename="../../libthoro/hash/sha256/sha256.hpp" />
+		<Unit filename="../CacheManagerVirusTotalV2.cpp" />
+		<Unit filename="../CacheManagerVirusTotalV2.hpp" />
 		<Unit filename="../Curly.cpp" />
 		<Unit filename="../Curly.hpp" />
 		<Unit filename="../Engine.cpp" />

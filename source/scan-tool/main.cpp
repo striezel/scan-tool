@@ -81,7 +81,7 @@ void showHelp()
 
 void showVersion()
 {
-  std::cout << "scan-tool, version 0.21, 2015-12-15\n";
+  std::cout << "scan-tool, version 0.22, 2015-12-19\n";
 }
 
 /* Four variables that will be used in main() but also in signal handling
@@ -410,16 +410,17 @@ int main(int argc, char ** argv)
   const auto ageLimit = std::chrono::system_clock::now() - std::chrono::hours(24*maxAgeInDays);
 
   //handle request cache settings
+  CacheManagerVirusTotalV2 cacheMgr;
   std::string requestCacheDirVT = "";
   if (useRequestCache)
   {
-    if (!CacheManagerVirusTotalV2::createCacheDirectory())
+    if (!cacheMgr.createCacheDirectory())
     {
       std::cerr << "Error: Could not create request cache directory!" << std::endl;
       return rcFileError;
     } //if directory could not be created
     // cache directory is ~/.scan-tool/vt-cache/
-    requestCacheDirVT = CacheManagerVirusTotalV2::getCacheDirectory();
+    requestCacheDirVT = cacheMgr.getCacheDirectory();
     if (!silent)
       std::clog << "Info: Request cache is enabled. "
                 << "Cache directory is " << requestCacheDirVT << "." << std::endl;
@@ -529,7 +530,7 @@ int main(int argc, char ** argv)
             /* Delete a possibly existing cached entry for that file, because
                it is now potentially outdated, as soon as the next request for
                that report is performed. */
-            CacheManagerVirusTotalV2::deleteCachedElement(hashString);
+            cacheMgr.deleteCachedElement(hashString);
           } //if file size is below limit
           else
           {

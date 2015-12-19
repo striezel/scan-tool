@@ -22,6 +22,7 @@
 #include <fstream>
 #include <iostream>
 #include <jsoncpp/json/reader.h>
+#include "CacheManagerVirusTotalV2.hpp"
 #include "Curly.hpp"
 #include "StringToTimeT.hpp"
 #include "../libthoro/filesystem/DirectoryFunctions.hpp"
@@ -160,11 +161,10 @@ std::chrono::seconds ScannerVirusTotalV2::timeBetweenConsecutiveRequests() const
 bool ScannerVirusTotalV2::getReport(const std::string& resource, Report& report, const bool useCache,
                    const std::string& cacheDir)
 {
-  waitForLimitExpiration();
   std::string response = "";
-  const std::string cachedFilePath = libthoro::filesystem::slashify(cacheDir)
-                                   + resource + ".json";
-  if (useCache && !cacheDir.empty() && libthoro::filesystem::File::exists(cachedFilePath))
+  const std::string cachedFilePath = CacheManagerVirusTotalV2::getPathForCachedElement(resource, cacheDir);
+  if (useCache && !cacheDir.empty() && !cachedFilePath.empty()
+      && libthoro::filesystem::File::exists(cachedFilePath))
   {
     //try to read JSON data from cached file
     std::ifstream cachedJSON(cachedFilePath, std::ios_base::in | std::ios_base::binary);
@@ -190,6 +190,7 @@ bool ScannerVirusTotalV2::getReport(const std::string& resource, Report& report,
   } //if cached JSON file shall be used
   else
   {
+    waitForLimitExpiration();
     //send request via cURL
     Curly cURL;
     cURL.setURL("https://www.virustotal.com/vtapi/v2/file/report");

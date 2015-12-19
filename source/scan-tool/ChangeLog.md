@@ -1,5 +1,8 @@
 # ChangeLog for scan-tool
 
+## Version 0.22 (2015-12-19)
+  - change directory structure of request cache
+
 ## Version 0.21 (2015-12-15)
   - show number of processed files when program execution is interrupted via
     interrupt (Ctrl+C) or SIGTERM

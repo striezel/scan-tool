@@ -9,6 +9,8 @@ set(vt-api-request_sources
     ../../libthoro/common/StringUtils.cpp
     ../../libthoro/filesystem/DirectoryFunctions.cpp
     ../../libthoro/filesystem/FileFunctions.cpp
+    ../../libthoro/hash/sha256/sha256.cpp
+    ../CacheManagerVirusTotalV2.cpp
     ../Curly.cpp
     ../Engine.cpp
     ../EngineV2.cpp
