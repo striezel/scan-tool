@@ -233,7 +233,15 @@ bool Curly::perform(std::string& response)
       }
       ++pfIter;
     } //while post fields
-    curl_easy_setopt(handle, CURLOPT_HTTPPOST, formFirst);
+    retCode = curl_easy_setopt(handle, CURLOPT_HTTPPOST, formFirst);
+    if (retCode != CURLE_OK)
+    {
+      std::cerr << "cURL error: setting multipart form data failed! Error: "
+                << curl_easy_strerror(retCode) << std::endl;
+      curl_formfree(formFirst);
+      curl_easy_cleanup(handle);
+      return false;
+    }
   } //if files are there
 
   //set write callback
