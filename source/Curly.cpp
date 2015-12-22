@@ -329,3 +329,58 @@ const std::string& Curly::getContentType() const
 {
   return m_LastContentType;
 }
+
+Curly::VersionData::VersionData()
+: cURL(""),
+  ssl(""),
+  libz(""),
+  protocols(std::vector<std::string>()),
+  ares(""),
+  idn(""),
+  ssh("")
+{
+}
+
+Curly::VersionData Curly::curlVersion()
+{
+  auto data = curl_version_info(CURLVERSION_NOW);
+  VersionData vd;
+  if (data->age < 0)
+    return vd;
+  //cURL version
+  vd.cURL = std::string(data->version);
+  //OpenSSL version
+  if (data->ssl_version != nullptr)
+    vd.ssl = std::string(data->ssl_version);
+  //zlib version
+  if (data->libz_version != nullptr)
+    vd.libz = std::string(data->libz_version);
+  //supported protocols
+  if (data->protocols != nullptr)
+  {
+    unsigned int i;
+    for (i = 0; data->protocols[i] != nullptr; ++i)
+    {
+      vd.protocols.push_back(std::string(data->protocols[i]));
+    } //for
+  } //if
+
+  if (data->age < 1)
+    return vd;
+  //ares version
+  if (data->ares != nullptr)
+    vd.ares = std::string(data->ares);
+
+  if (data->age < 2)
+    return vd;
+  //idn version
+  if (data->libidn != nullptr)
+    vd.idn = std::string(data->libidn);
+
+  if (data->age < 3)
+    return vd;
+  //libssh version
+  if (data->libssh_version != nullptr)
+    vd.ssh = std::string(data->libssh_version);
+  return vd;
+}
