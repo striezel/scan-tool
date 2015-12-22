@@ -151,6 +151,32 @@ class Curly
      *         or no request was performed yet.
      */
     const std::string& getContentType() const;
+
+
+    /** \brief structure to hold version information about the underlying cURL
+     *         library
+     */
+    struct VersionData
+    {
+      /** default constructor */
+      VersionData();
+
+      std::string cURL;  /**< cURL version */
+      std::string ssl;   /**< OpenSSL version */
+      std::string libz;  /**< zlib version */
+      std::vector<std::string> protocols; /**< supported protocols */
+      std::string ares;  /**< ares version (only for newer cURL versions) */
+      std::string idn;   /**< idn version (only for newer cURL versions) */
+      std::string ssh;   /**< libssh version (only for newer cURL versions) */
+    }; //struct
+
+    /** \brief gets version information about the underlying cURL library
+     *
+     * \return Returns a version string for the underlying cURL library.
+     * \remarks The result might contain some empty strings, if the used cURL
+     *          library is too old to provide version information about itself.
+     */
+    static VersionData curlVersion();
   private:
     std::string m_URL; /**< URL for the request */
     std::unordered_map<std::string, std::string> m_PostFields; /**< post fields; key = name; value = field's value */

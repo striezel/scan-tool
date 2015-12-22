@@ -7,6 +7,9 @@ add_subdirectory (curly)
 # Recurse into subdirectory for Curly header tests.
 add_subdirectory (curly-headers)
 
+# Recurse into subdirectory for Curly version information test.
+add_subdirectory (curly-version)
+
 # Recurse into subdirectory for the main executable tests.
 add_subdirectory (scan-tool)
 
