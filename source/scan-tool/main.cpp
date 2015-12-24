@@ -77,13 +77,13 @@ void showHelp()
             << "  --cache          - cache API requests locally to avoid requesting reports on\n"
             << "                     files that have been requested recently. This option is\n"
             << "                     disabled by default.\n"
-            << "  --integrity      - performs an integrity check of the cached reports and"
+            << "  --integrity      - performs an integrity check of the cached reports and\n"
             << "                     removes any corrupted reports. Exits after check.\n";
 }
 
 void showVersion()
 {
-  std::cout << "scan-tool, version 0.23, 2015-12-20\n";
+  std::cout << "scan-tool, version 0.23b, 2015-12-24\n";
 }
 
 /* Four variables that will be used in main() but also in signal handling

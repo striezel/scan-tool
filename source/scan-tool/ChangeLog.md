@@ -1,5 +1,8 @@
 # ChangeLog for scan-tool
 
+## Version 0.23b (2015-12-24)
+  - add missing line break to help text
+
 ## Version 0.23 (2015-12-20)
   - implement option to check report cache integrity
   - delete a corrupted cache file automatically when the program encounters
