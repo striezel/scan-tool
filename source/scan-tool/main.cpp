@@ -83,7 +83,7 @@ void showHelp()
 
 void showVersion()
 {
-  std::cout << "scan-tool, version 0.23b, 2015-12-24\n";
+  std::cout << "scan-tool, version 0.24, 2015-12-29\n";
 }
 
 /* Four variables that will be used in main() but also in signal handling
@@ -121,19 +121,35 @@ void linux_signal_handler(int sig)
     case SIGINT:
          std::clog << "SIGINT";
          break;
+    case SIGUSR1:
+         std::clog << "SIGUSR1";
+         break;
+    case SIGUSR2:
+         std::clog << "SIGUSR2";
+         break;
     default:
         std::clog << sig;
         break;
   } //switch
   std::clog << "!" << std::endl;
-  std::clog << "Only " << processedFiles << " out of " << totalFiles
-            << " files were processed." << std::endl;
-  //Show the summary, e.g. infected files, too large files, and unfinished
-  // queued scans, because user might want to see that despite termination.
-  showSummary(mapFileToHash, mapHashToReport, queued_scans, largeFiles,
-              largeFilesRescan);
-  std::clog << "Terminating program early due to caught signal." << std::endl;
-  std::exit(rcProgramTerminationBySignal);
+  if ((sig == SIGTERM) || (SIGINT == sig))
+  {
+    std::clog << "Only " << processedFiles << " out of " << totalFiles
+              << " files were processed." << std::endl;
+    //Show the summary, e.g. infected files, too large files, and unfinished
+    // queued scans, because user might want to see that despite termination.
+    showSummary(mapFileToHash, mapHashToReport, queued_scans, largeFiles,
+                largeFilesRescan);
+    std::clog << "Terminating program early due to caught signal." << std::endl;
+    std::exit(rcProgramTerminationBySignal);
+  } //if SIGINT or SIGTERM
+  else if ((sig == SIGUSR1) || (SIGUSR2 == sig))
+  {
+    std::clog << "Current statistics:" << std::endl
+              << processedFiles << " out of " << totalFiles
+              << " files were processed so far." << std::endl;
+    std::clog << "Queued for scan: " << queued_scans.size() << " item(s)." << std::endl;
+  } //else if SIGUSR1 or SIGUSR2
 }
 #elif defined(_WIN32)
 /** \brief signal handling function for Windows systems
@@ -463,6 +479,20 @@ int main(int argc, char ** argv)
   if (sigaction(SIGTERM, &sa, NULL) != 0)
   {
     std::clog << "Error: Could not set signal handling function for SIGTERM!"
+              << std::endl;
+    return rcSignalHandlerError;
+  }
+  // ... and one for SIGUSR1, ...
+  if (sigaction(SIGUSR1, &sa, NULL) != 0)
+  {
+    std::clog << "Error: Could not set signal handling function for SIGUSR1!"
+              << std::endl;
+    return rcSignalHandlerError;
+  }
+  // ... and one for SIGUSR2.
+  if (sigaction(SIGUSR2, &sa, NULL) != 0)
+  {
+    std::clog << "Error: Could not set signal handling function for SIGUSR2!"
               << std::endl;
     return rcSignalHandlerError;
   }
