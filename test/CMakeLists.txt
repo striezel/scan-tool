@@ -13,6 +13,9 @@ add_subdirectory (curly-version)
 # Recurse into subdirectory for the main executable tests.
 add_subdirectory (scan-tool)
 
+# Recurse into subdirectory for the mso-api-request executable tests.
+add_subdirectory (mso-api-request)
+
 # Recurse into subdirectory for the vt-api-request executable tests.
 add_subdirectory (vt-api-request)
 
