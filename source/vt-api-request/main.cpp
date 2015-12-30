@@ -65,7 +65,7 @@ void showHelp()
 
 void showVersion()
 {
-  std::cout << "vt-api-request, version 1.0.1, 2015-08-30\n";
+  std::cout << "vt-api-request, version 1.0.2, 2015-12-30\n";
 }
 
 int main(int argc, char ** argv)
@@ -211,12 +211,12 @@ int main(int argc, char ** argv)
   if (key.empty())
   {
     std::cout << "Error: This program won't work properly without an API key! "
-              << "Use --apikey to specifiy the VirusTotal API key." << std::endl;
+              << "Use --apikey to specify the VirusTotal API key." << std::endl;
     return rcInvalidParameter;
   }
   if (resources_report.empty() && resources_rescan.empty() && files_scan.empty())
   {
-    std::cout << "No resources for report retrieval, rescan or file scan were given.Exiting." << std::endl;
+    std::cout << "No resources for report retrieval, rescan or file scan were given. Exiting." << std::endl;
     return rcInvalidParameter;
   } //if not resources
 
