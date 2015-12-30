@@ -55,6 +55,7 @@ Curly::Curly()
 : m_URL(""),
   m_PostFields(std::unordered_map<std::string, std::string>()),
   m_Files(std::unordered_map<std::string, std::string>()),
+  m_headers(std::vector<std::string>()),
   m_LastResponseCode(0),
   m_LastContentType("")
 {
