@@ -6,7 +6,13 @@ project(mso-api-request)
 #add_definitions(-DDEFINE_CONSTANT_HERE -DANOTHER_ONE_THERE -DTHIS_IS_THE_THIRD)
 
 set(mso-api-request_sources
+    ../../libthoro/hash/sha256/sha256.cpp
     ../Curly.cpp
+    ../Engine.cpp
+    ../EngineMetascanOnline.cpp
+    ../ReportMetascanOnline.cpp
+    ../Scanner.cpp
+    ../ScannerMetascanOnline.cpp
     main.cpp)
 
 if (CMAKE_COMPILER_IS_GNUCC)

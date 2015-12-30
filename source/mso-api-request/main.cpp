@@ -18,10 +18,12 @@
  -------------------------------------------------------------------------------
 */
 
+#include <algorithm>
 #include <iostream>
 #include <string>
 #include <unordered_set>
-#include "../Curly.hpp"
+#include "../ReportMetascanOnline.hpp"
+#include "../ScannerMetascanOnline.hpp"
 
 const int rcInvalidParameter = 1;
 const int rcScanError = 3; //same as in scan-tool
@@ -42,7 +44,7 @@ void showHelp()
 
 void showVersion()
 {
-  std::cout << "mso-api-request, version 0.0.1, 2015-12-30\n";
+  std::cout << "mso-api-request, version 0.0.2, 2015-12-31\n";
 }
 
 int main(int argc, char ** argv)
@@ -139,6 +141,48 @@ int main(int argc, char ** argv)
     return rcInvalidParameter;
   } //if no resources
 
-  std::cout << "Not implemented yet!" << std::endl;
+
+  //initialize scanner instance
+  ScannerMetascanOnline scanMSO(key);
+
+  //iterate over all resources for report requests
+  for(const std::string& i : resources_report)
+  {
+    ReportMetascanOnline report;
+    if (!scanMSO.getReport(i, report))
+    {
+      std::cout << "Error: Could not retrieve report!" << std::endl;
+      return rcScanError;
+    }
+    std::cout << std::endl;
+    std::cout << "Report data for " << i << ":" << std::endl
+              << "  file_id: " << report.file_id << std::endl
+              << "  data_id: " << report.data_id << std::endl
+              << "  start_time: " << report.start_time << std::endl
+              << "  scan engines: " << report.total_avs << std::endl
+              //<< "  engines that detected a threat: " << report.positives << std::endl
+              << "  scan_all_result_a: " << report.scan_all_result_a << std::endl
+              << "  SHA256: " << report.file_info.sha256 << std::endl;
+    const unsigned int detection_count = std::count_if(
+        report.scan_details.cbegin(), report.scan_details.cend(),
+        // lambda expression to count all entries where detected == true
+        [](const EngineMetascanOnline& e) { return e.detected;}
+                                                );
+    if (detection_count > 0)
+    {
+      std::cout << "  INFECTED: " << detection_count << " engine(s) found a threat!" << std::endl;
+      for (const auto & e : report.scan_details)
+      {
+        if (e.detected)
+        {
+          std::cout << "    " << e.engine << " found " << e.result << std::endl;
+        } //if engine detected threat
+      } //for (range-based loop over all engines in report)
+    } //if at least one engine found a threat
+    else
+      std::cout << "  No threat was found for this resource." << std::endl;
+  } //for (range-based) over all resources
+
+  std::cout << std::endl << "Not completely implemented yet!" << std::endl;
   return 0;
 }
