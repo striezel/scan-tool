@@ -1,7 +1,7 @@
 # ChangeLog for scan-tool
 
 ## Version 0.24 (2015-12-29)
-  - (Linux only) show progress when SIGUSR1 or SIGUSR2 are received
+  - (Linux only) show progress when SIGUSR1 or SIGUSR2 is received
 
 ## Version 0.23b (2015-12-24)
   - add missing line break to help text
