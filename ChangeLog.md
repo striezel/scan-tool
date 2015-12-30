@@ -9,4 +9,5 @@ For the changelog of scan-tool see [source/scan-tool/ChangeLog.md]
 For the changelog of honeypottery see [source/honeypottery/ChangeLog.md]
 (./source/honeypottery/ChangeLog.md).
 
-There is no changelog for vt-api-request yet.
+For the changelog of vt-api-request see [source/vt-api-request/ChangeLog.md]
+(./source/vt-api-request/ChangeLog.md).
