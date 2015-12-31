@@ -74,7 +74,7 @@ class Scanner
      *
      * \return Returns the minimum interval between two consecutive requests.
      */
-    virtual std::chrono::seconds timeBetweenConsecutiveRequests() const = 0;
+    virtual std::chrono::milliseconds timeBetweenConsecutiveRequests() const = 0;
 
 
     /** \brief returns the time of the last request

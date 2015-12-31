@@ -150,12 +150,12 @@ void ScannerVirusTotalV2::setApiKey(const std::string& apikey)
     m_apikey = apikey;
 }
 
-std::chrono::seconds ScannerVirusTotalV2::timeBetweenConsecutiveRequests() const
+std::chrono::milliseconds ScannerVirusTotalV2::timeBetweenConsecutiveRequests() const
 {
   /* The public API allows four requests per minute, so we can perform one
      request every 15 seconds without hitting the rate limit.
   */
-  return std::chrono::seconds(15);
+  return std::chrono::milliseconds(15000);
 }
 
 bool ScannerVirusTotalV2::getReport(const std::string& resource, Report& report, const bool useCache,

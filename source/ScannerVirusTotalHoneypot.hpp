@@ -51,7 +51,7 @@ class ScannerVirusTotalHoneypot: public Scanner
      *
      * \return Returns the minimum interval between two consecutive requests.
      */
-    virtual std::chrono::seconds timeBetweenConsecutiveRequests() const override;
+    virtual std::chrono::milliseconds timeBetweenConsecutiveRequests() const override;
 
 
     /** \brief retrieves a scan report
