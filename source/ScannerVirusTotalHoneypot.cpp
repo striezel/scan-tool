@@ -94,7 +94,6 @@ ScannerVirusTotalHoneypot::Report honeypotReportFromJSONRoot(const Json::Value& 
   {
     report.scans.clear();
   }
-  report.total = report.scans.size();
 
   return std::move(report);
 }
@@ -111,12 +110,12 @@ void ScannerVirusTotalHoneypot::setApiKey(const std::string& apikey)
     m_apikey = apikey;
 }
 
-std::chrono::seconds ScannerVirusTotalHoneypot::timeBetweenConsecutiveRequests() const
+std::chrono::milliseconds ScannerVirusTotalHoneypot::timeBetweenConsecutiveRequests() const
 {
-  /* The public honeypot API allows 3000 requests per five minutes, so we can
+  /* The public honeypot API allows 300 requests per five minutes, so we can
      perform one request every single second without hitting the rate limit.
   */
-  return std::chrono::seconds(1);
+  return std::chrono::milliseconds(1000);
 }
 
 bool ScannerVirusTotalHoneypot::getReport(const std::string& scan_id, Report& report)

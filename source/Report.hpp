@@ -65,16 +65,10 @@ struct Report
   bool hasTime_t() const;
 
 
-  int response_code;     /**< response code from VirusTotal API */
-
   std::string scan_date; /**< date when the scan was performed, as string */
   std::time_t scan_date_t; /**< date when the scan was performed, as time_t; use hasTime_t() to check */
 
-  int total;     /**< total number of scan engines */
-  int positives; /**< number of engines that detected a virus */
   std::vector<EnginePtr> scans; /**< results of individual scan engines */
-
-  std::string permalink; /**< permanent link to the scan result */
 }; //struct Report
 
 #endif // REPORT_HPP

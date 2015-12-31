@@ -18,26 +18,12 @@
  -------------------------------------------------------------------------------
 */
 
-#include "ReportHoneypot.hpp"
+#include "ReportVirusTotalBase.hpp"
 
-ReportHoneypot::ReportHoneypot()
-: ReportVirusTotalBase()
+ReportVirusTotalBase::ReportVirusTotalBase()
+: Report(),
+  response_code(-1),
+  positives(-1),
+  permalink("")
 {
 }
-
-bool ReportHoneypot::successfulRetrieval() const
-{
-  return (response_code == 1);
-}
-
-bool ReportHoneypot::notFound() const
-{
-  return (response_code == 0);
-}
-
-/*
-bool ReportHoneypot::stillInQueue() const
-{
-  #warning Result code for this state is not known.
-}
-*/

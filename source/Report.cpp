@@ -21,13 +21,9 @@
 #include "Report.hpp"
 
 Report::Report()
-: response_code(-1),
-  scan_date(""),
+: scan_date(""),
   scan_date_t(static_cast<std::time_t>(-1)),
-  total(-1),
-  positives(-1),
-  scans(std::vector<EnginePtr>()),
-  permalink("")
+  scans(std::vector<EnginePtr>())
 {
 }
 
