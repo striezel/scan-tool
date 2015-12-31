@@ -11,6 +11,7 @@ set(honeypottery_sources
     ../Engine.cpp
     ../Report.cpp
     ../ReportHoneypot.cpp
+    ../ReportVirusTotalBase.cpp
     ../Scanner.cpp
     ../ScannerVirusTotalHoneypot.cpp
     ../StringToTimeT.cpp

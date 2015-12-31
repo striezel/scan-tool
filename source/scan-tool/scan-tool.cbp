@@ -63,14 +63,12 @@
 		<Unit filename="../EngineV2.hpp" />
 		<Unit filename="../Report.cpp" />
 		<Unit filename="../Report.hpp" />
-		<Unit filename="../ReportHoneypot.cpp" />
-		<Unit filename="../ReportHoneypot.hpp" />
 		<Unit filename="../ReportV2.cpp" />
 		<Unit filename="../ReportV2.hpp" />
+		<Unit filename="../ReportVirusTotalBase.cpp" />
+		<Unit filename="../ReportVirusTotalBase.hpp" />
 		<Unit filename="../Scanner.cpp" />
 		<Unit filename="../Scanner.hpp" />
-		<Unit filename="../ScannerVirusTotalHoneypot.cpp" />
-		<Unit filename="../ScannerVirusTotalHoneypot.hpp" />
 		<Unit filename="../ScannerVirusTotalV2.cpp" />
 		<Unit filename="../ScannerVirusTotalV2.hpp" />
 		<Unit filename="../StringToTimeT.cpp" />

@@ -94,7 +94,6 @@ ScannerVirusTotalHoneypot::Report honeypotReportFromJSONRoot(const Json::Value& 
   {
     report.scans.clear();
   }
-  report.total = report.scans.size();
 
   return std::move(report);
 }

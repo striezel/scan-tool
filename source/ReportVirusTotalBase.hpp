@@ -18,26 +18,26 @@
  -------------------------------------------------------------------------------
 */
 
-#include "ReportHoneypot.hpp"
+#ifndef REPORTVIRUSTOTALBASE_HPP
+#define REPORTVIRUSTOTALBASE_HPP
 
-ReportHoneypot::ReportHoneypot()
-: ReportVirusTotalBase()
-{
-}
+#include "Report.hpp"
 
-bool ReportHoneypot::successfulRetrieval() const
+/** \brief abstract base class for reports from VirusTotal API requests
+ *
+ * \remarks Encapsulates some data members that are common among different
+ * VirusTotal APIs but not included in other APIs.
+ */
+struct ReportVirusTotalBase: public Report
 {
-  return (response_code == 1);
-}
+  ///default constructor
+  ReportVirusTotalBase();
 
-bool ReportHoneypot::notFound() const
-{
-  return (response_code == 0);
-}
+  int response_code;     /**< response code from VirusTotal API */
 
-/*
-bool ReportHoneypot::stillInQueue() const
-{
-  #warning Result code for this state is not known.
-}
-*/
+  int positives; /**< number of engines that detected a virus */
+
+  std::string permalink; /**< permanent link to the scan result */
+}; //struct
+
+#endif // REPORTVIRUSTOTALBASE_HPP

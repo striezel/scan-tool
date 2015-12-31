@@ -21,10 +21,11 @@
 #include "ReportV2.hpp"
 
 ReportV2::ReportV2()
-: Report(),
+: ReportVirusTotalBase(),
   verbose_msg(""),
   resource(""),
   scan_id(""),
+  total(-1),
   md5(""), sha1(""), sha256("")
 {
 }

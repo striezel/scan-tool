@@ -21,10 +21,10 @@
 #ifndef REPORTHONEYPOT_HPP
 #define REPORTHONEYPOT_HPP
 
-#include "Report.hpp"
+#include "ReportVirusTotalBase.hpp"
 
 ///structure for detection report
-struct ReportHoneypot: public Report
+struct ReportHoneypot: public ReportVirusTotalBase
 {
   ///default constructor
   ReportHoneypot();

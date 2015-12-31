@@ -19,6 +19,7 @@ set(scan-tool_sources
     ../EngineV2.cpp
     ../Report.cpp
     ../ReportV2.cpp
+    ../ReportVirusTotalBase.cpp
     ../Scanner.cpp
     ../ScannerVirusTotalV2.cpp
     ../StringToTimeT.cpp

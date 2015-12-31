@@ -21,11 +21,11 @@
 #ifndef REPORTV2_HPP
 #define REPORTV2_HPP
 
-#include "Report.hpp"
+#include "ReportVirusTotalBase.hpp"
 #include "EngineV2.hpp"
 
 ///structure for detection report
-struct ReportV2: public Report
+struct ReportV2: public ReportVirusTotalBase
 {
   typedef EngineV2 Engine;
 
@@ -59,6 +59,8 @@ struct ReportV2: public Report
   std::string verbose_msg; /**< message from VirusTotal API */
   std::string resource; /**< name of the resource */
   std::string scan_id;   /**< scan ID */
+
+  int total;     /**< total number of scan engines */
 
   //hashes
   std::string md5;    /**< MD5 hash of the file */

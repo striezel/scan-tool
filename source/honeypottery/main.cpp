@@ -208,7 +208,7 @@ int main(int argc, char** argv)
     std::cout << "Report data for " << i << ":" << std::endl
               << "  response code: " << report.response_code << std::endl
               << "  scan_date: " << report.scan_date << std::endl
-              << "  scan engines: " << report.total << std::endl
+              << "  scan engines: " << report.scans.size() << std::endl
               << "  engines that detected a threat: " << report.positives << std::endl
               << "  permanent link: " << report.permalink << std::endl;
     for (const auto& eng : report.scans)
