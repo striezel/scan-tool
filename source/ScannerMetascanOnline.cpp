@@ -35,16 +35,11 @@ void ScannerMetascanOnline::setApiKey(const std::string& apikey)
     m_apikey = apikey;
 }
 
-std::chrono::seconds ScannerMetascanOnline::timeBetweenConsecutiveRequests() const
+std::chrono::milliseconds ScannerMetascanOnline::timeBetweenConsecutiveRequests() const
 {
   /* Metascan Online allows 1500 hash lookups per hour,
-     i.e. one request every 2.4 seconds.
-     However, we round that up to three seconds as long as this function in
-     the base class Scanner can only handle seconds and not milliseconds.
-  */
-  #warning TODO: change prototype in Scanner to return milliseconds instead of seconds.
-  //return std::chrono::milliseconds(2400);
-  return std::chrono::seconds(3);
+     i.e. one request every 2.4 seconds. */
+  return std::chrono::milliseconds(2400);
 }
 
 bool ScannerMetascanOnline::getReport(const std::string& resource, ReportMetascanOnline& report)
