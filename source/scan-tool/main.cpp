@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2015  Thoronador
+    Copyright (C) 2015, 2016  Thoronador
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -83,7 +83,7 @@ void showHelp()
 
 void showVersion()
 {
-  std::cout << "scan-tool, version 0.24, 2015-12-29\n";
+  std::cout << "scan-tool, version 0.25, 2016-01-04\n";
 }
 
 /* Four variables that will be used in main() but also in signal handling
@@ -96,8 +96,6 @@ std::map<std::string, std::string> mapFileToHash = std::map<std::string, std::st
 std::unordered_map<std::string, std::string> queued_scans = std::unordered_map<std::string, std::string>();
 //list of files that exceed the file size for scans; ; first = file name, second = file size in octets
 std::vector<std::pair<std::string, int64_t> > largeFiles;
-//list of files that exceed the file size for re-scans; ; first = file name, second = file size in octets
-std::vector<std::pair<std::string, int64_t> > largeFilesRescan;
 // for statistics: total number of files
 std::set<std::string>::size_type totalFiles;
 // for statistics: number of processed files
@@ -138,8 +136,7 @@ void linux_signal_handler(int sig)
               << " files were processed." << std::endl;
     //Show the summary, e.g. infected files, too large files, and unfinished
     // queued scans, because user might want to see that despite termination.
-    showSummary(mapFileToHash, mapHashToReport, queued_scans, largeFiles,
-                largeFilesRescan);
+    showSummary(mapFileToHash, mapHashToReport, queued_scans, largeFiles);
     std::clog << "Terminating program early due to caught signal." << std::endl;
     std::exit(rcProgramTerminationBySignal);
   } //if SIGINT or SIGTERM
@@ -172,8 +169,7 @@ BOOL windows_signal_handler(DWORD ctrlSignal)
          //Show the summary, e.g. infected files, too large files, and
          // unfinished queued scans, because user might want to see that
          // despite termination.
-         showSummary(mapFileToHash, mapHashToReport, queued_scans, largeFiles,
-                     largeFilesRescan);
+         showSummary(mapFileToHash, mapHashToReport, queued_scans, largeFiles);
          std::clog << "Terminating program early due to caught signal."
                    << std::endl;
          std::exit(rcProgramTerminationBySignal);
@@ -557,38 +553,23 @@ int main(int argc, char ** argv)
         if (report.hasTime_t()
             && (std::chrono::system_clock::from_time_t(report.scan_date_t) < ageLimit))
         {
-          const int64_t fileSize = libthoro::filesystem::File::getSize64(i);
-          if ((fileSize <= scanVT.maxScanSize()) && (fileSize >= 0))
+          std::string scan_id = "";
+          if (!scanVT.rescan(hashString, scan_id))
           {
-            std::string scan_id = "";
-            if (!scanVT.scan(i, scan_id))
-            {
-              std::cerr << "Error: Could not submit file " << i
-                        << " for (re-)scanning." << std::endl;
-              return rcScanError;
-            }
-            if (!silent)
-              std::clog << "Info: " << i << " was queued for re-scan, because "
-                        << "report is from " << report.scan_date
-                        << " and thus it is older than " << maxAgeInDays
-                        << " days. Scan ID for retrieval is " << scan_id
-                        << "." << std::endl;
-            /* Delete a possibly existing cached entry for that file, because
-               it is now potentially outdated, as soon as the next request for
-               that report is performed. */
-            cacheMgr.deleteCachedElement(hashString);
-          } //if file size is below limit
-          else
-          {
-            //File is too large for re-scan.
-            if (!silent)
-              std::cout << "Warning: File " << i << " is "
-                        << libthoro::filesystem::getSizeString(fileSize)
-                        << " and exceeds maximum file size for (re-)scan! "
-                        << "Re-scan will be skipped." << std::endl;
-            //save file name + size for later
-            largeFilesRescan.push_back(std::pair<std::string, int64_t>(i, fileSize));
-          } //else (file too large)
+            std::cerr << "Error: Could not initiate rescan for file " << i
+                      << "!" << std::endl;
+            return rcScanError;
+          }
+          if (!silent)
+            std::clog << "Info: " << i << " was queued for re-scan, because "
+                      << "report is from " << report.scan_date
+                      << " and thus it is older than " << maxAgeInDays
+                      << " days. Scan ID for retrieval is " << scan_id
+                      << "." << std::endl;
+          /* Delete a possibly existing cached entry for that file, because
+             it is now potentially outdated, as soon as the next request for
+             that report is performed. */
+          cacheMgr.deleteCachedElement(hashString);
         } //if rescan because of old report
       } //if file was in report database
       else if (report.notFound())
@@ -724,8 +705,7 @@ int main(int argc, char ** argv)
   } //if some scans are/were queued
 
   //show the summary, e.g. infected files, too large files, and unfinished queued scans
-  showSummary(mapFileToHash, mapHashToReport, queued_scans, largeFiles,
-              largeFilesRescan);
+  showSummary(mapFileToHash, mapHashToReport, queued_scans, largeFiles);
 
   return 0;
 }

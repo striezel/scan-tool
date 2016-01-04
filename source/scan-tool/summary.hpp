@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2015  Thoronador
+    Copyright (C) 2015, 2016  Thoronador
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -34,12 +34,10 @@
  * \param mapHashToReport  map that maps SHA256 hashes to corresponding report; key = SHA256 hash, value = scan report
  * \param queued_scans     list of queued scan requests; key = scan_id, value = file name
  * \param largeFiles       list of files that exceed the file size for scans; first = file name, second = file size in octets
- * \param largeFilesRescan list of files that exceed the file size for re-scans; first = file name, second = file size in octets
  */
 void showSummary(const std::map<std::string, std::string>& mapFileToHash,
                  std::map<std::string, ScannerVirusTotalV2::Report>& mapHashToReport,
                  const std::unordered_map<std::string, std::string>& queued_scans,
-                 std::vector<std::pair<std::string, int64_t> >& largeFiles,
-                 std::vector<std::pair<std::string, int64_t> >& largeFilesRescan);
+                 std::vector<std::pair<std::string, int64_t> >& largeFiles);
 
 #endif // SCANTOOL_SUMMARY_HPP
