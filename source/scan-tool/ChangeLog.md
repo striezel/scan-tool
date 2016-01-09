@@ -1,5 +1,8 @@
 # ChangeLog for scan-tool
 
+## Version 0.26b (2016-01-09)
+  - fix mistake in text message
+
 ## Version 0.26 (2016-01-09)
   - change directory structure of request cache (again)
   - add option for automatic transition from older request cache structures

@@ -30,7 +30,7 @@ int performTransition()
 
   if (!libthoro::filesystem::Directory::exists(cacheMgr.getCacheDirectory()))
   {
-    std::cout << "Warning: The is cache directory " << cacheMgr.getCacheDirectory()
+    std::cout << "Warning: The cache directory " << cacheMgr.getCacheDirectory()
               << " does not exist. Nothing to do here." << std::endl;
     return 0;
   }
