@@ -30,6 +30,7 @@
 #elif defined(_WIN32)
 #include <Windows.h>
 #endif
+#include "cachetransition.hpp"
 #include "summary.hpp"
 #include "../CacheManagerVirusTotalV2.hpp"
 #include "../Curly.hpp"
@@ -38,13 +39,8 @@
 #include "../../libthoro/filesystem/FileFunctions.hpp"
 #include "../../libthoro/hash/sha256/FileSourceUtility.hpp"
 #include "../../libthoro/hash/sha256/sha256.hpp"
-
 //return codes
-const int rcInvalidParameter = 1;
-const int rcFileError = 2;
-const int rcScanError = 3;
-const int rcSignalHandlerError = 4;
-const int rcProgramTerminationBySignal = 5;
+#include "../ReturnCodes.hpp"
 
 /* default value for maximum scan report age
 
@@ -78,12 +74,17 @@ void showHelp()
             << "                     files that have been requested recently. This option is\n"
             << "                     disabled by default.\n"
             << "  --integrity      - performs an integrity check of the cached reports and\n"
-            << "                     removes any corrupted reports. Exits after check.\n";
+            << "                     removes any corrupted reports. Exits after check.\n"
+            << "  --transition     - performs cache transition from 16 to 256 subdirectories.\n"
+            << "                     This can be used to give older caches (v0.25 and earlier)\n"
+            << "                     the current cache directory structure so that these older\n"
+            << "                     cache files can be used by the current version program.\n"
+            << "                     The program exits after the transition.\n";
 }
 
 void showVersion()
 {
-  std::cout << "scan-tool, version 0.25, 2016-01-04\n";
+  std::cout << "scan-tool, version 0.26, 2016-01-09\n";
 }
 
 /* Four variables that will be used in main() but also in signal handling
@@ -389,6 +390,11 @@ int main(int argc, char ** argv)
             std::cout << "There were " << corruptFiles << " corrupt files." << std::endl;
           return 0;
         } //integrity check
+        else if ((param == "--transition") or (param == "--cache-transition"))
+        {
+          const int rc = performTransition();
+          return rc;
+        } //cache transition to current directory structure
         //file for scan
         else if (libthoro::filesystem::File::exists(param))
         {

@@ -124,6 +124,32 @@ class CacheManagerVirusTotalV2
       *         Returns zero, if no corrupted files were found.
       */
     uint_least32_t checkIntegrity(const bool deleteCorrupted, const bool deleteUnknown) const;
+
+
+    /** \brief moves cached files from the old cache directory structure
+     *         without subdirectories to their new location in the current
+     *         directory structure with 256 subdirectories
+     *
+     * \return Returns the number of files that were moved.
+     * \remarks The request cache without subdirectories was used in versions
+     *          0.20 and 0.21 of scan-tool.
+     *          In order to perform the transition the new directories must
+     *          already be present. Call createCacheDirectory() to achieve that.
+     */
+    uint_least32_t transitionOneTo256();
+
+
+    /** \brief moves cached files from the old cache directory structure with
+     *         16 subdirectories to their new location in the current directory
+     *         structure with 256 subdirectories
+     *
+     * \return Returns the number of files that were moved.
+     * \remarks The request cache with 16 subdirectories was used in versions
+     *          0.22 till 0.25 of scan-tool.
+     *          In order to perform the transition the new directories must
+     *          already be present. Call createCacheDirectory() to achieve that.
+     */
+    uint_least32_t transition16To256();
   private:
     std::string m_CacheRoot; /**< path to the chosen root cache directory */
 }; //class

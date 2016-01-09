@@ -67,12 +67,15 @@
 		<Unit filename="../ReportV2.hpp" />
 		<Unit filename="../ReportVirusTotalBase.cpp" />
 		<Unit filename="../ReportVirusTotalBase.hpp" />
+		<Unit filename="../ReturnCodes.hpp" />
 		<Unit filename="../Scanner.cpp" />
 		<Unit filename="../Scanner.hpp" />
 		<Unit filename="../ScannerVirusTotalV2.cpp" />
 		<Unit filename="../ScannerVirusTotalV2.hpp" />
 		<Unit filename="../StringToTimeT.cpp" />
 		<Unit filename="../StringToTimeT.hpp" />
+		<Unit filename="cachetransition.cpp" />
+		<Unit filename="cachetransition.hpp" />
 		<Unit filename="main.cpp" />
 		<Unit filename="summary.cpp" />
 		<Unit filename="summary.hpp" />
