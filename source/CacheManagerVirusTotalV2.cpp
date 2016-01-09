@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2015  Thoronador
+    Copyright (C) 2015, 2016  Thoronador
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -154,14 +154,19 @@ uint_least32_t CacheManagerVirusTotalV2::checkIntegrity(const bool deleteCorrupt
     #endif // SCAN_TOOL_DEBUG
     for (auto const & file : files)
     {
-      if (!file.isDirectory && stringEndsWith(file.fileName, ".json")
-          && SHA256::isValidHash(file.fileName.substr(0, 64)))
+      if (//entry must not be a directory and file name has to end with ".json"
+          !file.isDirectory && stringEndsWith(file.fileName, ".json")
+          // first 64 characters must form a valid SHA256 hash
+          && SHA256::isValidHash(file.fileName.substr(0, 64))
+          // ... and total length has to be 69 characters
+          // (that is: 64 chars from hash, 5 chars for extension ".json")
+          && file.fileName.size() == 69)
       {
         const auto fileName = libthoro::filesystem::slashify(m_CacheRoot) + d
               + libthoro::filesystem::pathDelimiter + file.fileName;
         const auto fileSize = libthoro::filesystem::File::getSize64(fileName);
         //check, if file is way too large for a proper cache file
-        if (fileSize >= 1024*1024*4)
+        if (fileSize >= 1024*1024*2)
         {
           //Several kilobytes are alright, but not megabytes.
           ++corrupted;

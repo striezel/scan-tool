@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2015  Thoronador
+    Copyright (C) 2015, 2016  Thoronador
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -118,7 +118,8 @@ class CacheManagerVirusTotalV2
       *
       * \param deleteCorrupted  If set to true, corrupted cache files will be deleted.
       * \param deleteUnknown    If set to true, all reports of resources that are not
-      *                         known to VT will be deleted.
+      *                         known to VT will be deleted. These reports do not count
+      *                         as corrupted and do not influence the return value.
       * \return Returns the number of corrupted files that were found.
       *         Returns zero, if no corrupted files were found.
       */
