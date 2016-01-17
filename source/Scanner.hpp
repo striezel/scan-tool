@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2015  Thoronador
+    Copyright (C) 2015, 2016  Thoronador
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -70,28 +70,54 @@ class Scanner
     void silence(const bool silent);
 
 
-    /** \brief duration between consecutive requests, if time limit is respected
+    /** \brief duration between consecutive file scan requests, if time limit is respected
      *
-     * \return Returns the minimum interval between two consecutive requests.
+     * \return Returns the minimum interval between two consecutive file scan requests.
      */
-    virtual std::chrono::milliseconds timeBetweenConsecutiveRequests() const = 0;
+    virtual std::chrono::milliseconds timeBetweenConsecutiveScanRequests() const = 0;
 
 
-    /** \brief returns the time of the last request
+    /** \brief duration between consecutive hash lookups, if time limit is respected
      *
-     * \return Returns the time of the last request.
+     * \return Returns the minimum interval between two consecutive hash lookups.
      */
-    std::chrono::steady_clock::time_point lastRequestTime() const;
+    virtual std::chrono::milliseconds timeBetweenConsecutiveHashLookups() const = 0;
+
+
+    /** \brief returns the time of the last scan request
+     *
+     * \return Returns the time of the last scan request.
+     */
+    std::chrono::steady_clock::time_point lastScanRequestTime() const;
+
+
+    /** \brief returns the time of the last hash lookup
+     *
+     * \return Returns the time of the last hash lookup.
+     */
+    std::chrono::steady_clock::time_point lastHashLookupTime() const;
 
 
     /** \brief sets the time of the last request to now
      */
-    void requestWasNow();
+    virtual void scanRequestWasNow();
 
 
-    /** \brief waits until the time limit has expired, if the scanner honours a time limit
+    /** \brief sets the time of the last hash lookup to now
      */
-    void waitForLimitExpiration();
+    virtual void hashLookupWasNow();
+
+
+    /** \brief waits until the time limit for file scans has expired, if the
+     *         scanner honours a time limit
+     */
+    void waitForScanLimitExpiration();
+
+
+    /** \brief waits until the time limit for hash lookups has expired, if the
+     *         scanner honours a time limit
+     */
+    void waitForHashLookupLimitExpiration();
 
 
      /** \brief returns the maximum file size that is allowed to be scanned
@@ -102,7 +128,12 @@ class Scanner
   private:
     bool m_HonourLimit; /**< whether to honour time limits */
     bool m_Silent; /**< whether to be silent */
-    std::chrono::steady_clock::time_point m_LastRequest; /**< time of the last request */
+  protected:
+    /* Both time points are protected and not private, because descendants might
+       need to modify them directly in overridden scanRequestWasNow() or
+       hashLookupWasNow() methods. */
+    std::chrono::steady_clock::time_point m_LastScanRequest; /**< time of the last scan request */
+    std::chrono::steady_clock::time_point m_LastHashLookup; /**< time of the last hash lookup */
 }; //class
 
 #endif // SCANNER_HPP

@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2015  Thoronador
+    Copyright (C) 2015, 2016  Thoronador
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -225,7 +225,7 @@ int main(int argc, char ** argv)
   //initial wait to avoid exceeding the rate limit
   if (initial_wait)
   {
-    const auto duration = scanVT.timeBetweenConsecutiveRequests();
+    const auto duration = scanVT.timeBetweenConsecutiveScanRequests();
     std::cout << "Waiting " << std::chrono::duration_cast<std::chrono::milliseconds>(duration).count()
                   << " millisecond(s) for time limit to expire as requested..." << std::endl;
     std::this_thread::sleep_for(duration);

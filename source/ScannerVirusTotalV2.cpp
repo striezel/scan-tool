@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2015  Thoronador
+    Copyright (C) 2015, 2016  Thoronador
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -150,12 +150,38 @@ void ScannerVirusTotalV2::setApiKey(const std::string& apikey)
     m_apikey = apikey;
 }
 
-std::chrono::milliseconds ScannerVirusTotalV2::timeBetweenConsecutiveRequests() const
+std::chrono::milliseconds ScannerVirusTotalV2::timeBetweenConsecutiveScanRequests() const
 {
   /* The public API allows four requests per minute, so we can perform one
      request every 15 seconds without hitting the rate limit.
   */
   return std::chrono::milliseconds(15000);
+}
+
+std::chrono::milliseconds ScannerVirusTotalV2::timeBetweenConsecutiveHashLookups() const
+{
+  /* The public API allows four requests per minute, so we can perform one
+     request every 15 seconds without hitting the rate limit.
+  */
+  return std::chrono::milliseconds(15000);
+}
+
+void ScannerVirusTotalV2::scanRequestWasNow()
+{
+  /* VirusTotal API does not distinguish between the different kinds of
+     requests and all requests have the same time limit. That is why we have
+     to set both limits here. */
+  m_LastScanRequest = std::chrono::steady_clock::now();
+  m_LastHashLookup = m_LastScanRequest;
+}
+
+void ScannerVirusTotalV2::hashLookupWasNow()
+{
+  /* VirusTotal API does not distinguish between the different kinds of
+     requests and all requests have the same time limit. That is why we have
+     to set both limits here. */
+  m_LastHashLookup = std::chrono::steady_clock::now();
+  m_LastScanRequest = m_LastHashLookup;
 }
 
 bool ScannerVirusTotalV2::getReport(const std::string& resource, Report& report, const bool useCache,
@@ -190,7 +216,7 @@ bool ScannerVirusTotalV2::getReport(const std::string& resource, Report& report,
   } //if cached JSON file shall be used
   else
   {
-    waitForLimitExpiration();
+    waitForHashLookupLimitExpiration();
     //send request via cURL
     Curly cURL;
     cURL.setURL("https://www.virustotal.com/vtapi/v2/file/report");
@@ -202,7 +228,7 @@ bool ScannerVirusTotalV2::getReport(const std::string& resource, Report& report,
       std::cerr << "Error in ScannerVirusTotalV2::getReport(): Request could not be performed." << std::endl;
       return false;
     }
-    requestWasNow();
+    hashLookupWasNow();
 
     if (cURL.getResponseCode() == 204)
     {
@@ -280,7 +306,7 @@ bool ScannerVirusTotalV2::getReport(const std::string& resource, Report& report,
 
 bool ScannerVirusTotalV2::rescan(const std::string& resource, std::string& scan_id)
 {
-  waitForLimitExpiration();
+  waitForScanLimitExpiration();
   //send request
   Curly cURL;
   cURL.setURL("https://www.virustotal.com/vtapi/v2/file/rescan");
@@ -293,7 +319,7 @@ bool ScannerVirusTotalV2::rescan(const std::string& resource, std::string& scan_
     std::cerr << "Error in ScannerVirusTotalV2::rescan(): Request could not be performed." << std::endl;
     return false;
   }
-  requestWasNow();
+  scanRequestWasNow();
 
   if (cURL.getResponseCode() == 204)
   {
@@ -366,7 +392,7 @@ bool ScannerVirusTotalV2::scan(const std::string& filename, std::string& scan_id
   if (filename.empty())
     return false;
 
-  waitForLimitExpiration();
+  waitForScanLimitExpiration();
   //send request
   Curly cURL;
   cURL.setURL("https://www.virustotal.com/vtapi/v2/file/scan");
@@ -380,7 +406,7 @@ bool ScannerVirusTotalV2::scan(const std::string& filename, std::string& scan_id
     std::cerr << "Error in ScannerVirusTotalV2::scan(): Request could not be performed." << std::endl;
     return false;
   }
-  requestWasNow();
+  scanRequestWasNow();
 
   if (cURL.getResponseCode() == 204)
   {

@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2015  Thoronador
+    Copyright (C) 2015, 2016  Thoronador
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -47,11 +47,28 @@ class ScannerVirusTotalHoneypot: public Scanner
     void setApiKey(const std::string& apikey);
 
 
-    /** \brief duration between consecutive requests, if time limit is respected
+    /** \brief duration between consecutive file scan requests, if time limit is respected
      *
-     * \return Returns the minimum interval between two consecutive requests.
+     * \return Returns the minimum interval between two consecutive file scan requests.
      */
-    virtual std::chrono::milliseconds timeBetweenConsecutiveRequests() const override;
+    virtual std::chrono::milliseconds timeBetweenConsecutiveScanRequests() const override;
+
+
+    /** \brief duration between consecutive hash lookups, if time limit is respected
+     *
+     * \return Returns the minimum interval between two consecutive hash lookups.
+     */
+    virtual std::chrono::milliseconds timeBetweenConsecutiveHashLookups() const override;
+
+
+    /** \brief sets the time of the last request to now
+     */
+    virtual void scanRequestWasNow() override;
+
+
+    /** \brief sets the time of the last hash lookup to now
+     */
+    virtual void hashLookupWasNow() override;
 
 
     /** \brief retrieves a scan report
