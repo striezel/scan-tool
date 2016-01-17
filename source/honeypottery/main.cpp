@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2015  Thoronador
+    Copyright (C) 2015, 2016  Thoronador
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -21,11 +21,8 @@
 #include <iostream>
 #include <string>
 #include <unordered_set>
+#include "../ReturnCodes.hpp"
 #include "../ScannerVirusTotalHoneypot.hpp"
-
-//return codes
-const int rcInvalidParameter = 1;
-const int rcScanError = 3; //same as in scan-tool
 
 void showVersion()
 {

@@ -23,11 +23,9 @@
 #include <thread>
 #include <unordered_set>
 #include "../Curly.hpp"
+#include "../ReturnCodes.hpp"
 #include "../ScannerVirusTotalV2.hpp"
 
-//return codes
-const int rcInvalidParameter = 1;
-const int rcScanError = 3; //same as in scan-tool
 
 void showHelp()
 {

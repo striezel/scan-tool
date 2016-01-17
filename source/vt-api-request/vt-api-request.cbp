@@ -61,6 +61,7 @@
 		<Unit filename="../ReportV2.hpp" />
 		<Unit filename="../ReportVirusTotalBase.cpp" />
 		<Unit filename="../ReportVirusTotalBase.hpp" />
+		<Unit filename="../ReturnCodes.hpp" />
 		<Unit filename="../Scanner.cpp" />
 		<Unit filename="../Scanner.hpp" />
 		<Unit filename="../ScannerVirusTotalV2.cpp" />

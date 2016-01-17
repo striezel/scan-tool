@@ -49,6 +49,7 @@
 		<Unit filename="../ReportHoneypot.hpp" />
 		<Unit filename="../ReportVirusTotalBase.cpp" />
 		<Unit filename="../ReportVirusTotalBase.hpp" />
+		<Unit filename="../ReturnCodes.hpp" />
 		<Unit filename="../Scanner.cpp" />
 		<Unit filename="../Scanner.hpp" />
 		<Unit filename="../ScannerVirusTotalHoneypot.cpp" />
