@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2015  Thoronador
+    Copyright (C) 2015, 2016  Thoronador
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -79,6 +79,14 @@ struct ReportMetascanOnline
    *          may be partially undefined.
    */
   bool fromJSONRoot(const Json::Value& root);
+
+
+  /** \brief checks whether the response indicates, that the requested resource
+   * is not present/was not found
+   *
+   * \return Returns true, if the requested item was not found.
+   */
+  virtual bool notFound() const /* override */;
 }; //class
 
 #endif // REPORTMETASCANONLINE_HPP

@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2015  Thoronador
+    Copyright (C) 2015, 2016  Thoronador
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -277,4 +277,10 @@ bool ReportMetascanOnline::fromJSONRoot(const Json::Value& root)
 
   // all fine here
   return true;
+}
+
+bool ReportMetascanOnline::notFound() const
+{
+  //simple way to check for "not found"
+  return (file_id.empty() || scan_details.empty());
 }
