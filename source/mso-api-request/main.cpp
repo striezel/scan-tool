@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2015  Thoronador
+    Copyright (C) 2015, 2016  Thoronador
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -39,12 +39,16 @@ void showHelp()
             << "  --apikey KEY     - sets the API key for Metascan Online\n"
             << "  --report ID      - request the report with the given ID from Metascan\n"
             << "                     Online. Can occur multiple times, if more than one report\n"
-            << "                     shall be requested.\n";
+            << "                     shall be requested.\n"
+            << "  --rescan FILE_ID - request rescan of a file with the given ID that was\n"
+            << "                     uploaded earlier. The file ID usually is a 32 digit hex\n"
+            << "                     number. This parameter can occur multiple times.\n"
+            << "  --re FILE_ID     - same as --rescan FILE_ID\n";
 }
 
 void showVersion()
 {
-  std::cout << "mso-api-request, version 0.0.2, 2015-12-31\n";
+  std::cout << "mso-api-request, version 0.0.3, 2016-01-17\n";
 }
 
 int main(int argc, char ** argv)
@@ -53,6 +57,8 @@ int main(int argc, char ** argv)
   std::string key = "";
   //resources that will be queried
   std::unordered_set<std::string> resources_report = std::unordered_set<std::string>();
+  //file IDs for which a rescan will be requested
+  std::unordered_set<std::string> file_IDs_rescan = std::unordered_set<std::string>();
 
   if ((argc>1) and (argv!=NULL))
   {
@@ -111,6 +117,27 @@ int main(int argc, char ** argv)
             return rcInvalidParameter;
           }
         }//resource report
+        else if ((param=="--re") or (param=="--rescan"))
+        {
+          //enough parameters?
+          if ((i+1<argc) and (argv[i+1]!=NULL))
+          {
+            const std::string next_file_ID = std::string(argv[i+1]);
+            ++i; //Skip next parameter, because it's used as file identifier already
+            if (file_IDs_rescan.find(next_file_ID) == file_IDs_rescan.end())
+            {
+              std::cout << "Adding file ID " << next_file_ID
+                        << " to list of rescan requests." << std::endl;
+            }
+            file_IDs_rescan.insert(next_file_ID);
+          }
+          else
+          {
+            std::cout << "Error: You have to enter a file ID after \""
+                      << param << "\"." << std::endl;
+            return rcInvalidParameter;
+          }
+        }//rescan
         else
         {
           //unknown or wrong parameter
@@ -135,15 +162,31 @@ int main(int argc, char ** argv)
               << std::endl;
     return rcInvalidParameter;
   }
-  if (resources_report.empty())
+  if (resources_report.empty() && file_IDs_rescan.empty())
   {
-    std::cout << "No resources for report retrieval given. Exiting." << std::endl;
+    std::cout << "No resources for report retrieval or file IDs for rescan "
+              << "were given. Exiting." << std::endl;
     return rcInvalidParameter;
   } //if no resources
 
-
   //initialize scanner instance
   ScannerMetascanOnline scanMSO(key);
+
+  //iterate over all resources for rescan requests
+  for(const std::string& i : file_IDs_rescan)
+  {
+    ScannerMetascanOnline::RescanData scan_data;
+    if (!scanMSO.rescan(i, scan_data))
+    {
+      std::cout << "Error: Could not initiate rescan for file ID \""
+                << i << "\"!" << std::endl;
+      return rcScanError;
+    }
+    std::cout << "Rescan for \"" << i << "\" initiated. "
+              << "Data ID for later retrieval is " << scan_data.data_id << "."
+              << " Address for progress requests is " << scan_data.rest_ip
+              << "."  << std::endl;
+  } //for (range-based)
 
   //iterate over all resources for report requests
   for(const std::string& i : resources_report)

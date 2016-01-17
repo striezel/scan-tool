@@ -37,6 +37,16 @@ class ScannerMetascanOnline: public Scanner
     ScannerMetascanOnline(const std::string& apikey, const bool honourTimeLimits = true, const bool silent = false);
 
 
+    struct RescanData
+    {
+      //default constructor
+      RescanData();
+
+      std::string data_id; /**< Data ID used for retrieving scan result */
+      std::string rest_ip; /**< address for requests of scan progress */
+    }; //struct
+
+
     /** \brief sets a new API key
      *
      * \param apikey   the Metascan Online API key used for scanning
@@ -59,6 +69,17 @@ class ScannerMetascanOnline: public Scanner
      *         Returns false, if retrieval failed.
      */
     bool getReport(const std::string& resource, ReportMetascanOnline& report);
+
+
+    /** \brief requests a re-scan of an already uploaded file
+     *
+     * \param file_id    the file_id (as seen in report from getReport())
+     * \param scan_data  the scan_data which can be used to query the report later
+     * \return Returns true, if the rescan was initiated.
+     *         Returns false, if request failed.
+     */
+    bool rescan(const std::string& file_id, RescanData& scan_data);
+
 
     /** \brief returns the maximum file size that is allowed to be scanned
      *

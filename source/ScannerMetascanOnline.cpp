@@ -29,6 +29,12 @@ ScannerMetascanOnline::ScannerMetascanOnline(const std::string& apikey, const bo
 {
 }
 
+ScannerMetascanOnline::RescanData::RescanData()
+: data_id(""),
+  rest_ip("")
+{
+}
+
 void ScannerMetascanOnline::setApiKey(const std::string& apikey)
 {
   if (!apikey.empty())
@@ -115,6 +121,97 @@ bool ScannerMetascanOnline::getReport(const std::string& resource, ReportMetasca
   }
   //all done here
   return true;
+}
+
+bool ScannerMetascanOnline::rescan(const std::string& file_id, RescanData& scan_data)
+{
+  if (file_id.empty())
+    return false;
+
+  std::string response = "";
+  waitForLimitExpiration();
+  //send request via cURL
+  Curly cURL;
+  cURL.setURL("https://scan.metascan-online.com/v2/rescan/" + file_id);
+  //add API key
+  cURL.addHeader("apikey: "+m_apikey);
+
+  //perform request
+  if (!cURL.perform(response))
+  {
+    std::cerr << "Error in ScannerMetascanOnline::rescan(): Request could not be performed." << std::endl;
+    return false;
+  }
+  requestWasNow();
+
+  //400: Bad request
+  if (cURL.getResponseCode() == 400)
+  {
+    std::cerr << "Error in ScannerMetascanOnline::rescan(): Bad request!" << std::endl;
+    return false;
+  }
+  //401: wrong or missing API key
+  if (cURL.getResponseCode() == 401)
+  {
+    std::cerr << "Error in ScannerMetascanOnline::rescan(): API key is wrong or missing!" << std::endl;
+    return false;
+  }
+  //500: internal server error / server temporary unavailable
+  if (cURL.getResponseCode() == 401)
+  {
+    std::cerr << "Error in ScannerMetascanOnline::rescan(): Internal server error / server temporarily unavailable!" << std::endl;
+    return false;
+  }
+  //503: Server temporary unavailable. There're too many unfinished file in pending queue.
+  if (cURL.getResponseCode() == 503)
+  {
+    std::cerr << "Error in ScannerMetascanOnline::rescan(): Service temporarily unavailable!"
+              << " There are too many unfinished file in pending queue."
+              << " Try again later." << std::endl;
+    return false;
+  }
+  //response code should be 200
+  if (cURL.getResponseCode() != 200)
+  {
+    std::cerr << "Error in ScannerMetascanOnline::rescan(): Unexpected HTTP status code "
+              << cURL.getResponseCode() << "!" << std::endl;
+    return false;
+  }
+  #ifdef SCAN_TOOL_DEBUG
+  std::cout << "Request was successful!" << std::endl
+            << "Code: " << cURL.getResponseCode() << std::endl
+            << "Content-Type: " << cURL.getContentType() << std::endl
+            << "Response text: " << response << std::endl;
+  #endif
+  // parse JSON response
+  Json::Value root; // will contain the root value after parsing.
+  Json::Reader jsonReader;
+  const bool success = jsonReader.parse(response, root, false);
+  if (!success)
+  {
+    std::cerr << "Error in ScannerMetascanOnline::rescan(): Unable to parse "
+              << "JSON data!" << std::endl;
+    return false;
+  }
+  //data_id
+  Json::Value js_value = root["data_id"];
+  if (!js_value.empty() && js_value.isString())
+    scan_data.data_id = js_value.asString();
+  else
+  {
+    scan_data.data_id.clear();
+  } //else
+  //rest_ip
+  js_value = root["rest_ip"];
+  if (!js_value.empty() && js_value.isString())
+    scan_data.rest_ip = js_value.asString();
+  else
+  {
+    scan_data.rest_ip.clear();
+  } //else
+
+  //Found?
+  return (!scan_data.data_id.empty() && !scan_data.rest_ip.empty());
 }
 
 int64_t ScannerMetascanOnline::maxScanSize() const
