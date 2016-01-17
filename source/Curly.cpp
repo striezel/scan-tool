@@ -19,6 +19,7 @@
 */
 
 #include "Curly.hpp"
+#include <algorithm>
 #include <cstring>
 #include <iostream>
 #include <memory>
@@ -54,6 +55,7 @@ Curly::Curly()
 : m_URL(""),
   m_PostFields(std::unordered_map<std::string, std::string>()),
   m_Files(std::unordered_map<std::string, std::string>()),
+  m_headers(std::vector<std::string>()),
   m_LastResponseCode(0),
   m_LastContentType("")
 {
@@ -108,6 +110,33 @@ bool Curly::addFile(const std::string& filename, const std::string& field)
   return true;
 }
 
+const std::vector<std::string>& Curly::getHeaders() const
+{
+  return m_headers;
+}
+
+bool Curly::addHeader(const std::string& header)
+{
+  /* There are some rules for reasonable headers:
+     - No empty headers.
+     - Header must not be present yet.
+     - Header has to contain a colon (":"), but not as first character.
+     - Header must not contain CRLF.
+  */
+  const auto colonPos = header.find(':');
+  if (!header.empty()
+      && (std::find(m_headers.cbegin(), m_headers.cend(), header) == m_headers.cend())
+      && (colonPos != std::string::npos) && (colonPos > 0)
+      && (header.find('\n') == std::string::npos)
+      && (header.find('\r') == std::string::npos))
+  {
+    m_headers.push_back(header);
+    return true;
+  } //if conditions for header are met
+  //Not a valid header!
+  return false;
+}
+
 bool Curly::perform(std::string& response)
 {
   //"minimum" URL should be something like "http://a.bc"
@@ -139,6 +168,40 @@ bool Curly::perform(std::string& response)
     return false;
   }
 
+  //add custom headers
+  struct curl_slist * header_list = nullptr;
+  if (!m_headers.empty())
+  {
+    #ifdef DEBUG_MODE
+    std::clog << "adding headers with curl_slist_append() ..." << std::endl;
+    #endif // DEBUG_MODE
+    for(auto const & h: m_headers)
+    {
+      header_list = curl_slist_append(header_list, h.c_str());
+      if (nullptr == header_list)
+      {
+        std::cerr << "cURL error: creation of header list failed!" << std::endl;
+        std::cerr << curl_easy_strerror(retCode) << std::endl;
+        curl_easy_cleanup(handle);
+        return false;
+      }
+    } //for
+    //add headers to the handle
+    #ifdef DEBUG_MODE
+    std::clog << "curl_easy_setopt(handle, CURLOPT_HTTPHEADER, ...)" << std::endl;
+    #endif // DEBUG_MODE
+    retCode = curl_easy_setopt(handle, CURLOPT_HTTPHEADER, header_list);
+    if (retCode != CURLE_OK)
+    {
+      std::cerr << "cURL error: setting custom headers failed!" << std::endl;
+      std::cerr << curl_easy_strerror(retCode) << std::endl;
+      curl_slist_free_all(header_list);
+      header_list = nullptr;
+      curl_easy_cleanup(handle);
+      return false;
+    }
+  } //if custom headers are given
+
   //construct fields for post request
   #ifdef DEBUG_MODE
   std::clog << "curl_easy_escape(...)..." << std::endl;
@@ -156,6 +219,8 @@ bool Curly::perform(std::string& response)
         //escaping failed!
         std::cerr << "cURL error: escaping of post values failed!" << std::endl;
         curl_easy_cleanup(handle);
+        curl_slist_free_all(header_list);
+        header_list = nullptr;
         return false;
       }
       if (!postfields.empty())
@@ -170,6 +235,8 @@ bool Curly::perform(std::string& response)
         //escaping failed!
         std::cerr << "cURL error: escaping of post values failed!" << std::endl;
         curl_easy_cleanup(handle);
+        curl_slist_free_all(header_list);
+        header_list = nullptr;
         return false;
       }
       postfields += "=" + std::string(c_str);
@@ -188,6 +255,8 @@ bool Curly::perform(std::string& response)
       std::cerr << "cURL error: setting POST fields for Curly::perform failed! Error: "
                 << curl_easy_strerror(retCode) << std::endl;
       curl_easy_cleanup(handle);
+      curl_slist_free_all(header_list);
+      header_list = nullptr;
       return false;
     }
   } //if post fields exist
@@ -209,6 +278,8 @@ bool Curly::perform(std::string& response)
         std::cerr << "cURL error: could not add file to multipart/formdata!"
                   << std::endl;
         curl_formfree(formFirst);
+        curl_slist_free_all(header_list);
+        header_list = nullptr;
         curl_easy_cleanup(handle);
         return false;
       }
@@ -228,6 +299,8 @@ bool Curly::perform(std::string& response)
         std::cerr << "cURL error: could not add file to multipart/formdata!"
                   << std::endl;
         curl_formfree(formFirst);
+        curl_slist_free_all(header_list);
+        header_list = nullptr;
         curl_easy_cleanup(handle);
         return false;
       }
@@ -239,6 +312,8 @@ bool Curly::perform(std::string& response)
       std::cerr << "cURL error: setting multipart form data failed! Error: "
                 << curl_easy_strerror(retCode) << std::endl;
       curl_formfree(formFirst);
+      curl_slist_free_all(header_list);
+      header_list = nullptr;
       curl_easy_cleanup(handle);
       return false;
     }
@@ -251,6 +326,8 @@ bool Curly::perform(std::string& response)
     std::cerr << "curl_easy_setopt() of Curly::perform could not set write function! Error: "
               << curl_easy_strerror(retCode) << std::endl;
     curl_formfree(formFirst);
+    curl_slist_free_all(header_list);
+    header_list = nullptr;
     curl_easy_cleanup(handle);
     return false;
   }
@@ -262,6 +339,8 @@ bool Curly::perform(std::string& response)
     std::cerr << "curl_easy_setopt() of Curly::perform could not set write data! Error: "
               << curl_easy_strerror(retCode) << std::endl;
     curl_formfree(formFirst);
+    curl_slist_free_all(header_list);
+    header_list = nullptr;
     curl_easy_cleanup(handle);
     return false;
   }
@@ -276,6 +355,8 @@ bool Curly::perform(std::string& response)
     std::cerr << "curl_easy_perform() of Curly::perform failed! Error: "
               << curl_easy_strerror(retCode) << std::endl;
     curl_formfree(formFirst);
+    curl_slist_free_all(header_list);
+    header_list = nullptr;
     curl_easy_cleanup(handle);
     return false;
   }
@@ -288,6 +369,10 @@ bool Curly::perform(std::string& response)
   //free multipart/formdata, if any data was given
   curl_formfree(formFirst);
   formFirst = nullptr;
+
+  //free header data, if any data was given
+  curl_slist_free_all(header_list);
+  header_list = nullptr;
 
   //get response code
   retCode = curl_easy_getinfo(handle, CURLINFO_RESPONSE_CODE, &m_LastResponseCode);

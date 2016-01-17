@@ -107,6 +107,21 @@ class Curly
     bool addFile(const std::string& filename, const std::string& field);
 
 
+    /** \brief gets the list of additional / custom HTTP headers
+     *
+     * \return Returns a vector of strings that represents the headers.
+     */
+    const std::vector<std::string>& getHeaders() const;
+
+
+    /** \brief adds a custom HTTP header
+     *
+     * \param header   the header, without(!) CRLF at the end
+     * \return Returns true, if the header was added.
+     *         Returns false otherwise.
+     */
+    bool addHeader(const std::string& header);
+
     /** \brief performs the (POST) request
      *
      * \param response  reference to a string that will be filled with the
@@ -164,8 +179,9 @@ class Curly
     static VersionData curlVersion();
   private:
     std::string m_URL; /**< URL for the request */
-    std::unordered_map<std::string, std::string> m_PostFields;
+    std::unordered_map<std::string, std::string> m_PostFields; /**< post fields; key = name; value = field's value */
     std::unordered_map<std::string, std::string> m_Files; /**< added files; key = field name, value = file name */
+    std::vector<std::string> m_headers; /**< additional / custom headers (HTTP only) */
     long m_LastResponseCode;
     std::string m_LastContentType;
 }; //class Curly

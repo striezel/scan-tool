@@ -7,5 +7,8 @@ add_subdirectory (scan-tool)
 # Recurse into subdirectory for the honeypottery executable.
 add_subdirectory (honeypottery)
 
+# Recurse into subdirectory for mso-api-request executable.
+add_subdirectory (mso-api-request)
+
 # Recurse into subdirectory for vt-api-request executable.
 add_subdirectory (vt-api-request)
