@@ -49,6 +49,7 @@
 		<Unit filename="../EngineMetascanOnline.hpp" />
 		<Unit filename="../ReportMetascanOnline.cpp" />
 		<Unit filename="../ReportMetascanOnline.hpp" />
+		<Unit filename="../ReturnCodes.hpp" />
 		<Unit filename="../Scanner.cpp" />
 		<Unit filename="../Scanner.hpp" />
 		<Unit filename="../ScannerMetascanOnline.cpp" />

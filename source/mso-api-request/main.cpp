@@ -23,10 +23,8 @@
 #include <string>
 #include <unordered_set>
 #include "../ReportMetascanOnline.hpp"
+#include "../ReturnCodes.hpp"
 #include "../ScannerMetascanOnline.hpp"
-
-const int rcInvalidParameter = 1;
-const int rcScanError = 3; //same as in scan-tool
 
 void showHelp()
 {
