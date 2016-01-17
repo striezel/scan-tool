@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2015  Thoronador
+    Copyright (C) 2015, 2016  Thoronador
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -110,7 +110,7 @@ void ScannerVirusTotalHoneypot::setApiKey(const std::string& apikey)
     m_apikey = apikey;
 }
 
-std::chrono::milliseconds ScannerVirusTotalHoneypot::timeBetweenConsecutiveRequests() const
+std::chrono::milliseconds ScannerVirusTotalHoneypot::timeBetweenConsecutiveScanRequests() const
 {
   /* The public honeypot API allows 300 requests per five minutes, so we can
      perform one request every single second without hitting the rate limit.
@@ -118,9 +118,35 @@ std::chrono::milliseconds ScannerVirusTotalHoneypot::timeBetweenConsecutiveReque
   return std::chrono::milliseconds(1000);
 }
 
+std::chrono::milliseconds ScannerVirusTotalHoneypot::timeBetweenConsecutiveHashLookups() const
+{
+  /* The public honeypot API allows 300 requests per five minutes, so we can
+     perform one request every single second without hitting the rate limit.
+  */
+  return std::chrono::milliseconds(1000);
+}
+
+void ScannerVirusTotalHoneypot::scanRequestWasNow()
+{
+  /* VirusTotal API does not distinguish between the different kinds of
+     requests and all requests have the same time limit. That is why we have
+     to set both limits here. */
+  m_LastScanRequest = std::chrono::steady_clock::now();
+  m_LastHashLookup = m_LastScanRequest;
+}
+
+void ScannerVirusTotalHoneypot::hashLookupWasNow()
+{
+  /* VirusTotal API does not distinguish between the different kinds of
+     requests and all requests have the same time limit. That is why we have
+     to set both limits here. */
+  m_LastHashLookup = std::chrono::steady_clock::now();
+  m_LastScanRequest = m_LastHashLookup;
+}
+
 bool ScannerVirusTotalHoneypot::getReport(const std::string& scan_id, Report& report)
 {
-  waitForLimitExpiration();
+  waitForHashLookupLimitExpiration();
   //send request
   Curly cURL;
   cURL.setURL("https://www.virustotal.com/api/get_submitted_file_report.json");
@@ -133,7 +159,7 @@ bool ScannerVirusTotalHoneypot::getReport(const std::string& scan_id, Report& re
     std::cerr << "Error in ScannerVirusTotalHoneypot::getReport(): Request could not be performed." << std::endl;
     return false;
   }
-  requestWasNow();
+  hashLookupWasNow();
 
   if (cURL.getResponseCode() == 204)
   {
@@ -181,7 +207,7 @@ bool ScannerVirusTotalHoneypot::scan(const std::string& filename, std::string& s
   if (filename.empty())
     return false;
 
-  waitForLimitExpiration();
+  waitForScanLimitExpiration();
   //send request
   Curly cURL;
   cURL.setURL("https://www.virustotal.com/api/bulk_scan_file.json");
@@ -195,7 +221,7 @@ bool ScannerVirusTotalHoneypot::scan(const std::string& filename, std::string& s
     std::cerr << "Error in ScannerVirusTotalHoneypot::scan(): Request could not be performed." << std::endl;
     return false;
   }
-  requestWasNow();
+  scanRequestWasNow();
 
   if (cURL.getResponseCode() == 204)
   {

@@ -23,6 +23,7 @@ set(scan-tool_sources
     ../Scanner.cpp
     ../ScannerVirusTotalV2.cpp
     ../StringToTimeT.cpp
+    cachetransition.cpp
     summary.cpp
     main.cpp)
 

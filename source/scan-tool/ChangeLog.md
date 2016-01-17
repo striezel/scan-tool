@@ -1,5 +1,20 @@
 # ChangeLog for scan-tool
 
+## Version 0.26b (2016-01-09)
+  - fix mistake in text message
+
+## Version 0.26 (2016-01-09)
+  - change directory structure of request cache (again)
+  - add option for automatic transition from older request cache structures
+    (both the first from v0.20 till v0.21 and the later structure from v0.22
+    till v0.25) to new request cache structure
+
+## Version 0.25 (2016-01-04)
+  - improve rescan requests
+
+    Actually use rescan API for rescanning files instead of submitting the
+    whole file again. This is faster and saves bandwith.
+
 ## Version 0.24 (2015-12-29)
   - (Linux only) show progress when SIGUSR1 or SIGUSR2 is received
 

@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2015  Thoronador
+    Copyright (C) 2015, 2016  Thoronador
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -70,20 +70,23 @@ bool CacheManagerVirusTotalV2::createCacheDirectory()
     if (!libthoro::filesystem::Directory::createRecursive(m_CacheRoot))
       return false;
   } //if cache directory does not exist
-  const std::vector<std::string> sub = { std::string("0"), "1", "2", "3", "4",
-                        "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"};
-
+  const std::vector<char> subChars = { '0', '1', '2', '3', '4', '5', '6', '7',
+                                       '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
   //create sub directories
-  for (const auto & d : sub)
+  for (const auto & charOne : subChars)
   {
-    const auto subDirectory = m_CacheRoot + libthoro::filesystem::pathDelimiter + d;
-    if (!libthoro::filesystem::Directory::exists(subDirectory))
+    for (const auto & charTwo : subChars)
     {
-      //try to create the directory
-      if (!libthoro::filesystem::Directory::create(subDirectory))
-        return false;
-    } //if cache sub directory does not exist
-  } //for
+      const auto subDirectory = m_CacheRoot + libthoro::filesystem::pathDelimiter
+                              + std::string(1, charOne) + std::string(1, charTwo);
+      if (!libthoro::filesystem::Directory::exists(subDirectory))
+      {
+        //try to create the directory
+        if (!libthoro::filesystem::Directory::create(subDirectory))
+          return false;
+      } //if cache sub directory does not exist
+    } //for (inner)
+  } //for (outer)
   //Cache directory already exists. We've got nothing more to do here.
   return true;
 }
@@ -108,11 +111,11 @@ std::string CacheManagerVirusTotalV2::getPathForCachedElement(const std::string&
     return std::string("");
 
   /* General path for a cached element is
-     ~/.scan-tool/vt-cache/<first character of resource ID>/<resourceID>.json,
-     e.g. ~/.scan-tool/vt-cache/a/ab16da937795be615ce4bef4e4d5337e782a7e982ff13cea1ece3e89d914678f.json
+     ~/.scan-tool/vt-cache/<first two characters of resource ID>/<resourceID>.json,
+     e.g. ~/.scan-tool/vt-cache/ab/ab16da937795be615ce4bef4e4d5337e782a7e982ff13cea1ece3e89d914678f.json
      for the resource "ab16da937795be615ce4bef4e4d5337e782a7e982ff13cea1ece3e89d914678f".
   */
-  return libthoro::filesystem::slashify(cacheRoot) + resourceID.at(0)
+  return libthoro::filesystem::slashify(cacheRoot) + resourceID.substr(0, 2)
        + libthoro::filesystem::pathDelimiter + resourceID + ".json";
 }
 
@@ -142,78 +145,282 @@ uint_least32_t CacheManagerVirusTotalV2::checkIntegrity(const bool deleteCorrupt
 
   uint_least32_t corrupted = 0;
 
+  const std::vector<char> subChars = { '0', '1', '2', '3', '4', '5', '6', '7',
+                                       '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
+  for (const auto firstChar : subChars)
+  {
+    for (const auto secondChar : subChars)
+    {
+      const std::string currentSubDirectory = libthoro::filesystem::slashify(m_CacheRoot)
+                      + std::string(1, firstChar) + std::string(1, secondChar);
+      if (libthoro::filesystem::Directory::exists(currentSubDirectory))
+      {
+        const auto files = libthoro::filesystem::getDirectoryFileList(currentSubDirectory);
+        #ifdef SCAN_TOOL_DEBUG
+        std::clog << "Found " << files.size() << " files in "
+                  << currentSubDirectory << "." << std::endl;
+        #endif // SCAN_TOOL_DEBUG
+        for (auto const & file : files)
+        {
+          if (//entry must not be a directory and file name has to end with ".json"
+              !file.isDirectory && stringEndsWith(file.fileName, ".json")
+              // first 64 characters must form a valid SHA256 hash
+              && SHA256::isValidHash(file.fileName.substr(0, 64))
+              // ... and total length has to be 69 characters
+              // (that is: 64 chars from hash, 5 chars for extension ".json")
+              && file.fileName.size() == 69)
+          {
+            const auto fileName = currentSubDirectory
+                  + libthoro::filesystem::pathDelimiter + file.fileName;
+            const auto fileSize = libthoro::filesystem::File::getSize64(fileName);
+            //check, if file is way too large for a proper cache file
+            if (fileSize >= 1024*1024*2)
+            {
+              //Several kilobytes are alright, but not megabytes.
+              ++corrupted;
+              std::clog << "Info: JSON file " << fileName
+                        << " is too large for a cached response!" << std::endl;
+              if (deleteCorrupted)
+                libthoro::filesystem::File::remove(fileName);
+            } //if file is too large
+            else
+            {
+              std::string content = "";
+              if (libthoro::filesystem::File::readIntoString(fileName, content))
+              {
+                Json::Value root; // will contain the root value after parsing.
+                Json::Reader jsonReader;
+                const bool success = jsonReader.parse(content, root, false);
+                if (!success)
+                {
+                  std::clog << "Info: JSON data from " << fileName << " could not be parsed!" << std::endl;
+                  ++corrupted;
+                  if (deleteCorrupted)
+                    libthoro::filesystem::File::remove(fileName);
+                } //if parsing failed
+                else
+                {
+                  if (deleteUnknown)
+                  {
+                    const auto report = reportFromJSONRoot(root);
+                    //response code zero means: file not known to VirusTotal
+                    if ((report.response_code == 0)
+                        && report.verbose_msg == "The requested resource is not among the finished, queued or pending scans")
+                    {
+                      std::cout << "Info: " << fileName << " contains no relevant data." << std::endl;
+                      libthoro::filesystem::File::remove(fileName);
+                    } //if report can be deleted
+                  } //if cached files of unknown resources shall be deleted
+                } //else (JSON parsing was successful)
+              } //if file was read
+              else
+              {
+                std::cout << "Error: Could not read file " << fileName << "!"
+                          << std::endl;
+              }
+            } //else (file size might be OK)
+          } //if JSON file with correct name
+          else
+          {
+            if (!file.isDirectory)
+            {
+              std::cout << "Info: File " << file.fileName << " has incorrect naming scheme." << std::endl;
+            }
+          } //else (incorrect naming)
+        } //for (inner)
+      } //if subdirectory exists
+    } //for (2nd char)
+  } //for (1st char)
+  return corrupted;
+}
+
+uint_least32_t CacheManagerVirusTotalV2::transitionOneTo256()
+{
+  // Does the cache exist? If not, exit.
+  if (!libthoro::filesystem::Directory::exists(m_CacheRoot))
+    return 0;
+
+  uint_least32_t moved_files = 0;
+
+  const auto files = libthoro::filesystem::getDirectoryFileList(
+                           libthoro::filesystem::unslashify(m_CacheRoot));
+  #ifdef SCAN_TOOL_DEBUG
+  std::clog << "Found " << files.size() << " files in "
+            << libthoro::filesystem::unslashify(m_CacheRoot) << "." << std::endl;
+  #endif // SCAN_TOOL_DEBUG
+  for (auto const & file : files)
+  {
+    if (//entry must not be a directory and file name has to end with ".json"
+        !file.isDirectory && stringEndsWith(file.fileName, ".json")
+        // first 64 characters must form a valid SHA256 hash
+        && SHA256::isValidHash(file.fileName.substr(0, 64))
+        // ... and total length has to be 69 characters
+        // (that is: 64 chars from hash, 5 chars for extension ".json")
+        && file.fileName.size() == 69)
+    {
+      const auto fileName = libthoro::filesystem::slashify(m_CacheRoot)
+                          + file.fileName;
+      const auto fileSize = libthoro::filesystem::File::getSize64(fileName);
+      //check, if file is way too large for a proper cache file
+      if (fileSize >= 1024*1024*2)
+      {
+        //Several kilobytes are alright, but not megabytes.
+        std::clog << "Info: JSON file " << fileName
+                  << " is too large for a cached response!" << std::endl;
+        libthoro::filesystem::File::remove(fileName);
+      } //if file is too large
+      else
+      {
+        std::string content = "";
+        if (libthoro::filesystem::File::readIntoString(fileName, content))
+        {
+          Json::Value root; // will contain the root value after parsing.
+          Json::Reader jsonReader;
+          const bool success = jsonReader.parse(content, root, false);
+          if (!success)
+          {
+            std::clog << "Info: JSON data from " << fileName << " could not be parsed!" << std::endl;
+            libthoro::filesystem::File::remove(fileName);
+          } //if parsing failed
+          else
+          {
+            const auto report = reportFromJSONRoot(root);
+            //response code zero means: file not known to VirusTotal
+            if (report.response_code == 0)
+            {
+              std::cout << "Info: " << fileName << " contains no relevant data." << std::endl;
+              libthoro::filesystem::File::remove(fileName);
+            } //if report can be deleted
+            else
+            {
+              const std::string newPath = getPathForCachedElement(file.fileName.substr(0, 64));
+              if (libthoro::filesystem::File::rename(fileName, newPath))
+                ++moved_files;
+              else
+              {
+                std::cout << "Error: Could not move file " << fileName
+                          << " to " << newPath << "!" << std::endl;
+              }
+            } //else (file contains relevant data)
+          } //else (JSON parsing was successful)
+        } //if file was read
+        else
+        {
+          std::cout << "Error: Could not read file " << fileName << "!" << std::endl;
+        }
+      } //else (file size might be OK)
+    } //if JSON file with correct name
+    else
+    {
+      if (!file.isDirectory)
+      {
+        std::cout << "Info: File " << file.fileName << " has incorrect naming scheme." << std::endl;
+      }
+    }
+  } //for
+  return moved_files;
+}
+
+uint_least32_t CacheManagerVirusTotalV2::transition16To256()
+{
+  // Does the cache exist? If not, exit.
+  if (!libthoro::filesystem::Directory::exists(m_CacheRoot))
+    return 0;
+
+  uint_least32_t moved_files = 0;
+
   const std::vector<std::string> sub = { std::string("0"), "1", "2", "3", "4",
                         "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"};
   for (const auto & d : sub)
   {
-    const auto files = libthoro::filesystem::getDirectoryFileList(
-                           libthoro::filesystem::slashify(m_CacheRoot) + d);
-    #ifdef SCAN_TOOL_DEBUG
-    std::clog << "Found " << files.size() << " files in "
-              << libthoro::filesystem::slashify(m_CacheRoot) + d << "." << std::endl;
-    #endif // SCAN_TOOL_DEBUG
-    for (auto const & file : files)
+    const std::string currentSubDirectory =
+        libthoro::filesystem::slashify(m_CacheRoot) + d;
+    if (libthoro::filesystem::Directory::exists(currentSubDirectory))
     {
-      if (!file.isDirectory && stringEndsWith(file.fileName, ".json")
-          && SHA256::isValidHash(file.fileName.substr(0, 64)))
+      const auto files = libthoro::filesystem::getDirectoryFileList(currentSubDirectory);
+      #ifdef SCAN_TOOL_DEBUG
+      std::clog << "Found " << files.size() << " files in "
+                << currentSubDirectory << "." << std::endl;
+      #endif // SCAN_TOOL_DEBUG
+
+      for (auto const & file : files)
       {
-        const auto fileName = libthoro::filesystem::slashify(m_CacheRoot) + d
-              + libthoro::filesystem::pathDelimiter + file.fileName;
-        const auto fileSize = libthoro::filesystem::File::getSize64(fileName);
-        //check, if file is way too large for a proper cache file
-        if (fileSize >= 1024*1024*4)
+        if (//entry must not be a directory and file name has to end with ".json"
+            !file.isDirectory && stringEndsWith(file.fileName, ".json")
+            // first 64 characters must form a valid SHA256 hash
+            && SHA256::isValidHash(file.fileName.substr(0, 64))
+            // ... and total length has to be 69 characters
+            // (that is: 64 chars from hash, 5 chars for extension ".json")
+            && file.fileName.size() == 69)
         {
-          //Several kilobytes are alright, but not megabytes.
-          ++corrupted;
-          std::clog << "Info: JSON file " << fileName
-                    << " is too large for a cached response!" << std::endl;
-          if (deleteCorrupted)
-            libthoro::filesystem::File::remove(fileName);
-        } //if file is too large
-        else
-        {
-          std::string content = "";
-          if (libthoro::filesystem::File::readIntoString(fileName, content))
+          const auto fileName = currentSubDirectory
+                + libthoro::filesystem::pathDelimiter + file.fileName;
+          const auto fileSize = libthoro::filesystem::File::getSize64(fileName);
+          //check, if file is way too large for a proper cache file
+          if (fileSize >= 1024*1024*2)
           {
-            Json::Value root; // will contain the root value after parsing.
-            Json::Reader jsonReader;
-            const bool success = jsonReader.parse(content, root, false);
-            if (!success)
+            //Several kilobytes are alright, but not megabytes.
+            std::clog << "Info: JSON file " << fileName
+                      << " is too large for a cached response!" << std::endl;
+            libthoro::filesystem::File::remove(fileName);
+          } //if file is too large
+          else
+          {
+            std::string content = "";
+            if (libthoro::filesystem::File::readIntoString(fileName, content))
             {
-              std::clog << "Info: JSON data from " << fileName << " could not be parsed!" << std::endl;
-              ++corrupted;
-              if (deleteCorrupted)
+              Json::Value root; // will contain the root value after parsing.
+              Json::Reader jsonReader;
+              const bool success = jsonReader.parse(content, root, false);
+              if (!success)
+              {
+                std::clog << "Info: JSON data from " << fileName << " could not be parsed!" << std::endl;
                 libthoro::filesystem::File::remove(fileName);
-            } //if parsing failed
-            else
-            {
-              if (deleteUnknown)
+              } //if parsing failed
+              else
               {
                 const auto report = reportFromJSONRoot(root);
                 //response code zero means: file not known to VirusTotal
-                if ((report.response_code == 0)
-                    && report.verbose_msg == "The requested resource is not among the finished, queued or pending scans")
+                if (report.response_code == 0)
                 {
                   std::cout << "Info: " << fileName << " contains no relevant data." << std::endl;
                   libthoro::filesystem::File::remove(fileName);
                 } //if report can be deleted
-              } //if cached files of unknown resources shall be deleted
-            } //else (JSON parsing was successful)
-          } //if file was read
-          else
-          {
-            std::cout << "Error: Could not read file " << fileName << "!" << std::endl;
-          }
-        } //else (file size might be OK)
-      } //if JSON file with correct name
-      else
-      {
-        if (!file.isDirectory)
+                else
+                {
+                  const std::string newPath = getPathForCachedElement(file.fileName.substr(0, 64));
+                  if (libthoro::filesystem::File::rename(fileName, newPath))
+                    ++moved_files;
+                  else
+                  {
+                    std::cout << "Error: Could not move file " << fileName
+                              << " to " << newPath << "!" << std::endl;
+                  }
+                } //else (file contains relevant data)
+              } //else (JSON parsing was successful)
+            } //if file was read
+            else
+            {
+              std::cout << "Error: Could not read file " << fileName << "!" << std::endl;
+            }
+          } //else (file size might be OK)
+        } //if JSON file with correct name
+        else
         {
-          std::cout << "Info: File " << file.fileName << " has incorrect naming scheme." << std::endl;
-        }
+          if (!file.isDirectory)
+          {
+            std::cout << "Info: File " << file.fileName << " has incorrect naming scheme." << std::endl;
+          }
+        } //else
+      } //for (inner)
+      //try to remove the directory, because it should be empty / unused by now
+      if (!libthoro::filesystem::Directory::remove(currentSubDirectory))
+      {
+        std::cout << "Warning: Could not remove directory " << currentSubDirectory
+                  << ". Maybe this directory is not empty yet or you do not "
+                  << "have the required permission to remove it." << std::endl;
       }
-    } //for (inner)
+    } //if subdirectory exists
   } //for
-  return corrupted;
+  return moved_files;
 }
