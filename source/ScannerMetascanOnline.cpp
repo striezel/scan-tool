@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2015  Thoronador
+    Copyright (C) 2015, 2016  Thoronador
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -41,7 +41,14 @@ void ScannerMetascanOnline::setApiKey(const std::string& apikey)
     m_apikey = apikey;
 }
 
-std::chrono::milliseconds ScannerMetascanOnline::timeBetweenConsecutiveRequests() const
+std::chrono::milliseconds ScannerMetascanOnline::timeBetweenConsecutiveScanRequests() const
+{
+  /* Metascan Online allows 25 file scans per hour,
+     i.e. one scan every 144 seconds. */
+  return std::chrono::milliseconds(144000);
+}
+
+std::chrono::milliseconds ScannerMetascanOnline::timeBetweenConsecutiveHashLookups() const
 {
   /* Metascan Online allows 1500 hash lookups per hour,
      i.e. one request every 2.4 seconds. */
@@ -55,7 +62,7 @@ bool ScannerMetascanOnline::getReport(const std::string& resource, ReportMetasca
     return false;
 
   std::string response = "";
-  waitForLimitExpiration();
+  waitForHashLookupLimitExpiration();
   //send request via cURL
   Curly cURL;
   cURL.setURL("https://hashlookup.metascan-online.com/v2/hash/"+resource);
@@ -69,7 +76,7 @@ bool ScannerMetascanOnline::getReport(const std::string& resource, ReportMetasca
     std::cerr << "Error in ScannerMetascanOnline::getReport(): Request could not be performed." << std::endl;
     return false;
   }
-  requestWasNow();
+  hashLookupWasNow();
 
   //400: Bad request
   if (cURL.getResponseCode() == 400)
@@ -129,7 +136,7 @@ bool ScannerMetascanOnline::rescan(const std::string& file_id, RescanData& scan_
     return false;
 
   std::string response = "";
-  waitForLimitExpiration();
+  waitForScanLimitExpiration();
   //send request via cURL
   Curly cURL;
   cURL.setURL("https://scan.metascan-online.com/v2/rescan/" + file_id);
@@ -142,7 +149,7 @@ bool ScannerMetascanOnline::rescan(const std::string& file_id, RescanData& scan_
     std::cerr << "Error in ScannerMetascanOnline::rescan(): Request could not be performed." << std::endl;
     return false;
   }
-  requestWasNow();
+  scanRequestWasNow();
 
   //400: Bad request
   if (cURL.getResponseCode() == 400)
