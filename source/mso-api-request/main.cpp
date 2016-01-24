@@ -41,12 +41,21 @@ void showHelp()
             << "  --rescan FILE_ID - request rescan of a file with the given ID that was\n"
             << "                     uploaded earlier. The file ID usually is a 32 digit hex\n"
             << "                     number. This parameter can occur multiple times.\n"
-            << "  --re FILE_ID     - same as --rescan FILE_ID\n";
+            << "  --re FILE_ID     - same as --rescan FILE_ID\n"
+            << "  -- file FILE     - request to scan the file FILE by Metascan Online.\n"
+            << "                     FILE must be a local file that can be read by the user\n"
+            << "                     that runs this program. The program will print the scan\n"
+            << "                     data of the file to the standard output. Note that it can\n"
+            << "                     take some time for Metascan Online to scan this file,\n"
+            << "                     depending on the current load and number of queued scans.\n"
+            << "                     Can be repeated multiple times, if you want to scan\n"
+            << "                     several files.\n"
+            << "  --scan FILE      - same as --file FILE\n";
 }
 
 void showVersion()
 {
-  std::cout << "mso-api-request, version 0.0.4, 2016-01-17\n";
+  std::cout << "mso-api-request, version 0.0.5, 2016-01-24\n";
 }
 
 int main(int argc, char ** argv)
@@ -57,6 +66,8 @@ int main(int argc, char ** argv)
   std::unordered_set<std::string> resources_report = std::unordered_set<std::string>();
   //file IDs for which a rescan will be requested
   std::unordered_set<std::string> file_IDs_rescan = std::unordered_set<std::string>();
+  //files for which an upload and scan is requested
+  std::unordered_set<std::string> files_scan = std::unordered_set<std::string>();
 
   if ((argc>1) and (argv!=NULL))
   {
@@ -136,6 +147,27 @@ int main(int argc, char ** argv)
             return rcInvalidParameter;
           }
         }//rescan
+        else if ((param=="--file") or (param=="--scan"))
+        {
+          //enough parameters?
+          if ((i+1<argc) and (argv[i+1]!=NULL))
+          {
+            const std::string next_file = std::string(argv[i+1]);
+            ++i; //Skip next parameter, because it's used as filename already.
+            if (files_scan.find(next_file) == files_scan.end())
+            {
+              std::cout << "Adding file " << next_file
+                        << " to list of scan files." << std::endl;
+            }
+            files_scan.insert(next_file);
+          }
+          else
+          {
+            std::cout << "Error: You have to enter a file name after \""
+                      << param << "\"." << std::endl;
+            return rcInvalidParameter;
+          }
+        }//scan file
         else
         {
           //unknown or wrong parameter
@@ -160,10 +192,10 @@ int main(int argc, char ** argv)
               << std::endl;
     return rcInvalidParameter;
   }
-  if (resources_report.empty() && file_IDs_rescan.empty())
+  if (resources_report.empty() && file_IDs_rescan.empty() && files_scan.empty())
   {
-    std::cout << "No resources for report retrieval or file IDs for rescan "
-              << "were given. Exiting." << std::endl;
+    std::cout << "No resources for report retrieval, file IDs for rescan or "
+              << "files to scan were given. Exiting." << std::endl;
     return rcInvalidParameter;
   } //if no resources
 
@@ -224,6 +256,21 @@ int main(int argc, char ** argv)
       std::cout << "  No threat was found for this resource." << std::endl;
   } //for (range-based) over all resources
 
-  std::cout << std::endl << "Not completely implemented yet!" << std::endl;
+  //iterate over all files for scan requests
+  for(const std::string& i : files_scan)
+  {
+    ScannerMetascanOnline::RescanData scan_data;
+    if (!scanMSO.scan(i, scan_data))
+    {
+      std::cout << "Error: Could not initiate scan for \""
+                << i << "\"!" << std::endl;
+      return rcScanError;
+    }
+    std::cout << "Scan for \"" << i << "\" initiated. "
+              << "Data ID for later retrieval is " << scan_data.data_id << "."
+              << " Address for progress requests is " << scan_data.rest_ip
+              << "."  << std::endl;
+  } //for (range-based)
+
   return 0;
 }

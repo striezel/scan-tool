@@ -22,6 +22,8 @@
 #include <iostream>
 #include "Curly.hpp"
 #include "../libthoro/hash/sha256/sha256.hpp"
+#include "../libthoro/filesystem/DirectoryFunctions.hpp"
+#include "../libthoro/filesystem/FileFunctions.hpp"
 
 ScannerMetascanOnline::ScannerMetascanOnline(const std::string& apikey, const bool honourTimeLimits, const bool silent)
 : Scanner(honourTimeLimits, silent),
@@ -164,7 +166,7 @@ bool ScannerMetascanOnline::rescan(const std::string& file_id, RescanData& scan_
     return false;
   }
   //500: internal server error / server temporary unavailable
-  if (cURL.getResponseCode() == 401)
+  if (cURL.getResponseCode() == 500)
   {
     std::cerr << "Error in ScannerMetascanOnline::rescan(): Internal server error / server temporarily unavailable!" << std::endl;
     return false;
@@ -218,6 +220,117 @@ bool ScannerMetascanOnline::rescan(const std::string& file_id, RescanData& scan_
   } //else
 
   //Found?
+  return (!scan_data.data_id.empty() && !scan_data.rest_ip.empty());
+}
+
+bool ScannerMetascanOnline::scan(const std::string& filename, RescanData& scan_data)
+{
+  if (filename.empty())
+    return false;
+
+  waitForScanLimitExpiration();
+  //send request
+  Curly cURL;
+  cURL.setURL("https://scan.metascan-online.com/v2/file");
+  cURL.addHeader("apikey: " + m_apikey);
+  //scope for "basename" stuff
+  {
+    //add "basename" of file for better file info after scan
+    std::string dummy, fName, ext;
+    libthoro::filesystem::splitPathFileExtension(filename, libthoro::filesystem::pathDelimiter, dummy, fName, ext);
+    if (!fName.empty())
+    {
+      if (!ext.empty())
+        cURL.addHeader("filename: " + fName + '.' + ext);
+      else
+        cURL.addHeader("filename: " + fName);
+    } //if
+  } //scope
+  if (!cURL.addFile(filename, "file"))
+    return false;
+
+  std::string response = "";
+  if (!cURL.perform(response))
+  {
+    std::cerr << "Error in ScannerMetascanOnline::scan(): Request could not be performed." << std::endl;
+    return false;
+  }
+  scanRequestWasNow();
+
+  //400: Bad request
+  if (cURL.getResponseCode() == 400)
+  {
+    std::cerr << "Error in ScannerMetascanOnline::scan(): Bad request!" << std::endl;
+    return false;
+  }
+  //401: wrong or missing API key
+  if (cURL.getResponseCode() == 401)
+  {
+    std::cerr << "Error in ScannerMetascanOnline::scan(): API key is wrong or missing!" << std::endl;
+    return false;
+  }
+  //403: scan limit reached
+  if (cURL.getResponseCode() == 403)
+  {
+    std::cerr << "Error in ScannerMetascanOnline::scan(): The hourly scan limit has been reached!" << std::endl;
+    return false;
+  }
+  //500: internal server error / server temporary unavailable
+  if (cURL.getResponseCode() == 500)
+  {
+    std::cerr << "Error in ScannerMetascanOnline::scan(): Internal server error / server temporarily unavailable!" << std::endl;
+    return false;
+  }
+  //503: Server temporary unavailable due to maintenance or overloading.
+  if (cURL.getResponseCode() == 503)
+  {
+    std::cerr << "Error in ScannerMetascanOnline::scan(): Service temporarily"
+              << " unavailable due to maintenance or overloading."
+              << " Try again later." << std::endl;
+    return false;
+  }
+  //response code should be 200
+  if (cURL.getResponseCode() != 200)
+  {
+    std::cerr << "Error in ScannerMetascanOnline::scan(): Unexpected HTTP status code "
+              << cURL.getResponseCode() << "!" << std::endl;
+    return false;
+  }
+
+  #ifdef SCAN_TOOL_DEBUG
+  std::cout << "Request was successful!" << std::endl
+            << "Code: " << cURL.getResponseCode() << std::endl
+            << "Content-Type: " << cURL.getContentType() << std::endl
+            << "Response text: " << response << std::endl;
+  #endif
+  // parse JSON response
+  Json::Value root; // will contain the root value after parsing.
+  Json::Reader jsonReader;
+  const bool success = jsonReader.parse(response, root, false);
+  if (!success)
+  {
+    std::cerr << "Error in ScannerMetascanOnline::scan(): Unable to parse "
+              << "JSON data!" << std::endl;
+    return false;
+  }
+  //data_id
+  Json::Value js_value = root["data_id"];
+  if (!js_value.empty() && js_value.isString())
+    scan_data.data_id = js_value.asString();
+  else
+  {
+    scan_data.data_id.clear();
+  } //else
+  //rest_ip
+  js_value = root["rest_ip"];
+  if (!js_value.empty() && js_value.isString())
+    scan_data.rest_ip = js_value.asString();
+  else
+  {
+    scan_data.rest_ip.clear();
+  } //else
+
+  //Did we get the data and initialize a scan?
   return (!scan_data.data_id.empty() && !scan_data.rest_ip.empty());
 }
 

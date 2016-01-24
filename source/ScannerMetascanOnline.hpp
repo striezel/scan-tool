@@ -88,6 +88,16 @@ class ScannerMetascanOnline: public Scanner
     bool rescan(const std::string& file_id, RescanData& scan_data);
 
 
+    /** \brief upload a file and request a scan of the file
+     *
+     * \param filename   name of the (local) file that shall be uploaded and scanned
+     * \param scan_data  the scan_data which can be used to query the report later
+     * \return Returns true, if the scan was initiated.
+     *         Returns false, if request failed.
+     */
+    bool scan(const std::string& filename, RescanData& scan_data);
+
+
     /** \brief returns the maximum file size that is allowed to be scanned
      *
      * \return maximum size in bytes that can still be scanned

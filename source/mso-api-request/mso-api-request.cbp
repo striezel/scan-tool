@@ -39,6 +39,12 @@
 			<Add library="curl" />
 			<Add library="jsoncpp" />
 		</Linker>
+		<Unit filename="../../libthoro/common/StringUtils.cpp" />
+		<Unit filename="../../libthoro/common/StringUtils.h" />
+		<Unit filename="../../libthoro/filesystem/DirectoryFunctions.cpp" />
+		<Unit filename="../../libthoro/filesystem/DirectoryFunctions.hpp" />
+		<Unit filename="../../libthoro/filesystem/FileFunctions.cpp" />
+		<Unit filename="../../libthoro/filesystem/FileFunctions.hpp" />
 		<Unit filename="../../libthoro/hash/sha256/sha256.cpp" />
 		<Unit filename="../../libthoro/hash/sha256/sha256.hpp" />
 		<Unit filename="../Curly.cpp" />

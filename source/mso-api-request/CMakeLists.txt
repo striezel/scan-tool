@@ -6,6 +6,9 @@ project(mso-api-request)
 #add_definitions(-DDEFINE_CONSTANT_HERE -DANOTHER_ONE_THERE -DTHIS_IS_THE_THIRD)
 
 set(mso-api-request_sources
+    ../../libthoro/common/StringUtils.cpp
+    ../../libthoro/filesystem/DirectoryFunctions.cpp
+    ../../libthoro/filesystem/FileFunctions.cpp
     ../../libthoro/hash/sha256/sha256.cpp
     ../Curly.cpp
     ../Engine.cpp
