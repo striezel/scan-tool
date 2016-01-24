@@ -386,7 +386,7 @@ bool Curly::perform(std::string& response)
   }
   //get content type
   char * contType = nullptr;
-  retCode = curl_easy_getinfo(handle, CURLINFO_RESPONSE_CODE, &contType);
+  retCode = curl_easy_getinfo(handle, CURLINFO_CONTENT_TYPE, &contType);
   if (retCode != CURLE_OK)
   {
     std::cerr << "curl_easy_getinfo() of Curly::perform failed! Error: "
