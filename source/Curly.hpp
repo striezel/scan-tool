@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2015  Thoronador
+    Copyright (C) 2015, 2016  Thoronador
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -61,10 +61,12 @@ class Curly
      *
      * \param name   name of the field
      * \param value  the field's value
+     * \return Returns true, if a field with the given name was added.
+     *         Returns false otherwise.
      * \remarks If a POST field with the same name already exists, its value
      *          will be overwritten.
      */
-    void addPostField(const std::string& name, const std::string& value);
+    bool addPostField(const std::string& name, const std::string& value);
 
 
     /** \brief checks, if this class instance has a POST field with the given name

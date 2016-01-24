@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2015  Thoronador
+    Copyright (C) 2015, 2016  Thoronador
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -72,11 +72,16 @@ const std::string& Curly::getURL() const
   return m_URL;
 }
 
-void Curly::addPostField(const std::string& name, const std::string& value)
+bool Curly::addPostField(const std::string& name, const std::string& value)
 {
   //No empty names, and avoid conflict with file field names.
   if (!name.empty() && (m_Files.find(name) == m_Files.end()))
+  {
     m_PostFields[name] = value;
+    return true;
+  }
+  else
+    return false;
 }
 
 bool Curly::hasPostField(const std::string& name) const
