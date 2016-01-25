@@ -1,5 +1,8 @@
 # ChangeLog for mso-api-request
 
+## Version 0.0.6 (2016-01-25)
+  - fix implementation of upload/scan capability
+
 ## Version 0.0.5 (2016-01-24)
   - first implementation of upload/scan capability
 

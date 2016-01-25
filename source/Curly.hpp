@@ -124,6 +124,18 @@ class Curly
      */
     bool addHeader(const std::string& header);
 
+
+    /** \brief define the body of a HTTP POST request directly
+     *
+     * \param body  the content of the HTTP body
+     * \remarks This will only work, if no post fields have been set via the
+     * addPostField() method and if no files were added with addFile().
+     * Otherwise the fields and files from these functions will be used to
+     * create the body of the HTTP post request.
+     */
+    void setPostBody(const std::string& body);
+
+
     /** \brief performs the (POST) request
      *
      * \param response  reference to a string that will be filled with the
@@ -184,6 +196,8 @@ class Curly
     std::unordered_map<std::string, std::string> m_PostFields; /**< post fields; key = name; value = field's value */
     std::unordered_map<std::string, std::string> m_Files; /**< added files; key = field name, value = file name */
     std::vector<std::string> m_headers; /**< additional / custom headers (HTTP only) */
+    std::string m_PostBody; /**< plain post body */
+    bool m_UsePostBody; /**< whether to use the explicit post body */
     long m_LastResponseCode;
     std::string m_LastContentType;
 }; //class Curly

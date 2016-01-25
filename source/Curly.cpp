@@ -56,6 +56,8 @@ Curly::Curly()
   m_PostFields(std::unordered_map<std::string, std::string>()),
   m_Files(std::unordered_map<std::string, std::string>()),
   m_headers(std::vector<std::string>()),
+  m_PostBody(""),
+  m_UsePostBody(false),
   m_LastResponseCode(0),
   m_LastContentType("")
 {
@@ -140,6 +142,15 @@ bool Curly::addHeader(const std::string& header)
   } //if conditions for header are met
   //Not a valid header!
   return false;
+}
+
+void Curly::setPostBody(const std::string& body)
+{
+  m_PostBody = body;
+  /* Checking for non-empty post body would be good enough for most cases, but
+     it would not allow empty bodies. Therefore we need an extra flag for the
+     post body to allow empty post bodies, too. */
+  m_UsePostBody = true;
 }
 
 bool Curly::perform(std::string& response)
@@ -323,6 +334,41 @@ bool Curly::perform(std::string& response)
       return false;
     }
   } //if files are there
+
+  //set plain post body - but only of other POST stuff is empty
+  if (m_UsePostBody && m_PostFields.empty() && m_Files.empty())
+  {
+    retCode = curl_easy_setopt(handle, CURLOPT_POST, 1L);
+    if (retCode != CURLE_OK)
+    {
+      std::cerr << "cURL error: setting POST mode for Curly::perform failed! Error: "
+                << curl_easy_strerror(retCode) << std::endl;
+      curl_easy_cleanup(handle);
+      curl_slist_free_all(header_list);
+      header_list = nullptr;
+      return false;
+    }
+    retCode = curl_easy_setopt(handle, CURLOPT_POSTFIELDSIZE, m_PostBody.size());
+    if (retCode != CURLE_OK)
+    {
+      std::cerr << "cURL error: setting size of POST body for Curly::perform failed! Error: "
+                << curl_easy_strerror(retCode) << std::endl;
+      curl_easy_cleanup(handle);
+      curl_slist_free_all(header_list);
+      header_list = nullptr;
+      return false;
+    }
+    retCode = curl_easy_setopt(handle, CURLOPT_POSTFIELDS, m_PostBody.c_str());
+    if (retCode != CURLE_OK)
+    {
+      std::cerr << "cURL error: setting POST body for Curly::perform failed! Error: "
+                << curl_easy_strerror(retCode) << std::endl;
+      curl_easy_cleanup(handle);
+      curl_slist_free_all(header_list);
+      header_list = nullptr;
+      return false;
+    }
+  } //if post body
 
   //set write callback
   retCode = curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, writeCallbackString);

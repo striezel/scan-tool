@@ -228,7 +228,17 @@ bool ScannerMetascanOnline::scan(const std::string& filename, RescanData& scan_d
   if (filename.empty())
     return false;
 
+  //get file content, so we can put it into HTTP POST body later
+  /* This might cause huge memory consumption for large files, so we should be
+     careful which files we use here.
+  */
+  std::string content = "";
+  if (!libthoro::filesystem::File::readIntoString(filename, content))
+    return false;
+
+  //wait
   waitForScanLimitExpiration();
+
   //send request
   Curly cURL;
   cURL.setURL("https://scan.metascan-online.com/v2/file");
@@ -246,8 +256,9 @@ bool ScannerMetascanOnline::scan(const std::string& filename, RescanData& scan_d
         cURL.addHeader("filename: " + fName);
     } //if
   } //scope
-  if (!cURL.addFile(filename, "file"))
-    return false;
+
+  //set file content as HTTP POST body
+  cURL.setPostBody(content);
 
   std::string response = "";
   if (!cURL.perform(response))
