@@ -76,8 +76,10 @@ const std::string& Curly::getURL() const
 
 bool Curly::addPostField(const std::string& name, const std::string& value)
 {
-  //No empty names, and avoid conflict with file field names.
-  if (!name.empty() && (m_Files.find(name) == m_Files.end()))
+  /*Perform some checks before adding the post field:
+    No empty names, avoid conflict with file field names, and do not set it, if
+    we already have a plain post body. */
+  if (!name.empty() && (m_Files.find(name) == m_Files.end()) && !m_UsePostBody)
   {
     m_PostFields[name] = value;
     return true;
@@ -112,6 +114,9 @@ bool Curly::addFile(const std::string& filename, const std::string& field)
   //Avoid name conflict with post fields.
   if (m_PostFields.find(field) != m_PostFields.end())
     return false;
+  //Avoid conflict with post body.
+  if (m_UsePostBody)
+    return false;
   //Add file.
   m_Files[field] = filename;
   return true;
@@ -144,13 +149,20 @@ bool Curly::addHeader(const std::string& header)
   return false;
 }
 
-void Curly::setPostBody(const std::string& body)
+bool Curly::setPostBody(const std::string& body)
 {
-  m_PostBody = body;
-  /* Checking for non-empty post body would be good enough for most cases, but
-     it would not allow empty bodies. Therefore we need an extra flag for the
-     post body to allow empty post bodies, too. */
-  m_UsePostBody = true;
+  //avoid conflicts with post fields and files
+  if (m_PostFields.empty() && m_Files.empty())
+  {
+    m_PostBody = body;
+    /* Checking for non-empty post body would be good enough for most cases, but
+       it would not allow empty bodies. Therefore we need an extra flag for the
+       post body to allow empty post bodies, too. */
+    m_UsePostBody = true;
+    return true;
+  }
+  else
+    return false;
 }
 
 bool Curly::perform(std::string& response)

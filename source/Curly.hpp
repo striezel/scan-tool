@@ -132,8 +132,10 @@ class Curly
      * addPostField() method and if no files were added with addFile().
      * Otherwise the fields and files from these functions will be used to
      * create the body of the HTTP post request.
+     * \return Returns true, if the post body was added.
+     *         Returns false, if the post body could not be added.
      */
-    void setPostBody(const std::string& body);
+    bool setPostBody(const std::string& body);
 
 
     /** \brief performs the (POST) request
