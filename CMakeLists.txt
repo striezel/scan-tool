@@ -9,5 +9,9 @@ add_subdirectory (source)
 
 # enable tests
 enable_testing()
+
 # Recurse into subdirectory for tests.
 add_subdirectory (test)
+
+# Recurse into subdirectory for SHA-256 tests.
+add_subdirectory (libthoro/tests/hash/sha256)
