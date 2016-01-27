@@ -27,9 +27,9 @@
 		<Linker>
 			<Add library="curl" />
 		</Linker>
-		<Unit filename="../../source/Curly.cpp" />
-		<Unit filename="../../source/Curly.hpp" />
-		<Unit filename="main.cpp" />
+		<Unit filename="../../../source/Curly.cpp" />
+		<Unit filename="../../../source/Curly.hpp" />
+		<Unit filename="version.cpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />

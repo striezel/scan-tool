@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of the scan-tool test suite.
-    Copyright (C) 2015  Thoronador
+    Copyright (C) 2015, 2016  Thoronador
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
 */
 
 #include <iostream>
-#include "../../source/Curly.hpp"
+#include "../../../source/Curly.hpp"
 
 int main()
 {

@@ -11,8 +11,8 @@ project(test_curly_headers)
 #add_definitions(-DDEFINE_CONSTANT_HERE -DANOTHER_ONE_THERE -DTHIS_IS_THE_THIRD)
 
 set(test_curly_headers_sources
-    ../../source/Curly.cpp
-    main.cpp)
+    ../../../source/Curly.cpp
+    headers.cpp)
 
 if (CMAKE_COMPILER_IS_GNUCC)
     add_definitions (-Wall -O2 -fexceptions)
@@ -32,7 +32,7 @@ else ()
   message ( FATAL_ERROR "cURL was not found!" )
 endif (CURL_FOUND)
 # find jsoncpp library
-set(LibJsonCpp_DIR "../../cmake/" )
+set(LibJsonCpp_DIR "../../../cmake/" )
 find_package (LibJsonCpp)
 if (LIBJSONCPP_FOUND)
   include_directories(${LIBJSONCPP_INCLUDE_DIRS})
