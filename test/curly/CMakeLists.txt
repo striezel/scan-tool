@@ -7,5 +7,8 @@ add_subdirectory (headers)
 # Recurse into subdirectory for Curly POST request tests.
 add_subdirectory (post)
 
+# Recurse into subdirectory for test of Curly's supported protocols.
+add_subdirectory (protocol-support)
+
 # Recurse into subdirectory for Curly version information test.
 add_subdirectory (version)
