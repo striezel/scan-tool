@@ -82,6 +82,14 @@ struct ReportMetascanOnline
 
 
   /** \brief checks whether the response indicates, that the requested resource
+   * is present/was found and could be retrieved
+   *
+   * \return Returns true, if the requested item could be retrieved.
+   */
+  virtual bool successfulRetrieval() const /*override*/;
+
+
+  /** \brief checks whether the response indicates, that the requested resource
    * is not present/was not found
    *
    * \return Returns true, if the requested item was not found.

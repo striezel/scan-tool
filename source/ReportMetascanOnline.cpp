@@ -279,6 +279,12 @@ bool ReportMetascanOnline::fromJSONRoot(const Json::Value& root)
   return true;
 }
 
+bool ReportMetascanOnline::successfulRetrieval() const
+{
+  return (!scan_details.empty() && !scan_all_result_a.empty()
+          && !file_id.empty());
+}
+
 bool ReportMetascanOnline::notFound() const
 {
   //simple way to check for "not found"
