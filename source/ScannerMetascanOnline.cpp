@@ -31,10 +31,19 @@ ScannerMetascanOnline::ScannerMetascanOnline(const std::string& apikey, const bo
 {
 }
 
-ScannerMetascanOnline::RescanData::RescanData()
+ScannerMetascanOnline::ScanData::ScanData()
 : data_id(""),
   rest_ip("")
 {
+}
+
+bool ScannerMetascanOnline::ScanData::operator< (const ScanData& other) const
+{
+  if (data_id < other.data_id)
+    return true;
+  if (data_id == other.data_id)
+    return (rest_ip < other.rest_ip);
+  return false;
 }
 
 void ScannerMetascanOnline::setApiKey(const std::string& apikey)
@@ -132,7 +141,7 @@ bool ScannerMetascanOnline::getReport(const std::string& resource, ReportMetasca
   return true;
 }
 
-bool ScannerMetascanOnline::rescan(const std::string& file_id, RescanData& scan_data)
+bool ScannerMetascanOnline::rescan(const std::string& file_id, ScanData& scan_data)
 {
   if (file_id.empty())
     return false;
@@ -223,7 +232,7 @@ bool ScannerMetascanOnline::rescan(const std::string& file_id, RescanData& scan_
   return (!scan_data.data_id.empty() && !scan_data.rest_ip.empty());
 }
 
-bool ScannerMetascanOnline::scan(const std::string& filename, RescanData& scan_data)
+bool ScannerMetascanOnline::scan(const std::string& filename, ScanData& scan_data)
 {
   if (filename.empty())
     return false;

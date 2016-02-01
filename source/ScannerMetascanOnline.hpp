@@ -37,13 +37,23 @@ class ScannerMetascanOnline: public Scanner
     ScannerMetascanOnline(const std::string& apikey, const bool honourTimeLimits = true, const bool silent = false);
 
 
-    struct RescanData
+    struct ScanData
     {
       //default constructor
-      RescanData();
+      ScanData();
 
       std::string data_id; /**< Data ID used for retrieving scan result */
       std::string rest_ip; /**< address for requests of scan progress */
+
+
+      /** \brief comparison operator "less than" for ScanData
+       *
+       * \param other the other scan_data
+       * \return Returns true, if this is "less than" the other ScanData.
+       * \remarks Not strictly a less than, but only implemented to allow use
+       *          of ScanData in ordered data structures like sets or maps.
+       */
+      bool operator < (const ScanData& other) const;
     }; //struct
 
 
@@ -85,7 +95,7 @@ class ScannerMetascanOnline: public Scanner
      * \return Returns true, if the rescan was initiated.
      *         Returns false, if request failed.
      */
-    bool rescan(const std::string& file_id, RescanData& scan_data);
+    bool rescan(const std::string& file_id, ScanData& scan_data);
 
 
     /** \brief upload a file and request a scan of the file
@@ -95,7 +105,7 @@ class ScannerMetascanOnline: public Scanner
      * \return Returns true, if the scan was initiated.
      *         Returns false, if request failed.
      */
-    bool scan(const std::string& filename, RescanData& scan_data);
+    bool scan(const std::string& filename, ScanData& scan_data);
 
 
     /** \brief returns the maximum file size that is allowed to be scanned
@@ -106,5 +116,22 @@ class ScannerMetascanOnline: public Scanner
   private:
     std::string m_apikey; /**< holds the Metascan Online API key */
 }; //class
+
+
+// custom specialization of std::hash for ScannerMetascanOnline::ScanData
+namespace std
+{
+    template<> struct hash<ScannerMetascanOnline::ScanData>
+    {
+        typedef ScannerMetascanOnline::ScanData argument_type;
+        typedef std::size_t result_type;
+        result_type operator()(argument_type const& s) const
+        {
+            result_type const h1 ( std::hash<std::string>()(s.data_id) );
+            result_type const h2 ( std::hash<std::string>()(s.rest_ip) );
+            return h1 ^ (h2 << 1);
+        }
+    };
+}
 
 #endif // SCANNERMETASCANONLINE_HPP

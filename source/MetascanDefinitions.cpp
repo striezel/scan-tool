@@ -18,7 +18,7 @@
  -------------------------------------------------------------------------------
 */
 
-#include "MetascanDefintions.hpp"
+#include "MetascanDefinitions.hpp"
 
 namespace MSO
 {
