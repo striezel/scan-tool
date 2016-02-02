@@ -200,17 +200,23 @@ uint_least32_t CacheManagerVirusTotalV2::checkIntegrity(const bool deleteCorrupt
                 } //if parsing failed
                 else
                 {
-                  if (deleteUnknown)
+                  const auto report = reportFromJSONRoot(root);
+                  //response code zero means: file not known to VirusTotal
+                  if (deleteUnknown && (report.response_code == 0))
                   {
-                    const auto report = reportFromJSONRoot(root);
-                    //response code zero means: file not known to VirusTotal
-                    if ((report.response_code == 0)
-                        && report.verbose_msg == "The requested resource is not among the finished, queued or pending scans")
-                    {
-                      std::cout << "Info: " << fileName << " contains no relevant data." << std::endl;
+                    std::cout << "Info: " << fileName << " contains no relevant data." << std::endl;
+                    libthoro::filesystem::File::remove(fileName);
+                  } //if report can be deleted
+                  //check SHA256 hash
+                  else if (report.sha256 != file.fileName.substr(0, 64))
+                  {
+                    std::cout << "Info: SHA256 hash of " << file.fileName
+                              << " is " << report.sha256 << " and does not "
+                              << " match file name." << std::endl;
+                    ++corrupted;
+                    if (deleteCorrupted)
                       libthoro::filesystem::File::remove(fileName);
-                    } //if report can be deleted
-                  } //if cached files of unknown resources shall be deleted
+                  } //else if SHA256 does not match
                 } //else (JSON parsing was successful)
               } //if file was read
               else
