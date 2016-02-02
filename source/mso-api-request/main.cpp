@@ -205,7 +205,7 @@ int main(int argc, char ** argv)
   //iterate over all resources for rescan requests
   for(const std::string& i : file_IDs_rescan)
   {
-    ScannerMetascanOnline::RescanData scan_data;
+    ScannerMetascanOnline::ScanData scan_data;
     if (!scanMSO.rescan(i, scan_data))
     {
       std::cout << "Error: Could not initiate rescan for file ID \""
@@ -259,7 +259,7 @@ int main(int argc, char ** argv)
   //iterate over all files for scan requests
   for(const std::string& i : files_scan)
   {
-    ScannerMetascanOnline::RescanData scan_data;
+    ScannerMetascanOnline::ScanData scan_data;
     if (!scanMSO.scan(i, scan_data))
     {
       std::cout << "Error: Could not initiate scan for \""
