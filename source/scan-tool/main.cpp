@@ -84,7 +84,7 @@ void showHelp()
 
 void showVersion()
 {
-  std::cout << "scan-tool, version 0.27, 2016-02-02\n";
+  std::cout << "scan-tool, version 0.27b, 2016-02-03\n";
 }
 
 /* Four variables that will be used in main() but also in signal handling

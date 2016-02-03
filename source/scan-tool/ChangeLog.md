@@ -1,5 +1,8 @@
 # ChangeLog for scan-tool
 
+## Version 0.27b (2016-02-03)
+  - improve integrity check (again)
+
 ## Version 0.27 (2016-02-02)
   - integrity check will now check SHA256 hash against cache file name
 

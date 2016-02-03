@@ -208,7 +208,9 @@ uint_least32_t CacheManagerVirusTotalV2::checkIntegrity(const bool deleteCorrupt
                     libthoro::filesystem::File::remove(fileName);
                   } //if report can be deleted
                   //check SHA256 hash
-                  else if (report.sha256 != file.fileName.substr(0, 64))
+                  else if ((report.sha256 != file.fileName.substr(0, 64))
+                           or (firstChar != file.fileName[0])
+                           or (secondChar != file.fileName[1]))
                   {
                     std::cout << "Info: SHA256 hash of " << file.fileName
                               << " is " << report.sha256 << " and does not "
