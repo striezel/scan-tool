@@ -1,9 +1,9 @@
 # We might support earlier versions, too, but it's only tested with 2.8.9.
 cmake_minimum_required (VERSION 2.8)
 
-# ##################### #
-# tests for class Curly #
-# ##################### #
+# ############################################## #
+# test for class Curly's fields in POST requests #
+# ############################################## #
 
 
 # test binary for Curly POST requests
@@ -32,6 +32,15 @@ if (CURL_FOUND)
 else ()
   message ( FATAL_ERROR "cURL was not found!" )
 endif (CURL_FOUND)
+# find jsoncpp library
+set(LibJsonCpp_DIR "../../../cmake/" )
+find_package (LibJsonCpp)
+if (LIBJSONCPP_FOUND)
+  include_directories(${LIBJSONCPP_INCLUDE_DIRS})
+  target_link_libraries (test_curly_post ${LIBJSONCPP_LIBRARIES})
+else ()
+  message ( FATAL_ERROR "libjsoncpp was not found!" )
+endif (LIBJSONCPP_FOUND)
 
 # add test for Curly class
 add_test(NAME Curly_POST

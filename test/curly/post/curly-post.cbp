@@ -26,6 +26,7 @@
 		</Compiler>
 		<Linker>
 			<Add library="curl" />
+			<Add library="jsoncpp" />
 		</Linker>
 		<Unit filename="../../../source/Curly.cpp" />
 		<Unit filename="../../../source/Curly.hpp" />

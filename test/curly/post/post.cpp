@@ -20,6 +20,7 @@
 
 #include <iostream>
 #include <vector>
+#include <jsoncpp/json/reader.h>
 #include "../../../source/Curly.hpp"
 
 int main()
@@ -64,85 +65,52 @@ int main()
               << post.getContentType() << " instead!" << std::endl;
     return 1;
   }
-  //check response
-  std::vector<std::string> expectedSubstrings = {
-      std::string("\"args\": {}"),
-      "\"data\": \"\"",
-      "\"files\": {}",
-      "\"form\": {",
-      "\"foo\": \"bar\",",
-      "\"ping\": \"pong\"",
-      "\"Host\": \"httpbin.org\"",
-      "\"url\": \"https://httpbin.org/post\""
-  };
 
   std::cout << "Response:" << std::endl << response << std::endl << std::endl;
 
-  for (const auto & item : expectedSubstrings)
+  //check response
+  Json::Value root; // will contain the root value after parsing
+  Json::Reader jsonReader;
+  const bool success = jsonReader.parse(response, root, false);
+  if (!success)
   {
-    if (response.find(item) == std::string::npos)
-    {
-      std::cout << "Error: Expected and actual response do not match!" << std::endl
-                << "Expected response to contain \"" << item << "\", but it does not."
-                << std::endl;
-    return 1;
-    }
-  } //for
-
-
-  // **** test for file submission capability ****
-  //add the file
-  if (!post.addFile("/dev/null", "fieldname"))
-  {
-    std::cout << "Error: could not add file to request data!" << std::endl;
-    return 1;
-  }
-  response.clear();
-  if (!post.perform(response))
-  {
-    std::cout << "Error: Could not perform post request!" << std::endl;
-    return 1;
-  }
-  //check HTTP status code
-  if (post.getResponseCode() != 200)
-  {
-    std::cout << "Error: HTTP status code is not 200, it is "
-              << post.getResponseCode() << " instead!" << std::endl;
-    return 1;
-  }
-  //check content type
-  if (post.getContentType() != "application/json" && !post.getContentType().empty())
-  {
-    std::cout << "Error: Content type is not application/json, it is "
-              << post.getContentType() << " instead!" << std::endl;
+    std::cerr << "Error: Unable to parse JSON data from response!" << std::endl;
     return 1;
   }
 
-  std::cout << "Response (2nd):" << std::endl << response << std::endl << std::endl;
-
-  expectedSubstrings = {
-      std::string("\"args\": {}"),
-      "\"data\": \"\"",
-      "\"files\": {\n",
-      "\"fieldname\": \"\"",
-      "\"form\": {",
-      "\"foo\": \"bar\",",
-      "\"ping\": \"pong\"",
-      "\"Host\": \"httpbin.org\"",
-      "\"url\": \"https://httpbin.org/post\""
-  };
-
-  for (const auto & item : expectedSubstrings)
+  const Json::Value form = root["form"];
+  if (form.empty() || !form.isObject())
   {
-    if (response.find(item) == std::string::npos)
-    {
-      std::cout << "Error: Expected and actual response do not match!" << std::endl
-                << "Expected response to contain \"" << item << "\", but it does not."
-                << std::endl;
+    std::cout << "Error: form element in response is empty or no object!" << std::endl;
     return 1;
-    }
-  } //for
+  }
+  //check for "foo"
+  Json::Value val = form["foo"];
+  if (val.empty() || !val.isString())
+  {
+    std::cout << "Error: element foo in response is empty or no string!" << std::endl;
+    return 1;
+  }
+  if (val.asString() != "bar")
+  {
+    std::cout << "Error: Value of foo is not \"bar\", but \"" << val.asString()
+              << "\" instead!" << std::endl;
+    return 1;
+  }
+  //check for "ping"
+  val = form["ping"];
+  if (val.empty() || !val.isString())
+  {
+    std::cout << "Error: element ping in response is empty or no string!" << std::endl;
+    return 1;
+  }
+  if (val.asString() != "pong")
+  {
+    std::cout << "Error: Value of ping is not \"pong\", but \"" << val.asString()
+              << "\" instead!" << std::endl;
+    return 1;
+  }
 
-  std::cout << "Curly is fine." << std::endl;
+  std::cout << "Curly's POST fields are fine." << std::endl;
   return 0;
 }
