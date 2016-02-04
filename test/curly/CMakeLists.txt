@@ -13,5 +13,8 @@ add_subdirectory (post-file)
 # Recurse into subdirectory for test of Curly's supported protocols.
 add_subdirectory (protocol-support)
 
+# Recurse into subdirectory for test of HTTP status code retrieval in Curly.
+add_subdirectory (status-code)
+
 # Recurse into subdirectory for Curly version information test.
 add_subdirectory (version)
