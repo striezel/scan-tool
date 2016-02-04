@@ -25,8 +25,8 @@
 #include "CacheManagerVirusTotalV2.hpp"
 #include "Curly.hpp"
 #include "StringToTimeT.hpp"
-#include "../libthoro/filesystem/DirectoryFunctions.hpp"
-#include "../libthoro/filesystem/FileFunctions.hpp"
+#include "../libthoro/filesystem/directory.hpp"
+#include "../libthoro/filesystem/file.hpp"
 
 ScannerVirusTotalV2::Report reportFromJSONRoot(const Json::Value& root)
 {
@@ -190,7 +190,7 @@ bool ScannerVirusTotalV2::getReport(const std::string& resource, Report& report,
   std::string response = "";
   const std::string cachedFilePath = CacheManagerVirusTotalV2::getPathForCachedElement(resource, cacheDir);
   if (useCache && !cacheDir.empty() && !cachedFilePath.empty()
-      && libthoro::filesystem::File::exists(cachedFilePath))
+      && libthoro::filesystem::file::exists(cachedFilePath))
   {
     //try to read JSON data from cached file
     std::ifstream cachedJSON(cachedFilePath, std::ios_base::in | std::ios_base::binary);
@@ -253,7 +253,7 @@ bool ScannerVirusTotalV2::getReport(const std::string& resource, Report& report,
               << "Response text: " << response << std::endl;
     #endif
     //write JSON data to request cache, if request cache is enabled
-    if (useCache && !cacheDir.empty() && libthoro::filesystem::Directory::exists(cacheDir))
+    if (useCache && !cacheDir.empty() && libthoro::filesystem::directory::exists(cacheDir))
     {
       std::ofstream cachedJSON(cachedFilePath, std::ios_base::out | std::ios_base::binary | std::ios_base::trunc);
       if (!cachedJSON.good())
@@ -281,7 +281,7 @@ bool ScannerVirusTotalV2::getReport(const std::string& resource, Report& report,
        is most likely corrupted, e.g. disk corruption or content manipulation.
     */
     if (useCache && !cacheDir.empty() && !cachedFilePath.empty()
-      && libthoro::filesystem::File::exists(cachedFilePath))
+      && libthoro::filesystem::file::exists(cachedFilePath))
     {
       CacheManagerVirusTotalV2::deleteCachedElement(resource, cacheDir);
     } //if

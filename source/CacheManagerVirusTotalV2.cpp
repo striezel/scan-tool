@@ -21,8 +21,8 @@
 #include "CacheManagerVirusTotalV2.hpp"
 #include "ScannerVirusTotalV2.hpp"
 #include "../libthoro/common/StringUtils.h"
-#include "../libthoro/filesystem/DirectoryFunctions.hpp"
-#include "../libthoro/filesystem/FileFunctions.hpp"
+#include "../libthoro/filesystem/directory.hpp"
+#include "../libthoro/filesystem/file.hpp"
 #include "../libthoro/hash/sha256/sha256.hpp"
 
 CacheManagerVirusTotalV2::CacheManagerVirusTotalV2(const std::string& cacheRoot)
@@ -40,7 +40,7 @@ CacheManagerVirusTotalV2::CacheManagerVirusTotalV2(const std::string& cacheRoot)
 std::string CacheManagerVirusTotalV2::getDefaultCacheDirectory()
 {
   std::string homeDirectory;
-  if (!libthoro::filesystem::Directory::getHome(homeDirectory))
+  if (!libthoro::filesystem::directory::getHome(homeDirectory))
   {
     #if defined(__linux__) || defined(linux)
     //use /tmp as replacement for home directory
@@ -64,10 +64,10 @@ const std::string& CacheManagerVirusTotalV2::getCacheDirectory() const
 
 bool CacheManagerVirusTotalV2::createCacheDirectory()
 {
-  if (!libthoro::filesystem::Directory::exists(m_CacheRoot))
+  if (!libthoro::filesystem::directory::exists(m_CacheRoot))
   {
     //try to create the directory (and its parent directories, if missing)
-    if (!libthoro::filesystem::Directory::createRecursive(m_CacheRoot))
+    if (!libthoro::filesystem::directory::createRecursive(m_CacheRoot))
       return false;
   } //if cache directory does not exist
   const std::vector<char> subChars = { '0', '1', '2', '3', '4', '5', '6', '7',
@@ -79,10 +79,10 @@ bool CacheManagerVirusTotalV2::createCacheDirectory()
     {
       const auto subDirectory = m_CacheRoot + libthoro::filesystem::pathDelimiter
                               + std::string(1, charOne) + std::string(1, charTwo);
-      if (!libthoro::filesystem::Directory::exists(subDirectory))
+      if (!libthoro::filesystem::directory::exists(subDirectory))
       {
         //try to create the directory
-        if (!libthoro::filesystem::Directory::create(subDirectory))
+        if (!libthoro::filesystem::directory::create(subDirectory))
           return false;
       } //if cache sub directory does not exist
     } //for (inner)
@@ -131,16 +131,16 @@ bool CacheManagerVirusTotalV2::deleteCachedElement(const std::string& resourceID
   if (cachedFile.empty())
     return false;
 
-  if (!libthoro::filesystem::File::exists(cachedFile))
+  if (!libthoro::filesystem::file::exists(cachedFile))
     return true;
   //File exists, delete it.
-  return libthoro::filesystem::File::remove(cachedFile);
+  return libthoro::filesystem::file::remove(cachedFile);
 }
 
 uint_least32_t CacheManagerVirusTotalV2::checkIntegrity(const bool deleteCorrupted, const bool deleteUnknown) const
 {
   // Does the cache exist? If not, exit.
-  if (!libthoro::filesystem::Directory::exists(m_CacheRoot))
+  if (!libthoro::filesystem::directory::exists(m_CacheRoot))
     return 0;
 
   uint_least32_t corrupted = 0;
@@ -153,7 +153,7 @@ uint_least32_t CacheManagerVirusTotalV2::checkIntegrity(const bool deleteCorrupt
     {
       const std::string currentSubDirectory = libthoro::filesystem::slashify(m_CacheRoot)
                       + std::string(1, firstChar) + std::string(1, secondChar);
-      if (libthoro::filesystem::Directory::exists(currentSubDirectory))
+      if (libthoro::filesystem::directory::exists(currentSubDirectory))
       {
         const auto files = libthoro::filesystem::getDirectoryFileList(currentSubDirectory);
         #ifdef SCAN_TOOL_DEBUG
@@ -172,7 +172,7 @@ uint_least32_t CacheManagerVirusTotalV2::checkIntegrity(const bool deleteCorrupt
           {
             const auto fileName = currentSubDirectory
                   + libthoro::filesystem::pathDelimiter + file.fileName;
-            const auto fileSize = libthoro::filesystem::File::getSize64(fileName);
+            const auto fileSize = libthoro::filesystem::file::getSize64(fileName);
             //check, if file is way too large for a proper cache file
             if (fileSize >= 1024*1024*2)
             {
@@ -181,12 +181,12 @@ uint_least32_t CacheManagerVirusTotalV2::checkIntegrity(const bool deleteCorrupt
               std::clog << "Info: JSON file " << fileName
                         << " is too large for a cached response!" << std::endl;
               if (deleteCorrupted)
-                libthoro::filesystem::File::remove(fileName);
+                libthoro::filesystem::file::remove(fileName);
             } //if file is too large
             else
             {
               std::string content = "";
-              if (libthoro::filesystem::File::readIntoString(fileName, content))
+              if (libthoro::filesystem::file::readIntoString(fileName, content))
               {
                 Json::Value root; // will contain the root value after parsing.
                 Json::Reader jsonReader;
@@ -196,7 +196,7 @@ uint_least32_t CacheManagerVirusTotalV2::checkIntegrity(const bool deleteCorrupt
                   std::clog << "Info: JSON data from " << fileName << " could not be parsed!" << std::endl;
                   ++corrupted;
                   if (deleteCorrupted)
-                    libthoro::filesystem::File::remove(fileName);
+                    libthoro::filesystem::file::remove(fileName);
                 } //if parsing failed
                 else
                 {
@@ -205,7 +205,7 @@ uint_least32_t CacheManagerVirusTotalV2::checkIntegrity(const bool deleteCorrupt
                   if (deleteUnknown && (report.response_code == 0))
                   {
                     std::cout << "Info: " << fileName << " contains no relevant data." << std::endl;
-                    libthoro::filesystem::File::remove(fileName);
+                    libthoro::filesystem::file::remove(fileName);
                   } //if report can be deleted
                   //check SHA256 hash
                   else if ((report.sha256 != file.fileName.substr(0, 64))
@@ -217,7 +217,7 @@ uint_least32_t CacheManagerVirusTotalV2::checkIntegrity(const bool deleteCorrupt
                               << " match file name." << std::endl;
                     ++corrupted;
                     if (deleteCorrupted)
-                      libthoro::filesystem::File::remove(fileName);
+                      libthoro::filesystem::file::remove(fileName);
                   } //else if SHA256 does not match
                 } //else (JSON parsing was successful)
               } //if file was read
@@ -245,7 +245,7 @@ uint_least32_t CacheManagerVirusTotalV2::checkIntegrity(const bool deleteCorrupt
 uint_least32_t CacheManagerVirusTotalV2::transitionOneTo256()
 {
   // Does the cache exist? If not, exit.
-  if (!libthoro::filesystem::Directory::exists(m_CacheRoot))
+  if (!libthoro::filesystem::directory::exists(m_CacheRoot))
     return 0;
 
   uint_least32_t moved_files = 0;
@@ -268,19 +268,19 @@ uint_least32_t CacheManagerVirusTotalV2::transitionOneTo256()
     {
       const auto fileName = libthoro::filesystem::slashify(m_CacheRoot)
                           + file.fileName;
-      const auto fileSize = libthoro::filesystem::File::getSize64(fileName);
+      const auto fileSize = libthoro::filesystem::file::getSize64(fileName);
       //check, if file is way too large for a proper cache file
       if (fileSize >= 1024*1024*2)
       {
         //Several kilobytes are alright, but not megabytes.
         std::clog << "Info: JSON file " << fileName
                   << " is too large for a cached response!" << std::endl;
-        libthoro::filesystem::File::remove(fileName);
+        libthoro::filesystem::file::remove(fileName);
       } //if file is too large
       else
       {
         std::string content = "";
-        if (libthoro::filesystem::File::readIntoString(fileName, content))
+        if (libthoro::filesystem::file::readIntoString(fileName, content))
         {
           Json::Value root; // will contain the root value after parsing.
           Json::Reader jsonReader;
@@ -288,7 +288,7 @@ uint_least32_t CacheManagerVirusTotalV2::transitionOneTo256()
           if (!success)
           {
             std::clog << "Info: JSON data from " << fileName << " could not be parsed!" << std::endl;
-            libthoro::filesystem::File::remove(fileName);
+            libthoro::filesystem::file::remove(fileName);
           } //if parsing failed
           else
           {
@@ -297,12 +297,12 @@ uint_least32_t CacheManagerVirusTotalV2::transitionOneTo256()
             if (report.response_code == 0)
             {
               std::cout << "Info: " << fileName << " contains no relevant data." << std::endl;
-              libthoro::filesystem::File::remove(fileName);
+              libthoro::filesystem::file::remove(fileName);
             } //if report can be deleted
             else
             {
               const std::string newPath = getPathForCachedElement(file.fileName.substr(0, 64));
-              if (libthoro::filesystem::File::rename(fileName, newPath))
+              if (libthoro::filesystem::file::rename(fileName, newPath))
                 ++moved_files;
               else
               {
@@ -332,7 +332,7 @@ uint_least32_t CacheManagerVirusTotalV2::transitionOneTo256()
 uint_least32_t CacheManagerVirusTotalV2::transition16To256()
 {
   // Does the cache exist? If not, exit.
-  if (!libthoro::filesystem::Directory::exists(m_CacheRoot))
+  if (!libthoro::filesystem::directory::exists(m_CacheRoot))
     return 0;
 
   uint_least32_t moved_files = 0;
@@ -343,7 +343,7 @@ uint_least32_t CacheManagerVirusTotalV2::transition16To256()
   {
     const std::string currentSubDirectory =
         libthoro::filesystem::slashify(m_CacheRoot) + d;
-    if (libthoro::filesystem::Directory::exists(currentSubDirectory))
+    if (libthoro::filesystem::directory::exists(currentSubDirectory))
     {
       const auto files = libthoro::filesystem::getDirectoryFileList(currentSubDirectory);
       #ifdef SCAN_TOOL_DEBUG
@@ -363,19 +363,19 @@ uint_least32_t CacheManagerVirusTotalV2::transition16To256()
         {
           const auto fileName = currentSubDirectory
                 + libthoro::filesystem::pathDelimiter + file.fileName;
-          const auto fileSize = libthoro::filesystem::File::getSize64(fileName);
+          const auto fileSize = libthoro::filesystem::file::getSize64(fileName);
           //check, if file is way too large for a proper cache file
           if (fileSize >= 1024*1024*2)
           {
             //Several kilobytes are alright, but not megabytes.
             std::clog << "Info: JSON file " << fileName
                       << " is too large for a cached response!" << std::endl;
-            libthoro::filesystem::File::remove(fileName);
+            libthoro::filesystem::file::remove(fileName);
           } //if file is too large
           else
           {
             std::string content = "";
-            if (libthoro::filesystem::File::readIntoString(fileName, content))
+            if (libthoro::filesystem::file::readIntoString(fileName, content))
             {
               Json::Value root; // will contain the root value after parsing.
               Json::Reader jsonReader;
@@ -383,7 +383,7 @@ uint_least32_t CacheManagerVirusTotalV2::transition16To256()
               if (!success)
               {
                 std::clog << "Info: JSON data from " << fileName << " could not be parsed!" << std::endl;
-                libthoro::filesystem::File::remove(fileName);
+                libthoro::filesystem::file::remove(fileName);
               } //if parsing failed
               else
               {
@@ -392,12 +392,12 @@ uint_least32_t CacheManagerVirusTotalV2::transition16To256()
                 if (report.response_code == 0)
                 {
                   std::cout << "Info: " << fileName << " contains no relevant data." << std::endl;
-                  libthoro::filesystem::File::remove(fileName);
+                  libthoro::filesystem::file::remove(fileName);
                 } //if report can be deleted
                 else
                 {
                   const std::string newPath = getPathForCachedElement(file.fileName.substr(0, 64));
-                  if (libthoro::filesystem::File::rename(fileName, newPath))
+                  if (libthoro::filesystem::file::rename(fileName, newPath))
                     ++moved_files;
                   else
                   {
@@ -422,7 +422,7 @@ uint_least32_t CacheManagerVirusTotalV2::transition16To256()
         } //else
       } //for (inner)
       //try to remove the directory, because it should be empty / unused by now
-      if (!libthoro::filesystem::Directory::remove(currentSubDirectory))
+      if (!libthoro::filesystem::directory::remove(currentSubDirectory))
       {
         std::cout << "Warning: Could not remove directory " << currentSubDirectory
                   << ". Maybe this directory is not empty yet or you do not "

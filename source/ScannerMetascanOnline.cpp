@@ -22,8 +22,8 @@
 #include <iostream>
 #include "Curly.hpp"
 #include "../libthoro/hash/sha256/sha256.hpp"
-#include "../libthoro/filesystem/DirectoryFunctions.hpp"
-#include "../libthoro/filesystem/FileFunctions.hpp"
+#include "../libthoro/filesystem/directory.hpp"
+#include "../libthoro/filesystem/file.hpp"
 
 ScannerMetascanOnline::ScannerMetascanOnline(const std::string& apikey, const bool honourTimeLimits, const bool silent)
 : Scanner(honourTimeLimits, silent),
@@ -242,7 +242,7 @@ bool ScannerMetascanOnline::scan(const std::string& filename, ScanData& scan_dat
      careful which files we use here.
   */
   std::string content = "";
-  if (!libthoro::filesystem::File::readIntoString(filename, content))
+  if (!libthoro::filesystem::file::readIntoString(filename, content))
     return false;
 
   //wait

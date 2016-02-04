@@ -21,7 +21,7 @@
 #include "summary.hpp"
 #include <algorithm>
 #include <iostream>
-#include "../../libthoro/filesystem/FileFunctions.hpp"
+#include "../../libthoro/filesystem/file.hpp"
 
 void showSummary(const std::map<std::string, std::string>& mapFileToHash,
                  std::map<std::string, ReportMetascanOnline>& mapHashToReport,

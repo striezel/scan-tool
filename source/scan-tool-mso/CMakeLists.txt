@@ -7,8 +7,8 @@ project(scan-tool-mso)
 
 set(scan-tool-mso_sources
     ../../libthoro/common/StringUtils.cpp
-    ../../libthoro/filesystem/DirectoryFunctions.cpp
-    ../../libthoro/filesystem/FileFunctions.cpp
+    ../../libthoro/filesystem/directory.cpp
+    ../../libthoro/filesystem/file.cpp
     ../../libthoro/hash/sha256/FileSource.cpp
     ../../libthoro/hash/sha256/FileSourceUtility.cpp
     ../../libthoro/hash/sha256/MessageSource.cpp

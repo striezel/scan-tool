@@ -35,7 +35,7 @@
 #include "../MetascanDefinitions.hpp"
 #include "../ScannerMetascanOnline.hpp"
 #include "../../libthoro/common/StringUtils.h"
-#include "../../libthoro/filesystem/FileFunctions.hpp"
+#include "../../libthoro/filesystem/file.hpp"
 #include "../../libthoro/hash/sha256/FileSourceUtility.hpp"
 #include "../../libthoro/hash/sha256/sha256.hpp"
 //return codes
@@ -221,7 +221,7 @@ int main(int argc, char ** argv)
           {
             const std::string listFile = std::string(argv[i+1]);
             ++i; //Skip next parameter, because it's used as list file already.
-            if (!libthoro::filesystem::File::exists(listFile))
+            if (!libthoro::filesystem::file::exists(listFile))
             {
               std::cout << "Error: File " << listFile << " does not exist!"
                         << std::endl;
@@ -242,7 +242,7 @@ int main(int argc, char ** argv)
               std::getline(inFile, nextFile, '\n');
               if (!nextFile.empty())
               {
-                if (libthoro::filesystem::File::exists(nextFile))
+                if (libthoro::filesystem::file::exists(nextFile))
                 {
                   #ifdef SCAN_TOOL_DEBUG
                   std::cout << "Info: Adding " << nextFile << " to list of files for scan." << std::endl;
@@ -266,7 +266,7 @@ int main(int argc, char ** argv)
           } //else
         } //list of files
         //file for scan
-        else if (libthoro::filesystem::File::exists(param))
+        else if (libthoro::filesystem::file::exists(param))
         {
           files_scan.insert(param);
         } //file
@@ -391,7 +391,7 @@ int main(int argc, char ** argv)
       else if (report.notFound())
       {
         //no data present for file
-        const int64_t fileSize = libthoro::filesystem::File::getSize64(i);
+        const int64_t fileSize = libthoro::filesystem::file::getSize64(i);
         if ((fileSize <= scanMSO.maxScanSize()) && (fileSize >= 0))
         {
           ScannerMetascanOnline::ScanData scan_data;

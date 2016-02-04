@@ -20,7 +20,7 @@
 
 #include "cachetransition.hpp"
 #include <iostream>
-#include "../../libthoro/filesystem/DirectoryFunctions.hpp"
+#include "../../libthoro/filesystem/directory.hpp"
 #include "../CacheManagerVirusTotalV2.hpp"
 #include "../ReturnCodes.hpp"
 
@@ -28,7 +28,7 @@ int performTransition()
 {
   CacheManagerVirusTotalV2 cacheMgr;
 
-  if (!libthoro::filesystem::Directory::exists(cacheMgr.getCacheDirectory()))
+  if (!libthoro::filesystem::directory::exists(cacheMgr.getCacheDirectory()))
   {
     std::cout << "Warning: The cache directory " << cacheMgr.getCacheDirectory()
               << " does not exist. Nothing to do here." << std::endl;
