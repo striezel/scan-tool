@@ -347,7 +347,7 @@ bool Curly::perform(std::string& response)
     }
   } //if files are there
 
-  //set plain post body - but only of other POST stuff is empty
+  //set plain post body - but only if other POST stuff is empty
   if (m_UsePostBody && m_PostFields.empty() && m_Files.empty())
   {
     retCode = curl_easy_setopt(handle, CURLOPT_POST, 1L);
