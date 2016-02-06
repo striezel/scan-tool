@@ -51,6 +51,48 @@ size_t writeCallbackString(char *ptr, size_t size, size_t nmemb, void *userdata)
   return actualSize;
 }
 
+#ifdef CURLY_READ_CALLBACK_STRING
+struct StringData
+{
+  std::string::size_type dataOffset;
+  std::string * data;
+};
+
+size_t readCallbackString(char *buffer, size_t size, size_t nitems, void *instream)
+{
+  const auto maxSize = size * nitems;
+  if (maxSize < 1)
+    return 0;
+  if (nullptr == instream)
+  {
+    std::cerr << "Error: read callback received NULL pointer!" << std::endl;
+    return CURL_READFUNC_ABORT;
+  }
+  //cast it to string data
+  StringData * sd = reinterpret_cast<StringData*>(instream);
+  if (nullptr == sd->data)
+  {
+    std::cerr << "Error: read callback received NULL pointer for string data!"
+              << std::endl;
+    return CURL_READFUNC_ABORT;
+  }
+  if (sd->dataOffset < 0)
+  {
+    std::cerr << "Error: read callback received invalid data offset!"
+              << std::endl;
+    return CURL_READFUNC_ABORT;
+  }
+  const auto totalLength = sd->data->length();
+  if (sd->dataOffset >= totalLength)
+    return 0;
+
+  const auto chunkSize = std::min(maxSize, totalLength - sd->dataOffset);
+  std::memcpy(buffer, &(sd->data[sd->dataOffset]), chunkSize);
+  sd->dataOffset = sd->dataOffset + chunkSize;
+  return chunkSize;
+}
+#endif // CURLY_READ_CALLBACK_STRING
+
 Curly::Curly()
 : m_URL(""),
   m_PostFields(std::unordered_map<std::string, std::string>()),
