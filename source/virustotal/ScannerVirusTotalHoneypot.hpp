@@ -18,48 +18,31 @@
  -------------------------------------------------------------------------------
 */
 
-#ifndef SCANNERMETASCANONLINE_HPP
-#define SCANNERMETASCANONLINE_HPP
+#ifndef SCANNERVIRUSTOTALHONEYPOT_HPP
+#define SCANNERVIRUSTOTALHONEYPOT_HPP
 
 #include <string>
-#include "ReportMetascanOnline.hpp"
-#include "Scanner.hpp"
+#include <vector>
+#include "../Scanner.hpp"
+#include "ReportHoneypot.hpp"
 
-class ScannerMetascanOnline: public Scanner
+class ScannerVirusTotalHoneypot: public Scanner
 {
   public:
+    typedef ReportHoneypot Report;
+
     /** \brief default constructor
      *
-     * \param apikey   the Metascan Online API key used for scanning
+     * \param apikey   the VirusTotal API key used for scanning
      * \param honourTimeLimits   whether or not time limits should be honoured
      * \param silent             whether or not output to the standard output should be reduced
      */
-    ScannerMetascanOnline(const std::string& apikey, const bool honourTimeLimits = true, const bool silent = false);
-
-
-    struct ScanData
-    {
-      //default constructor
-      ScanData();
-
-      std::string data_id; /**< Data ID used for retrieving scan result */
-      std::string rest_ip; /**< address for requests of scan progress */
-
-
-      /** \brief comparison operator "less than" for ScanData
-       *
-       * \param other the other scan_data
-       * \return Returns true, if this is "less than" the other ScanData.
-       * \remarks Not strictly a less than, but only implemented to allow use
-       *          of ScanData in ordered data structures like sets or maps.
-       */
-      bool operator < (const ScanData& other) const;
-    }; //struct
+    ScannerVirusTotalHoneypot(const std::string& apikey, const bool honourTimeLimits = true, const bool silent = false);
 
 
     /** \brief sets a new API key
      *
-     * \param apikey   the Metascan Online API key used for scanning
+     * \param apikey   the VirusTotal API key used for scanning
      */
     void setApiKey(const std::string& apikey);
 
@@ -78,60 +61,48 @@ class ScannerMetascanOnline: public Scanner
     virtual std::chrono::milliseconds timeBetweenConsecutiveHashLookups() const override;
 
 
+    /** \brief sets the time of the last request to now
+     */
+    virtual void scanRequestWasNow() override;
+
+
+    /** \brief sets the time of the last hash lookup to now
+     */
+    virtual void hashLookupWasNow() override;
+
+
     /** \brief retrieves a scan report
      *
-     * \param resource   resource identifier
+     * \param scan_id    scan ID of a previously submitted file
      * \param report     reference to a Report structure where the report's data will be stored
      * \return Returns true, if the report could be retrieved.
      *         Returns false, if retrieval failed.
      */
-    bool getReport(const std::string& resource, ReportMetascanOnline& report);
-
-
-    /** \brief requests a re-scan of an already uploaded file
-     *
-     * \param file_id    the file_id (as seen in report from getReport())
-     * \param scan_data  the scan_data which can be used to query the report later
-     * \return Returns true, if the rescan was initiated.
-     *         Returns false, if request failed.
-     */
-    bool rescan(const std::string& file_id, ScanData& scan_data);
+    bool getReport(const std::string& scan_id, Report& report);
 
 
     /** \brief upload a file and request a scan of the file
      *
      * \param filename   name of the (local) file that shall be uploaded and scanned
-     * \param scan_data  the scan_data which can be used to query the report later
+     * \param scan_id    the scan_id (resource) which can be used to query the report later
      * \return Returns true, if the scan was initiated.
      *         Returns false, if request failed.
+     * \remarks Files sent using the API have the lowest scanning priority.
+     * Depending on VirusTotal's load, it may take several hours before the
+     * file is scanned, so query the report at regular intervals until the
+     * result shows up and do not keep sending the file rescan requests over
+     * and over again.
      */
-    bool scan(const std::string& filename, ScanData& scan_data);
+    bool scan(const std::string& filename, std::string& scan_id);
 
 
     /** \brief returns the maximum file size that is allowed to be scanned
-     *
-     * \return maximum size in bytes that can still be scanned
-     */
+      *
+      * \return maximum size in bytes that can still be scanned
+      */
     virtual int64_t maxScanSize() const override;
   private:
-    std::string m_apikey; /**< holds the Metascan Online API key */
+    std::string m_apikey; /**< holds the VirusTotal API key */
 }; //class
 
-
-// custom specialization of std::hash for ScannerMetascanOnline::ScanData
-namespace std
-{
-    template<> struct hash<ScannerMetascanOnline::ScanData>
-    {
-        typedef ScannerMetascanOnline::ScanData argument_type;
-        typedef std::size_t result_type;
-        result_type operator()(argument_type const& s) const
-        {
-            result_type const h1 ( std::hash<std::string>()(s.data_id) );
-            result_type const h2 ( std::hash<std::string>()(s.rest_ip) );
-            return h1 ^ (h2 << 1);
-        }
-    };
-}
-
-#endif // SCANNERMETASCANONLINE_HPP
+#endif // SCANNERVIRUSTOTALHONEYPOT_HPP

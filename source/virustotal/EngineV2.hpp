@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2016  Thoronador
+    Copyright (C) 2015, 2016  Thoronador
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,23 +18,18 @@
  -------------------------------------------------------------------------------
 */
 
-#include "MetascanDefinitions.hpp"
+#ifndef ENGINEV2_HPP
+#define ENGINEV2_HPP
 
-namespace MSO
+#include "../Engine.hpp"
+
+struct EngineV2: public Engine
 {
+  ///default constructor
+  EngineV2();
 
-bool isInfected(const int scan_result_i)
-{
-  //See https://www.metascan-online.com/public-api#!/definitions
-  switch (scan_result_i)
-  {
-    case 1: //"infected"
-    case 2: //"suspicious"
-    case 8: //"skipped dirty"
-         return true;
-    default:
-         return false;
-  } //swi
-}
+  std::string version; /**< version of the antivirus engine */
+  std::string update;  /**< last update of the antivirus engine */
+}; //struct Engine
 
-} //namespace
+#endif // ENGINEV2_HPP

@@ -15,12 +15,12 @@ set(scan-tool-mso_sources
     ../../libthoro/hash/sha256/sha256.cpp
     ../Curly.cpp
     ../Engine.cpp
-    ../EngineMetascanOnline.cpp
-    ../MetascanDefinitions.cpp
+    ../metascan/Definitions.cpp
+    ../metascan/EngineMetascanOnline.cpp
+    ../metascan/ReportMetascanOnline.cpp
+    ../metascan/ScannerMetascanOnline.cpp
     ../Report.cpp
-    ../ReportMetascanOnline.cpp
     ../Scanner.cpp
-    ../ScannerMetascanOnline.cpp
     summary.cpp
     main.cpp)
 

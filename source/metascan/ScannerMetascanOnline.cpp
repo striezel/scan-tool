@@ -20,10 +20,10 @@
 
 #include "ScannerMetascanOnline.hpp"
 #include <iostream>
-#include "Curly.hpp"
-#include "../libthoro/hash/sha256/sha256.hpp"
-#include "../libthoro/filesystem/directory.hpp"
-#include "../libthoro/filesystem/file.hpp"
+#include "../Curly.hpp"
+#include "../../libthoro/hash/sha256/sha256.hpp"
+#include "../../libthoro/filesystem/directory.hpp"
+#include "../../libthoro/filesystem/file.hpp"
 
 ScannerMetascanOnline::ScannerMetascanOnline(const std::string& apikey, const bool honourTimeLimits, const bool silent)
 : Scanner(honourTimeLimits, silent),

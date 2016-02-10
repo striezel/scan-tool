@@ -32,8 +32,8 @@
 #endif
 #include "summary.hpp"
 #include "../Curly.hpp"
-#include "../MetascanDefinitions.hpp"
-#include "../ScannerMetascanOnline.hpp"
+#include "../metascan/Definitions.hpp"
+#include "../metascan/ScannerMetascanOnline.hpp"
 #include "../../libthoro/common/StringUtils.h"
 #include "../../libthoro/filesystem/file.hpp"
 #include "../../libthoro/hash/sha256/FileSourceUtility.hpp"

@@ -22,9 +22,9 @@
 #include <iostream>
 #include <string>
 #include <unordered_set>
-#include "../ReportMetascanOnline.hpp"
+#include "../metascan/ReportMetascanOnline.hpp"
+#include "../metascan/ScannerMetascanOnline.hpp"
 #include "../ReturnCodes.hpp"
-#include "../ScannerMetascanOnline.hpp"
 
 void showHelp()
 {

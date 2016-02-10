@@ -22,11 +22,11 @@
 #include <fstream>
 #include <iostream>
 #include <jsoncpp/json/reader.h>
-#include "CacheManagerVirusTotalV2.hpp"
-#include "Curly.hpp"
-#include "StringToTimeT.hpp"
-#include "../libthoro/filesystem/directory.hpp"
-#include "../libthoro/filesystem/file.hpp"
+#include "../CacheManagerVirusTotalV2.hpp"
+#include "../Curly.hpp"
+#include "../StringToTimeT.hpp"
+#include "../../libthoro/filesystem/directory.hpp"
+#include "../../libthoro/filesystem/file.hpp"
 
 ScannerVirusTotalV2::Report reportFromJSONRoot(const Json::Value& root)
 {

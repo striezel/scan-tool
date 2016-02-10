@@ -21,8 +21,8 @@
 #include "ScannerVirusTotalHoneypot.hpp"
 #include <iostream>
 #include <jsoncpp/json/reader.h>
-#include "Curly.hpp"
-#include "StringToTimeT.hpp"
+#include "../Curly.hpp"
+#include "../StringToTimeT.hpp"
 
 ScannerVirusTotalHoneypot::Report honeypotReportFromJSONRoot(const Json::Value& root)
 {

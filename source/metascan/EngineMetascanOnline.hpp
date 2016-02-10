@@ -18,26 +18,20 @@
  -------------------------------------------------------------------------------
 */
 
-#ifndef REPORTVIRUSTOTALBASE_HPP
-#define REPORTVIRUSTOTALBASE_HPP
+#ifndef ENGINEMETASCANONLINE_HPP
+#define ENGINEMETASCANONLINE_HPP
 
-#include "Report.hpp"
+#include "../Engine.hpp"
+#include <chrono>
 
-/** \brief abstract base class for reports from VirusTotal API requests
- *
- * \remarks Encapsulates some data members that are common among different
- * VirusTotal APIs but not included in other APIs.
- */
-struct ReportVirusTotalBase: public Report
+struct EngineMetascanOnline: public Engine
 {
   ///default constructor
-  ReportVirusTotalBase();
+  EngineMetascanOnline();
 
-  int response_code;     /**< response code from VirusTotal API */
+  int scan_result_i; /**< numeric value to represent scan result */
+  std::string def_time; /**< date of virus definitions of the antivirus engine */
+  std::chrono::milliseconds scan_time;  /**< time in milliseconds required for scan by this AV engine */
+}; //struct Engine
 
-  int positives; /**< number of engines that detected a virus */
-
-  std::string permalink; /**< permanent link to the scan result */
-}; //struct
-
-#endif // REPORTVIRUSTOTALBASE_HPP
+#endif // ENGINEMETASCANONLINE_HPP

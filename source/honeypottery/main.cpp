@@ -22,7 +22,7 @@
 #include <string>
 #include <unordered_set>
 #include "../ReturnCodes.hpp"
-#include "../ScannerVirusTotalHoneypot.hpp"
+#include "../virustotal/ScannerVirusTotalHoneypot.hpp"
 
 void showVersion()
 {

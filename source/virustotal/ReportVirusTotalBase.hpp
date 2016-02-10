@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2015  Thoronador
+    Copyright (C) 2015, 2016  Thoronador
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,20 +18,26 @@
  -------------------------------------------------------------------------------
 */
 
-#ifndef ENGINEMETASCANONLINE_HPP
-#define ENGINEMETASCANONLINE_HPP
+#ifndef REPORTVIRUSTOTALBASE_HPP
+#define REPORTVIRUSTOTALBASE_HPP
 
-#include "Engine.hpp"
-#include <chrono>
+#include "../Report.hpp"
 
-struct EngineMetascanOnline: public Engine
+/** \brief abstract base class for reports from VirusTotal API requests
+ *
+ * \remarks Encapsulates some data members that are common among different
+ * VirusTotal APIs but not included in other APIs.
+ */
+struct ReportVirusTotalBase: public Report
 {
   ///default constructor
-  EngineMetascanOnline();
+  ReportVirusTotalBase();
 
-  int scan_result_i; /**< numeric value to represent scan result */
-  std::string def_time; /**< date of virus definitions of the antivirus engine */
-  std::chrono::milliseconds scan_time;  /**< time in milliseconds required for scan by this AV engine */
-}; //struct Engine
+  int response_code;     /**< response code from VirusTotal API */
 
-#endif // ENGINEMETASCANONLINE_HPP
+  int positives; /**< number of engines that detected a virus */
+
+  std::string permalink; /**< permanent link to the scan result */
+}; //struct
+
+#endif // REPORTVIRUSTOTALBASE_HPP

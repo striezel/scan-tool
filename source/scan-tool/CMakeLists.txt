@@ -16,12 +16,12 @@ set(scan-tool_sources
     ../CacheManagerVirusTotalV2.cpp
     ../Curly.cpp
     ../Engine.cpp
-    ../EngineV2.cpp
+    ../virustotal/EngineV2.cpp
     ../Report.cpp
-    ../ReportV2.cpp
-    ../ReportVirusTotalBase.cpp
+    ../virustotal/ReportV2.cpp
+    ../virustotal/ReportVirusTotalBase.cpp
     ../Scanner.cpp
-    ../ScannerVirusTotalV2.cpp
+    ../virustotal/ScannerVirusTotalV2.cpp
     ../StringToTimeT.cpp
     cachetransition.cpp
     summary.cpp

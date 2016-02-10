@@ -26,8 +26,8 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
-#include "../ReportMetascanOnline.hpp"
-#include "../ScannerMetascanOnline.hpp"
+#include "../metascan/ReportMetascanOnline.hpp"
+#include "../metascan/ScannerMetascanOnline.hpp"
 
 /** \brief shows the summary of a scan-tool-mso run
  *

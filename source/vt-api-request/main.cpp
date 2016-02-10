@@ -24,7 +24,7 @@
 #include <unordered_set>
 #include "../Curly.hpp"
 #include "../ReturnCodes.hpp"
-#include "../ScannerVirusTotalV2.hpp"
+#include "../virustotal/ScannerVirusTotalV2.hpp"
 
 
 void showHelp()

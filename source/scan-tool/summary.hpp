@@ -26,7 +26,7 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
-#include "../ScannerVirusTotalV2.hpp"
+#include "../virustotal/ScannerVirusTotalV2.hpp"
 
 /** \brief shows the summary of a scan-tool run
  *

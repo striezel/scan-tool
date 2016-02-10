@@ -19,7 +19,7 @@
 */
 
 #include "CacheManagerVirusTotalV2.hpp"
-#include "ScannerVirusTotalV2.hpp"
+#include "virustotal/ScannerVirusTotalV2.hpp"
 #include "../libthoro/common/StringUtils.h"
 #include "../libthoro/filesystem/directory.hpp"
 #include "../libthoro/filesystem/file.hpp"
