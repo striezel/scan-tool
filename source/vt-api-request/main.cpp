@@ -112,7 +112,7 @@ int main(int argc, char ** argv)
           {
             std::cout << "Error: You have to enter some text after \""
                       << param <<"\"." << std::endl;
-            return rcInvalidParameter;
+            return scantool::rcInvalidParameter;
           }
         }//API key
         else if ((param=="--report") or (param=="--resource"))
@@ -133,7 +133,7 @@ int main(int argc, char ** argv)
           {
             std::cout << "Error: You have to enter a resource ID after \""
                       << param << "\"." << std::endl;
-            return rcInvalidParameter;
+            return scantool::rcInvalidParameter;
           }
         }//resource report
         else if ((param=="--re") or (param=="--rescan"))
@@ -154,7 +154,7 @@ int main(int argc, char ** argv)
           {
             std::cout << "Error: You have to enter a resource ID after \""
                       << param << "\"." << std::endl;
-            return rcInvalidParameter;
+            return scantool::rcInvalidParameter;
           }
         }//rescan
         else if ((param=="--file") or (param=="--scan"))
@@ -175,7 +175,7 @@ int main(int argc, char ** argv)
           {
             std::cout << "Error: You have to enter a file name after \""
                       << param << "\"." << std::endl;
-            return rcInvalidParameter;
+            return scantool::rcInvalidParameter;
           }
         }//scan file
         else if ((param=="--initial-wait") or (param=="--wait"))
@@ -185,7 +185,7 @@ int main(int argc, char ** argv)
           {
             std::cout << "Error: Parameter " << param << " must not occur more than once!"
                       << std::endl;
-            return rcInvalidParameter;
+            return scantool::rcInvalidParameter;
           }
           initial_wait = true;
         } //initial_wait
@@ -194,13 +194,13 @@ int main(int argc, char ** argv)
           //unknown or wrong parameter
           std::cout << "Invalid parameter given: \"" << param << "\"." << std::endl
                     << "Use --help to get a list of valid parameters.\n";
-          return rcInvalidParameter;
+          return scantool::rcInvalidParameter;
         }
       }//parameter exists
       else
       {
         std::cout << "Parameter at index " << i << " is NULL." << std::endl;
-        return rcInvalidParameter;
+        return scantool::rcInvalidParameter;
       }
       ++i;//on to next parameter
     }//while
@@ -210,12 +210,12 @@ int main(int argc, char ** argv)
   {
     std::cout << "Error: This program won't work properly without an API key! "
               << "Use --apikey to specify the VirusTotal API key." << std::endl;
-    return rcInvalidParameter;
+    return scantool::rcInvalidParameter;
   }
   if (resources_report.empty() && resources_rescan.empty() && files_scan.empty())
   {
     std::cout << "No resources for report retrieval, rescan or file scan were given. Exiting." << std::endl;
-    return rcInvalidParameter;
+    return scantool::rcInvalidParameter;
   } //if not resources
 
   ScannerVirusTotalV2 scanVT(key);
@@ -237,7 +237,7 @@ int main(int argc, char ** argv)
     {
       std::cout << "Error: Could not initiate rescan for \""
                 << i << "\"!" << std::endl;
-      return rcScanError;
+      return scantool::rcScanError;
     }
     std::cout << "Rescan for \"" << i << "\" initiated. "
               << "Scan-ID for later retrieval is " << scan_id << "." << std::endl;
@@ -250,7 +250,7 @@ int main(int argc, char ** argv)
     if (!scanVT.getReport(i, report, false, std::string()))
     {
       std::cout << "Error: Could not retrieve report!" << std::endl;
-      return rcScanError;
+      return scantool::rcScanError;
     }
     std::cout << std::endl;
     std::cout << "Report data for " << i << ":" << std::endl
@@ -283,7 +283,7 @@ int main(int argc, char ** argv)
     {
       std::cout << "Error: Could not initiate scan for \""
                 << i << "\"!" << std::endl;
-      return rcScanError;
+      return scantool::rcScanError;
     }
     std::cout << "Scan for " << i << " initiated. "
               << "Scan-ID for later retrieval is " << scan_id << "." << std::endl;

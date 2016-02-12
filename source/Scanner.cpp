@@ -22,6 +22,9 @@
 #include <iostream>
 #include <thread>
 
+namespace scantool
+{
+
 Scanner::Scanner(const bool honourTimeLimits, const bool _silent)
 : m_HonourLimit(honourTimeLimits),
   m_Silent(_silent),
@@ -117,3 +120,5 @@ void Scanner::waitForHashLookupLimitExpiration()
     std::this_thread::sleep_for(duration);
   } //if waiting is required
 }
+
+} //namespace

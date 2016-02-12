@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2015  Thoronador
+    Copyright (C) 2015, 2016  Thoronador
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,13 +18,16 @@
  -------------------------------------------------------------------------------
 */
 
-#ifndef REPORT_HPP
-#define REPORT_HPP
+#ifndef SCANTOOL_REPORT_HPP
+#define SCANTOOL_REPORT_HPP
 
 #include <ctime>
 #include <memory>
 #include <vector>
 #include "Engine.hpp"
+
+namespace scantool
+{
 
 ///structure for detection report
 struct Report
@@ -71,4 +74,6 @@ struct Report
   std::vector<EnginePtr> scans; /**< results of individual scan engines */
 }; //struct Report
 
-#endif // REPORT_HPP
+} //namespace
+
+#endif // SCANTOOL_REPORT_HPP

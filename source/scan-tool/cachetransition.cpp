@@ -39,7 +39,7 @@ int performTransition()
   if (!cacheMgr.createCacheDirectory())
   {
     std::cout << "Error: Could not create new cache directory structure!" << std::endl;
-    return rcFileError;
+    return scantool::rcFileError;
   }
 
   std::cout << "Performing cache transition. This may take a while ..." << std::endl;

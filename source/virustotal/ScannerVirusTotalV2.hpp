@@ -27,7 +27,7 @@
 #include "../Scanner.hpp"
 #include "ReportV2.hpp"
 
-class ScannerVirusTotalV2: public Scanner
+class ScannerVirusTotalV2: public scantool::Scanner
 {
   public:
     ///structure for detection report

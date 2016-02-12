@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2015  Thoronador
+    Copyright (C) 2015, 2016  Thoronador
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -20,6 +20,9 @@
 
 #include "Report.hpp"
 
+namespace scantool
+{
+
 Report::Report()
 : scan_date(""),
   scan_date_t(static_cast<std::time_t>(-1)),
@@ -31,3 +34,5 @@ bool Report::hasTime_t() const
 {
   return (static_cast<std::time_t>(-1) != scan_date_t);
 }
+
+} //namespace

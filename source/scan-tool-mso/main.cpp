@@ -113,7 +113,7 @@ void linux_signal_handler(int sig)
     // might want to see that despite termination.
     showSummary(mapFileToHash, mapHashToReport, largeFiles);
     std::clog << "Terminating program early due to caught signal." << std::endl;
-    std::exit(rcProgramTerminationBySignal);
+    std::exit(scantool::rcProgramTerminationBySignal);
   } //if SIGINT or SIGTERM
   else if ((sig == SIGUSR1) || (SIGUSR2 == sig))
   {
@@ -145,7 +145,7 @@ BOOL windows_signal_handler(DWORD ctrlSignal)
          showSummary(mapFileToHash, mapHashToReport, largeFiles);
          std::clog << "Terminating program early due to caught signal."
                    << std::endl;
-         std::exit(rcProgramTerminationBySignal);
+         std::exit(scantool::rcProgramTerminationBySignal);
          return TRUE; //bogus
          break;
   } //switch
@@ -200,7 +200,7 @@ int main(int argc, char ** argv)
           {
             std::cout << "Error: You have to enter some text after \""
                       << param <<"\"." << std::endl;
-            return rcInvalidParameter;
+            return scantool::rcInvalidParameter;
           }
         } //API key
         else if ((param=="--silent") or (param=="-s"))
@@ -210,7 +210,7 @@ int main(int argc, char ** argv)
           {
             std::cout << "Error: Parameter " << param << " must not occur more than once!"
                       << std::endl;
-            return rcInvalidParameter;
+            return scantool::rcInvalidParameter;
           }
           silent = true;
         } //silent
@@ -225,7 +225,7 @@ int main(int argc, char ** argv)
             {
               std::cout << "Error: File " << listFile << " does not exist!"
                         << std::endl;
-              return rcFileError;
+              return scantool::rcFileError;
             }
             //open file and read file names
             std::ifstream inFile;
@@ -234,7 +234,7 @@ int main(int argc, char ** argv)
             {
               std::cout << "Error: Could not open file " << listFile << "!"
                         << std::endl;
-              return rcFileError;
+              return scantool::rcFileError;
             }
             std::string nextFile;
             while (!inFile.eof())
@@ -262,7 +262,7 @@ int main(int argc, char ** argv)
           {
             std::cout << "Error: You have to enter a file name after \""
                       << param <<"\"." << std::endl;
-            return rcInvalidParameter;
+            return scantool::rcInvalidParameter;
           } //else
         } //list of files
         //file for scan
@@ -275,13 +275,13 @@ int main(int argc, char ** argv)
           //unknown or wrong parameter
           std::cout << "Invalid parameter given: \"" << param << "\"." << std::endl
                     << "Use --help to get a list of valid parameters.\n" << std::endl;
-          return rcInvalidParameter;
+          return scantool::rcInvalidParameter;
         } //if unknown parameter
       } //if parameter exists
       else
       {
         std::cout << "Parameter at index " << i << " is NULL." << std::endl;
-        return rcInvalidParameter;
+        return scantool::rcInvalidParameter;
       }
       ++i;//on to next parameter
     } //while
@@ -291,7 +291,7 @@ int main(int argc, char ** argv)
   {
     std::cout << "Error: This program won't work properly without an API key! "
               << "Use --apikey to specifiy the VirusTotal API key." << std::endl;
-    return rcInvalidParameter;
+    return scantool::rcInvalidParameter;
   }
   if (files_scan.empty())
   {
@@ -318,35 +318,35 @@ int main(int argc, char ** argv)
   {
     std::clog << "Error: Could not set signal handling function for SIGINT!"
               << std::endl;
-    return rcSignalHandlerError;
+    return scantool::rcSignalHandlerError;
   }
   // ... and one for SIGTERM.
   if (sigaction(SIGTERM, &sa, NULL) != 0)
   {
     std::clog << "Error: Could not set signal handling function for SIGTERM!"
               << std::endl;
-    return rcSignalHandlerError;
+    return scantool::rcSignalHandlerError;
   }
   // ... and one for SIGUSR1, ...
   if (sigaction(SIGUSR1, &sa, NULL) != 0)
   {
     std::clog << "Error: Could not set signal handling function for SIGUSR1!"
               << std::endl;
-    return rcSignalHandlerError;
+    return scantool::rcSignalHandlerError;
   }
   // ... and one for SIGUSR2.
   if (sigaction(SIGUSR2, &sa, NULL) != 0)
   {
     std::clog << "Error: Could not set signal handling function for SIGUSR2!"
               << std::endl;
-    return rcSignalHandlerError;
+    return scantool::rcSignalHandlerError;
   }
   #elif defined(_WIN32)
   if (SetConsoleCtrlHandler((PHANDLER_ROUTINE) windows_signal_handler, TRUE) == 0)
   {
     std::clog << "Error: Could not set signal handling function for Ctrl+C!"
               << std::endl;
-    return rcSignalHandlerError;
+    return scantool::rcSignalHandlerError;
   } //if
   #else
     #error Unknown operating system! No known signal handing facility.
@@ -365,7 +365,7 @@ int main(int argc, char ** argv)
     {
       std::cout << "Error: Could not determine SHA256 hash of " << i
                 << "!" << std::endl;
-      return rcFileError;
+      return scantool::rcFileError;
     } //if no hash
     const std::string hashString = fileHash.toHexString();
     ReportMetascanOnline report;
@@ -399,7 +399,7 @@ int main(int argc, char ** argv)
           {
             std::cerr << "Error: Could not submit file " << i << " for scanning."
                       << std::endl;
-            return rcScanError;
+            return scantool::rcScanError;
           }
           //remember time of last scan request
           lastQueuedScanTime = std::chrono::steady_clock::now();

@@ -24,7 +24,7 @@
 #include "../Engine.hpp"
 #include <chrono>
 
-struct EngineMetascanOnline: public Engine
+struct EngineMetascanOnline: public scantool::Engine
 {
   ///default constructor
   EngineMetascanOnline();

@@ -21,6 +21,9 @@
 #ifndef SCANTOOL_RETURNCODES_HPP
 #define SCANTOOL_RETURNCODES_HPP
 
+namespace scantool
+{
+
 //return codes
 // -- invalid/malformed parameter value
 const int rcInvalidParameter = 1;
@@ -32,5 +35,7 @@ const int rcScanError = 3;
 const int rcSignalHandlerError = 4;
 // -- program was terminated by an intercepted signal
 const int rcProgramTerminationBySignal = 5;
+
+} //namespace
 
 #endif // SCANTOOL_RETURNCODES_HPP

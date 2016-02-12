@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2015  Thoronador
+    Copyright (C) 2015, 2016  Thoronador
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,10 +18,13 @@
  -------------------------------------------------------------------------------
 */
 
-#ifndef ENGINE_HPP
-#define ENGINE_HPP
+#ifndef SCANTOOL_ENGINE_HPP
+#define SCANTOOL_ENGINE_HPP
 
 #include <string>
+
+namespace scantool
+{
 
 struct Engine
 {
@@ -36,4 +39,6 @@ struct Engine
   std::string result;  /**< name of the detected malware */
 }; //struct Engine
 
-#endif // ENGINE_HPP
+} //namespace
+
+#endif // SCANTOOL_ENGINE_HPP

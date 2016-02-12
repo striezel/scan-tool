@@ -26,7 +26,7 @@
 #include "../Scanner.hpp"
 #include "ReportHoneypot.hpp"
 
-class ScannerVirusTotalHoneypot: public Scanner
+class ScannerVirusTotalHoneypot: public scantool::Scanner
 {
   public:
     typedef ReportHoneypot Report;

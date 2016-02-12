@@ -25,7 +25,7 @@
 #include "ReportMetascanOnline.hpp"
 #include "../Scanner.hpp"
 
-class ScannerMetascanOnline: public Scanner
+class ScannerMetascanOnline: public scantool::Scanner
 {
   public:
     /** \brief default constructor

@@ -139,7 +139,7 @@ void linux_signal_handler(int sig)
     // queued scans, because user might want to see that despite termination.
     showSummary(mapFileToHash, mapHashToReport, queued_scans, largeFiles);
     std::clog << "Terminating program early due to caught signal." << std::endl;
-    std::exit(rcProgramTerminationBySignal);
+    std::exit(scantool::rcProgramTerminationBySignal);
   } //if SIGINT or SIGTERM
   else if ((sig == SIGUSR1) || (SIGUSR2 == sig))
   {
@@ -232,7 +232,7 @@ int main(int argc, char ** argv)
           {
             std::cout << "Error: You have to enter some text after \""
                       << param <<"\"." << std::endl;
-            return rcInvalidParameter;
+            return scantool::rcInvalidParameter;
           }
         } //API key
         else if ((param=="--silent") or (param=="-s"))
@@ -242,7 +242,7 @@ int main(int argc, char ** argv)
           {
             std::cout << "Error: Parameter " << param << " must not occur more than once!"
                       << std::endl;
-            return rcInvalidParameter;
+            return scantool::rcInvalidParameter;
           }
           silent = true;
         } //silent
@@ -256,13 +256,13 @@ int main(int argc, char ** argv)
             if (!stringToInt(integer, limit))
             {
               std::cout << "Error: \"" << integer << "\" is not an integer!" << std::endl;
-              return rcInvalidParameter;
+              return scantool::rcInvalidParameter;
             }
             if (limit < 0)
             {
               std::cout << "Error: " << limit << " is negative, but only"
                         << " non-negative values are allowed here." << std::endl;
-              return rcInvalidParameter;
+              return scantool::rcInvalidParameter;
             }
             maybeLimit = limit;
             ++i; //Skip next parameter, because it's used as limit already.
@@ -271,7 +271,7 @@ int main(int argc, char ** argv)
           {
             std::cout << "Error: You have to enter an integer value after \""
                       << param <<"\"." << std::endl;
-            return rcInvalidParameter;
+            return scantool::rcInvalidParameter;
           }
         } //"maybe" limit
         else if ((param=="--files") or (param=="--list"))
@@ -285,7 +285,7 @@ int main(int argc, char ** argv)
             {
               std::cout << "Error: File " << listFile << " does not exist!"
                         << std::endl;
-              return rcFileError;
+              return scantool::rcFileError;
             }
             //open file and read file names
             std::ifstream inFile;
@@ -294,7 +294,7 @@ int main(int argc, char ** argv)
             {
               std::cout << "Error: Could not open file " << listFile << "!"
                         << std::endl;
-              return rcFileError;
+              return scantool::rcFileError;
             }
             std::string nextFile;
             while (!inFile.eof())
@@ -322,7 +322,7 @@ int main(int argc, char ** argv)
           {
             std::cout << "Error: You have to enter a file name after \""
                       << param <<"\"." << std::endl;
-            return rcInvalidParameter;
+            return scantool::rcInvalidParameter;
           } //else
         } //list of files
         //age limit for reports
@@ -331,7 +331,7 @@ int main(int argc, char ** argv)
           if (maxAgeInDays > 0)
           {
             std::cout << "Error: Report age has been specified multiple times." << std::endl;
-            return rcInvalidParameter;
+            return scantool::rcInvalidParameter;
           }
           //enough parameters?
           if ((i+1<argc) and (argv[i+1]!=NULL))
@@ -341,12 +341,12 @@ int main(int argc, char ** argv)
             if (!stringToUnsignedInt(integer, limit))
             {
               std::cout << "Error: \"" << integer << "\" is not an unsigned integer!" << std::endl;
-              return rcInvalidParameter;
+              return scantool::rcInvalidParameter;
             }
             if (limit <= 0)
             {
               std::cout << "Error: Report age has to be more than zero days." << std::endl;
-              return rcInvalidParameter;
+              return scantool::rcInvalidParameter;
             }
             //Is it more than ca. 100 years?
             if (limit > 36500)
@@ -363,7 +363,7 @@ int main(int argc, char ** argv)
           {
             std::cout << "Error: You have to enter an integer value after \""
                       << param <<"\"." << std::endl;
-            return rcInvalidParameter;
+            return scantool::rcInvalidParameter;
           }
         } //age limit
         //use request cache
@@ -372,7 +372,7 @@ int main(int argc, char ** argv)
           if (useRequestCache)
           {
             std::cout << "Error: Request cache was already enabled." << std::endl;
-            return rcInvalidParameter;
+            return scantool::rcInvalidParameter;
           }
           useRequestCache = true;
         } //request cache
@@ -405,13 +405,13 @@ int main(int argc, char ** argv)
           //unknown or wrong parameter
           std::cout << "Invalid parameter given: \"" << param << "\"." << std::endl
                     << "Use --help to get a list of valid parameters.\n" << std::endl;
-          return rcInvalidParameter;
+          return scantool::rcInvalidParameter;
         } //if unknown parameter
       } //if parameter exists
       else
       {
         std::cout << "Parameter at index " << i << " is NULL." << std::endl;
-        return rcInvalidParameter;
+        return scantool::rcInvalidParameter;
       }
       ++i;//on to next parameter
     } //while
@@ -421,7 +421,7 @@ int main(int argc, char ** argv)
   {
     std::cout << "Error: This program won't work properly without an API key! "
               << "Use --apikey to specifiy the VirusTotal API key." << std::endl;
-    return rcInvalidParameter;
+    return scantool::rcInvalidParameter;
   }
   if (files_scan.empty())
   {
@@ -451,7 +451,7 @@ int main(int argc, char ** argv)
     if (!cacheMgr.createCacheDirectory())
     {
       std::cerr << "Error: Could not create request cache directory!" << std::endl;
-      return rcFileError;
+      return scantool::rcFileError;
     } //if directory could not be created
     // cache directory is ~/.scan-tool/vt-cache/
     requestCacheDirVT = cacheMgr.getCacheDirectory();
@@ -475,35 +475,35 @@ int main(int argc, char ** argv)
   {
     std::clog << "Error: Could not set signal handling function for SIGINT!"
               << std::endl;
-    return rcSignalHandlerError;
+    return scantool::rcSignalHandlerError;
   }
   // ... and one for SIGTERM.
   if (sigaction(SIGTERM, &sa, NULL) != 0)
   {
     std::clog << "Error: Could not set signal handling function for SIGTERM!"
               << std::endl;
-    return rcSignalHandlerError;
+    return scantool::rcSignalHandlerError;
   }
   // ... and one for SIGUSR1, ...
   if (sigaction(SIGUSR1, &sa, NULL) != 0)
   {
     std::clog << "Error: Could not set signal handling function for SIGUSR1!"
               << std::endl;
-    return rcSignalHandlerError;
+    return scantool::rcSignalHandlerError;
   }
   // ... and one for SIGUSR2.
   if (sigaction(SIGUSR2, &sa, NULL) != 0)
   {
     std::clog << "Error: Could not set signal handling function for SIGUSR2!"
               << std::endl;
-    return rcSignalHandlerError;
+    return scantool::rcSignalHandlerError;
   }
   #elif defined(_WIN32)
   if (SetConsoleCtrlHandler((PHANDLER_ROUTINE) windows_signal_handler, TRUE) == 0)
   {
     std::clog << "Error: Could not set signal handling function for Ctrl+C!"
               << std::endl;
-    return rcSignalHandlerError;
+    return scantool::rcSignalHandlerError;
   } //if
   #else
     #error Unknown operating system! No known signal handing facility.
@@ -522,7 +522,7 @@ int main(int argc, char ** argv)
     {
       std::cout << "Error: Could not determine SHA256 hash of " << i
                 << "!" << std::endl;
-      return rcFileError;
+      return scantool::rcFileError;
     } //if no hash
     const std::string hashString = fileHash.toHexString();
     ScannerVirusTotalV2::Report report;
@@ -564,7 +564,7 @@ int main(int argc, char ** argv)
           {
             std::cerr << "Error: Could not initiate rescan for file " << i
                       << "!" << std::endl;
-            return rcScanError;
+            return scantool::rcScanError;
           }
           if (!silent)
             std::clog << "Info: " << i << " was queued for re-scan, because "
@@ -589,7 +589,7 @@ int main(int argc, char ** argv)
           {
             std::cerr << "Error: Could not submit file " << i << " for scanning."
                       << std::endl;
-            return rcScanError;
+            return scantool::rcScanError;
           }
           //remember time of last scan request
           lastQueuedScanTime = std::chrono::steady_clock::now();
@@ -618,7 +618,7 @@ int main(int argc, char ** argv)
         //unexpected response code
         std::cerr << "Error: Got unexpected response code ("<<report.response_code
                   << ") for report of file " << i << "." << std::endl;
-        return rcScanError;
+        return scantool::rcScanError;
       }
     }
     else

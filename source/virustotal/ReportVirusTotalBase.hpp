@@ -28,7 +28,7 @@
  * \remarks Encapsulates some data members that are common among different
  * VirusTotal APIs but not included in other APIs.
  */
-struct ReportVirusTotalBase: public Report
+struct ReportVirusTotalBase: public scantool::Report
 {
   ///default constructor
   ReportVirusTotalBase();

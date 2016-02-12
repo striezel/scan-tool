@@ -23,7 +23,7 @@
 
 #include "../Engine.hpp"
 
-struct EngineV2: public Engine
+struct EngineV2: public scantool::Engine
 {
   ///default constructor
   EngineV2();

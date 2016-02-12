@@ -102,7 +102,7 @@ int main(int argc, char ** argv)
           {
             std::cout << "Error: You have to enter some text after \""
                       << param <<"\"." << std::endl;
-            return rcInvalidParameter;
+            return scantool::rcInvalidParameter;
           }
         }//API key
         else if ((param=="--report") or (param=="--resource"))
@@ -123,7 +123,7 @@ int main(int argc, char ** argv)
           {
             std::cout << "Error: You have to enter a resource ID after \""
                       << param << "\"." << std::endl;
-            return rcInvalidParameter;
+            return scantool::rcInvalidParameter;
           }
         }//resource report
         else if ((param=="--re") or (param=="--rescan"))
@@ -144,7 +144,7 @@ int main(int argc, char ** argv)
           {
             std::cout << "Error: You have to enter a file ID after \""
                       << param << "\"." << std::endl;
-            return rcInvalidParameter;
+            return scantool::rcInvalidParameter;
           }
         }//rescan
         else if ((param=="--file") or (param=="--scan"))
@@ -165,7 +165,7 @@ int main(int argc, char ** argv)
           {
             std::cout << "Error: You have to enter a file name after \""
                       << param << "\"." << std::endl;
-            return rcInvalidParameter;
+            return scantool::rcInvalidParameter;
           }
         }//scan file
         else
@@ -173,13 +173,13 @@ int main(int argc, char ** argv)
           //unknown or wrong parameter
           std::cout << "Invalid parameter given: \"" << param << "\"." << std::endl
                     << "Use --help to get a list of valid parameters.\n";
-          return rcInvalidParameter;
+          return scantool::rcInvalidParameter;
         }
       }//parameter exists
       else
       {
         std::cout << "Parameter at index " << i << " is NULL." << std::endl;
-        return rcInvalidParameter;
+        return scantool::rcInvalidParameter;
       }
       ++i;//on to next parameter
     }//while
@@ -190,13 +190,13 @@ int main(int argc, char ** argv)
     std::cout << "Error: This program won't work properly without an API key! "
               << "Use --apikey to specify the Metascan Online API key."
               << std::endl;
-    return rcInvalidParameter;
+    return scantool::rcInvalidParameter;
   }
   if (resources_report.empty() && file_IDs_rescan.empty() && files_scan.empty())
   {
     std::cout << "No resources for report retrieval, file IDs for rescan or "
               << "files to scan were given. Exiting." << std::endl;
-    return rcInvalidParameter;
+    return scantool::rcInvalidParameter;
   } //if no resources
 
   //initialize scanner instance
@@ -210,7 +210,7 @@ int main(int argc, char ** argv)
     {
       std::cout << "Error: Could not initiate rescan for file ID \""
                 << i << "\"!" << std::endl;
-      return rcScanError;
+      return scantool::rcScanError;
     }
     std::cout << "Rescan for \"" << i << "\" initiated. "
               << "Data ID for later retrieval is " << scan_data.data_id << "."
@@ -225,7 +225,7 @@ int main(int argc, char ** argv)
     if (!scanMSO.getReport(i, report))
     {
       std::cout << "Error: Could not retrieve report!" << std::endl;
-      return rcScanError;
+      return scantool::rcScanError;
     }
     std::cout << std::endl;
     std::cout << "Report data for " << i << ":" << std::endl
@@ -264,7 +264,7 @@ int main(int argc, char ** argv)
     {
       std::cout << "Error: Could not initiate scan for \""
                 << i << "\"!" << std::endl;
-      return rcScanError;
+      return scantool::rcScanError;
     }
     std::cout << "Scan for \"" << i << "\" initiated. "
               << "Data ID for later retrieval is " << scan_data.data_id << "."

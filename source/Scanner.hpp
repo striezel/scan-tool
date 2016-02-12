@@ -18,11 +18,14 @@
  -------------------------------------------------------------------------------
 */
 
-#ifndef SCANNER_HPP
-#define SCANNER_HPP
+#ifndef SCANTOOL_SCANNER_HPP
+#define SCANTOOL_SCANNER_HPP
 
 #include <chrono>
 #include <cstdint>
+
+namespace scantool
+{
 
 class Scanner
 {
@@ -136,4 +139,6 @@ class Scanner
     std::chrono::steady_clock::time_point m_LastHashLookup; /**< time of the last hash lookup */
 }; //class
 
-#endif // SCANNER_HPP
+} //namespace
+
+#endif // SCANTOOL_SCANNER_HPP
