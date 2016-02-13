@@ -33,7 +33,7 @@
 #include "summary.hpp"
 #include "../Curly.hpp"
 #include "../metascan/Definitions.hpp"
-#include "../metascan/ScannerMetascanOnline.hpp"
+#include "../metascan/Scanner.hpp"
 #include "../../libthoro/common/StringUtils.h"
 #include "../../libthoro/filesystem/file.hpp"
 #include "../../libthoro/hash/sha256/FileSourceUtility.hpp"
@@ -66,7 +66,7 @@ void showVersion()
 /* Four variables that will be used in main() but also in signal handling
    function and are therefore declared as global variables. */
 //maps SHA256 hashes to corresponding report; key = SHA256 hash, value = scan report
-std::map<std::string, ReportMetascanOnline> mapHashToReport;
+std::map<std::string, scantool::metascan::Report> mapHashToReport;
 //maps filename to hash; key = file name, value = SHA256 hash
 std::map<std::string, std::string> mapFileToHash = std::map<std::string, std::string>();
 //list of files that exceed the file size for scans; ; first = file name, second = file size in octets
@@ -353,7 +353,7 @@ int main(int argc, char ** argv)
   #endif // defined
 
   //create scanner: pass API key, honour time limits, set silent mode
-  ScannerMetascanOnline scanMSO(key, true, silent);
+  scantool::metascan::Scanner scanMSO(key, true, silent);
   //time when last scan was queued
   std::chrono::steady_clock::time_point lastQueuedScanTime = std::chrono::steady_clock::now() - std::chrono::hours(24);
 
@@ -368,13 +368,13 @@ int main(int argc, char ** argv)
       return scantool::rcFileError;
     } //if no hash
     const std::string hashString = fileHash.toHexString();
-    ReportMetascanOnline report;
+    scantool::metascan::Report report;
     if (scanMSO.getReport(hashString, report))
     {
       if (report.successfulRetrieval())
       {
         //got report
-        if (!MSO::isInfected(report.scan_all_result_i))
+        if (!scantool::metascan::isInfected(report.scan_all_result_i))
         {
           if (!silent)
             std::cout << i << " OK" << std::endl;
@@ -394,7 +394,7 @@ int main(int argc, char ** argv)
         const int64_t fileSize = libthoro::filesystem::file::getSize64(i);
         if ((fileSize <= scanMSO.maxScanSize()) && (fileSize >= 0))
         {
-          ScannerMetascanOnline::ScanData scan_data;
+          scantool::metascan::Scanner::ScanData scan_data;
           if (!scanMSO.scan(i, scan_data))
           {
             std::cerr << "Error: Could not submit file " << i << " for scanning."
@@ -434,7 +434,7 @@ int main(int argc, char ** argv)
   //TODO: try to retrieve queued scans
 
   //show the summary, e.g. infected files, too large files
-  showSummary(mapFileToHash, mapHashToReport, largeFiles);
+  scantool::metascan::showSummary(mapFileToHash, mapHashToReport, largeFiles);
 
   return 0;
 }

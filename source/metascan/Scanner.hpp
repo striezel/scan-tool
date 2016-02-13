@@ -18,14 +18,20 @@
  -------------------------------------------------------------------------------
 */
 
-#ifndef SCANNERMETASCANONLINE_HPP
-#define SCANNERMETASCANONLINE_HPP
+#ifndef SCANTOOL_MSO_SCANNER_HPP
+#define SCANTOOL_MSO_SCANNER_HPP
 
 #include <string>
-#include "ReportMetascanOnline.hpp"
+#include "Report.hpp"
 #include "../Scanner.hpp"
 
-class ScannerMetascanOnline: public scantool::Scanner
+namespace scantool
+{
+
+namespace metascan
+{
+
+class Scanner: public scantool::Scanner
 {
   public:
     /** \brief default constructor
@@ -34,7 +40,7 @@ class ScannerMetascanOnline: public scantool::Scanner
      * \param honourTimeLimits   whether or not time limits should be honoured
      * \param silent             whether or not output to the standard output should be reduced
      */
-    ScannerMetascanOnline(const std::string& apikey, const bool honourTimeLimits = true, const bool silent = false);
+    Scanner(const std::string& apikey, const bool honourTimeLimits = true, const bool silent = false);
 
 
     struct ScanData
@@ -85,7 +91,7 @@ class ScannerMetascanOnline: public scantool::Scanner
      * \return Returns true, if the report could be retrieved.
      *         Returns false, if retrieval failed.
      */
-    bool getReport(const std::string& resource, ReportMetascanOnline& report);
+    bool getReport(const std::string& resource, Report& report);
 
 
     /** \brief requests a re-scan of an already uploaded file
@@ -117,13 +123,17 @@ class ScannerMetascanOnline: public scantool::Scanner
     std::string m_apikey; /**< holds the Metascan Online API key */
 }; //class
 
+} //namespace
 
-// custom specialization of std::hash for ScannerMetascanOnline::ScanData
+} //namespace
+
+
+// custom specialization of std::hash for scantool::metascan::Scanner::ScanData
 namespace std
 {
-    template<> struct hash<ScannerMetascanOnline::ScanData>
+    template<> struct hash<scantool::metascan::Scanner::ScanData>
     {
-        typedef ScannerMetascanOnline::ScanData argument_type;
+        typedef scantool::metascan::Scanner::ScanData argument_type;
         typedef std::size_t result_type;
         result_type operator()(argument_type const& s) const
         {
@@ -134,4 +144,4 @@ namespace std
     };
 }
 
-#endif // SCANNERMETASCANONLINE_HPP
+#endif // SCANTOOL_MSO_SCANNER_HPP

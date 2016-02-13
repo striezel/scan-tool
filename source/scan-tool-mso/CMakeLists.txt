@@ -16,9 +16,9 @@ set(scan-tool-mso_sources
     ../Curly.cpp
     ../Engine.cpp
     ../metascan/Definitions.cpp
-    ../metascan/EngineMetascanOnline.cpp
-    ../metascan/ReportMetascanOnline.cpp
-    ../metascan/ScannerMetascanOnline.cpp
+    ../metascan/Engine.cpp
+    ../metascan/Report.cpp
+    ../metascan/Scanner.cpp
     ../Report.cpp
     ../Scanner.cpp
     summary.cpp

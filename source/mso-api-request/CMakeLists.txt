@@ -12,9 +12,9 @@ set(mso-api-request_sources
     ../../libthoro/hash/sha256/sha256.cpp
     ../Curly.cpp
     ../Engine.cpp
-    ../metascan/EngineMetascanOnline.cpp
-    ../metascan/ReportMetascanOnline.cpp
-    ../metascan/ScannerMetascanOnline.cpp
+    ../metascan/Engine.cpp
+    ../metascan/Report.cpp
+    ../metascan/Scanner.cpp
     ../Scanner.cpp
     main.cpp)
 

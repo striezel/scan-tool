@@ -18,19 +18,25 @@
  -------------------------------------------------------------------------------
 */
 
-#ifndef REPORTMETASCANONLINE_HPP
-#define REPORTMETASCANONLINE_HPP
+#ifndef SCANTOOL_MSO_REPORT_HPP
+#define SCANTOOL_MSO_REPORT_HPP
 
 #include <cstdint>
 #include <string>
 #include <vector>
 #include <jsoncpp/json/reader.h>
-#include "EngineMetascanOnline.hpp"
+#include "Engine.hpp"
 
-struct ReportMetascanOnline
+namespace scantool
+{
+
+namespace metascan
+{
+
+struct Report
 {
   /** \brief default constructor */
-  ReportMetascanOnline();
+  Report();
 
   /** \brief structure for the file_info part in reports */
   struct FileInfo
@@ -56,7 +62,7 @@ struct ReportMetascanOnline
 
   std::string file_id;
   //scan_result part of report
-  std::vector<EngineMetascanOnline> scan_details;
+  std::vector<Engine> scan_details;
   bool rescan_available;
   int scan_all_result_i;
   std::string start_time;
@@ -97,4 +103,8 @@ struct ReportMetascanOnline
   virtual bool notFound() const /* override */;
 }; //class
 
-#endif // REPORTMETASCANONLINE_HPP
+} //namespace
+
+} //namespace
+
+#endif // SCANTOOL_MSO_REPORT_HPP

@@ -18,12 +18,18 @@
  -------------------------------------------------------------------------------
 */
 
-#include "ReportMetascanOnline.hpp"
+#include "Report.hpp"
 
-ReportMetascanOnline::ReportMetascanOnline()
+namespace scantool
+{
+
+namespace metascan
+{
+
+Report::Report()
 : file_id(""),
   //scan_result part of report
-  scan_details(std::vector<EngineMetascanOnline>()),
+  scan_details(std::vector<Engine>()),
   rescan_available(false),
   scan_all_result_i(-1),
   start_time(""),
@@ -39,7 +45,7 @@ ReportMetascanOnline::ReportMetascanOnline()
 {
 }
 
-ReportMetascanOnline::FileInfo::FileInfo()
+Report::FileInfo::FileInfo()
 : file_size(-1),
   upload_timestamp(""),
   //hashes
@@ -54,7 +60,7 @@ ReportMetascanOnline::FileInfo::FileInfo()
 {
 }
 
-bool ReportMetascanOnline::fromJSONRoot(const Json::Value& root)
+bool Report::fromJSONRoot(const Json::Value& root)
 {
   if (root.empty())
     return false;
@@ -80,7 +86,7 @@ bool ReportMetascanOnline::fromJSONRoot(const Json::Value& root)
       scan_details.clear();
       while (iter != itEnd)
       {
-        EngineMetascanOnline eng;
+        Engine eng;
         const Json::Value engVal = js_scan_details.get(*iter, Json::Value());
         /* The engine name is the member name. */
         eng.engine = *iter;
@@ -279,14 +285,18 @@ bool ReportMetascanOnline::fromJSONRoot(const Json::Value& root)
   return true;
 }
 
-bool ReportMetascanOnline::successfulRetrieval() const
+bool Report::successfulRetrieval() const
 {
   return (!scan_details.empty() && !scan_all_result_a.empty()
           && !file_id.empty());
 }
 
-bool ReportMetascanOnline::notFound() const
+bool Report::notFound() const
 {
   //simple way to check for "not found"
   return (file_id.empty() || scan_details.empty());
 }
+
+} //namespace
+
+} //namespace

@@ -18,26 +18,32 @@
  -------------------------------------------------------------------------------
 */
 
-#include "ScannerMetascanOnline.hpp"
+#include "Scanner.hpp"
 #include <iostream>
 #include "../Curly.hpp"
 #include "../../libthoro/hash/sha256/sha256.hpp"
 #include "../../libthoro/filesystem/directory.hpp"
 #include "../../libthoro/filesystem/file.hpp"
 
-ScannerMetascanOnline::ScannerMetascanOnline(const std::string& apikey, const bool honourTimeLimits, const bool silent)
-: Scanner(honourTimeLimits, silent),
+namespace scantool
+{
+
+namespace metascan
+{
+
+Scanner::Scanner(const std::string& apikey, const bool honourTimeLimits, const bool silent)
+: scantool::Scanner(honourTimeLimits, silent),
   m_apikey(apikey)
 {
 }
 
-ScannerMetascanOnline::ScanData::ScanData()
+Scanner::ScanData::ScanData()
 : data_id(""),
   rest_ip("")
 {
 }
 
-bool ScannerMetascanOnline::ScanData::operator< (const ScanData& other) const
+bool Scanner::ScanData::operator< (const ScanData& other) const
 {
   if (data_id < other.data_id)
     return true;
@@ -46,27 +52,27 @@ bool ScannerMetascanOnline::ScanData::operator< (const ScanData& other) const
   return false;
 }
 
-void ScannerMetascanOnline::setApiKey(const std::string& apikey)
+void Scanner::setApiKey(const std::string& apikey)
 {
   if (!apikey.empty())
     m_apikey = apikey;
 }
 
-std::chrono::milliseconds ScannerMetascanOnline::timeBetweenConsecutiveScanRequests() const
+std::chrono::milliseconds Scanner::timeBetweenConsecutiveScanRequests() const
 {
   /* Metascan Online allows 25 file scans per hour,
      i.e. one scan every 144 seconds. */
   return std::chrono::milliseconds(144000);
 }
 
-std::chrono::milliseconds ScannerMetascanOnline::timeBetweenConsecutiveHashLookups() const
+std::chrono::milliseconds Scanner::timeBetweenConsecutiveHashLookups() const
 {
   /* Metascan Online allows 1500 hash lookups per hour,
      i.e. one request every 2.4 seconds. */
   return std::chrono::milliseconds(2400);
 }
 
-bool ScannerMetascanOnline::getReport(const std::string& resource, ReportMetascanOnline& report)
+bool Scanner::getReport(const std::string& resource, Report& report)
 {
   //We only want SHA 256 hashes here, no MD5 or SHA 1.
   if (!SHA256::isValidHash(resource))
@@ -84,7 +90,7 @@ bool ScannerMetascanOnline::getReport(const std::string& resource, ReportMetasca
 
   if (!cURL.perform(response))
   {
-    std::cerr << "Error in ScannerMetascanOnline::getReport(): Request could not be performed." << std::endl;
+    std::cerr << "Error in Scanner::getReport(): Request could not be performed." << std::endl;
     return false;
   }
   hashLookupWasNow();
@@ -92,25 +98,25 @@ bool ScannerMetascanOnline::getReport(const std::string& resource, ReportMetasca
   //400: Bad request
   if (cURL.getResponseCode() == 400)
   {
-    std::cerr << "Error in ScannerMetascanOnline::getReport(): Bad request!" << std::endl;
+    std::cerr << "Error in Scanner::getReport(): Bad request!" << std::endl;
     return false;
   }
   //401: wrong or missing API key
   if (cURL.getResponseCode() == 401)
   {
-    std::cerr << "Error in ScannerMetascanOnline::getReport(): API key is wrong or missing!" << std::endl;
+    std::cerr << "Error in Scanner::getReport(): API key is wrong or missing!" << std::endl;
     return false;
   }
   //403: greetings from your hourly rate limit
   if (cURL.getResponseCode() == 403)
   {
-    std::cerr << "Error in ScannerMetascanOnline::getReport(): Hourly rate limit reached!" << std::endl;
+    std::cerr << "Error in Scanner::getReport(): Hourly rate limit reached!" << std::endl;
     return false;
   }
   //response code should be 200
   if (cURL.getResponseCode() != 200)
   {
-    std::cerr << "Error in ScannerMetascanOnline::getReport(): Unexpected HTTP status code "
+    std::cerr << "Error in Scanner::getReport(): Unexpected HTTP status code "
               << cURL.getResponseCode() << "!" << std::endl;
     return false;
   }
@@ -126,14 +132,14 @@ bool ScannerMetascanOnline::getReport(const std::string& resource, ReportMetasca
   const bool success = jsonReader.parse(response, root, false);
   if (!success)
   {
-    std::cerr << "Error in ScannerMetascanOnline::getReport(): Unable to "
+    std::cerr << "Error in Scanner::getReport(): Unable to "
               << "parse JSON data!" << std::endl;
     return false;
   }
   // fill report with JSON data
   if (!report.fromJSONRoot(root))
   {
-    std::cerr << "Error in ScannerMetascanOnline::getReport(): The parsed "
+    std::cerr << "Error in Scanner::getReport(): The parsed "
               << "JSON does not contain data to fill a report!" << std::endl;
     return false;
   }
@@ -141,7 +147,7 @@ bool ScannerMetascanOnline::getReport(const std::string& resource, ReportMetasca
   return true;
 }
 
-bool ScannerMetascanOnline::rescan(const std::string& file_id, ScanData& scan_data)
+bool Scanner::rescan(const std::string& file_id, ScanData& scan_data)
 {
   if (file_id.empty())
     return false;
@@ -157,7 +163,7 @@ bool ScannerMetascanOnline::rescan(const std::string& file_id, ScanData& scan_da
   //perform request
   if (!cURL.perform(response))
   {
-    std::cerr << "Error in ScannerMetascanOnline::rescan(): Request could not be performed." << std::endl;
+    std::cerr << "Error in Scanner::rescan(): Request could not be performed." << std::endl;
     return false;
   }
   scanRequestWasNow();
@@ -165,25 +171,25 @@ bool ScannerMetascanOnline::rescan(const std::string& file_id, ScanData& scan_da
   //400: Bad request
   if (cURL.getResponseCode() == 400)
   {
-    std::cerr << "Error in ScannerMetascanOnline::rescan(): Bad request!" << std::endl;
+    std::cerr << "Error in Scanner::rescan(): Bad request!" << std::endl;
     return false;
   }
   //401: wrong or missing API key
   if (cURL.getResponseCode() == 401)
   {
-    std::cerr << "Error in ScannerMetascanOnline::rescan(): API key is wrong or missing!" << std::endl;
+    std::cerr << "Error in Scanner::rescan(): API key is wrong or missing!" << std::endl;
     return false;
   }
   //500: internal server error / server temporary unavailable
   if (cURL.getResponseCode() == 500)
   {
-    std::cerr << "Error in ScannerMetascanOnline::rescan(): Internal server error / server temporarily unavailable!" << std::endl;
+    std::cerr << "Error in Scanner::rescan(): Internal server error / server temporarily unavailable!" << std::endl;
     return false;
   }
   //503: Server temporary unavailable. There're too many unfinished file in pending queue.
   if (cURL.getResponseCode() == 503)
   {
-    std::cerr << "Error in ScannerMetascanOnline::rescan(): Service temporarily unavailable!"
+    std::cerr << "Error in Scanner::rescan(): Service temporarily unavailable!"
               << " There are too many unfinished file in pending queue."
               << " Try again later." << std::endl;
     return false;
@@ -191,7 +197,7 @@ bool ScannerMetascanOnline::rescan(const std::string& file_id, ScanData& scan_da
   //response code should be 200
   if (cURL.getResponseCode() != 200)
   {
-    std::cerr << "Error in ScannerMetascanOnline::rescan(): Unexpected HTTP status code "
+    std::cerr << "Error in Scanner::rescan(): Unexpected HTTP status code "
               << cURL.getResponseCode() << "!" << std::endl;
     return false;
   }
@@ -207,7 +213,7 @@ bool ScannerMetascanOnline::rescan(const std::string& file_id, ScanData& scan_da
   const bool success = jsonReader.parse(response, root, false);
   if (!success)
   {
-    std::cerr << "Error in ScannerMetascanOnline::rescan(): Unable to parse "
+    std::cerr << "Error in Scanner::rescan(): Unable to parse "
               << "JSON data!" << std::endl;
     return false;
   }
@@ -232,7 +238,7 @@ bool ScannerMetascanOnline::rescan(const std::string& file_id, ScanData& scan_da
   return (!scan_data.data_id.empty() && !scan_data.rest_ip.empty());
 }
 
-bool ScannerMetascanOnline::scan(const std::string& filename, ScanData& scan_data)
+bool Scanner::scan(const std::string& filename, ScanData& scan_data)
 {
   if (filename.empty())
     return false;
@@ -272,7 +278,7 @@ bool ScannerMetascanOnline::scan(const std::string& filename, ScanData& scan_dat
   std::string response = "";
   if (!cURL.perform(response))
   {
-    std::cerr << "Error in ScannerMetascanOnline::scan(): Request could not be performed." << std::endl;
+    std::cerr << "Error in Scanner::scan(): Request could not be performed." << std::endl;
     return false;
   }
   scanRequestWasNow();
@@ -280,31 +286,31 @@ bool ScannerMetascanOnline::scan(const std::string& filename, ScanData& scan_dat
   //400: Bad request
   if (cURL.getResponseCode() == 400)
   {
-    std::cerr << "Error in ScannerMetascanOnline::scan(): Bad request!" << std::endl;
+    std::cerr << "Error in Scanner::scan(): Bad request!" << std::endl;
     return false;
   }
   //401: wrong or missing API key
   if (cURL.getResponseCode() == 401)
   {
-    std::cerr << "Error in ScannerMetascanOnline::scan(): API key is wrong or missing!" << std::endl;
+    std::cerr << "Error in Scanner::scan(): API key is wrong or missing!" << std::endl;
     return false;
   }
   //403: scan limit reached
   if (cURL.getResponseCode() == 403)
   {
-    std::cerr << "Error in ScannerMetascanOnline::scan(): The hourly scan limit has been reached!" << std::endl;
+    std::cerr << "Error in Scanner::scan(): The hourly scan limit has been reached!" << std::endl;
     return false;
   }
   //500: internal server error / server temporary unavailable
   if (cURL.getResponseCode() == 500)
   {
-    std::cerr << "Error in ScannerMetascanOnline::scan(): Internal server error / server temporarily unavailable!" << std::endl;
+    std::cerr << "Error in Scanner::scan(): Internal server error / server temporarily unavailable!" << std::endl;
     return false;
   }
   //503: Server temporary unavailable due to maintenance or overloading.
   if (cURL.getResponseCode() == 503)
   {
-    std::cerr << "Error in ScannerMetascanOnline::scan(): Service temporarily"
+    std::cerr << "Error in Scanner::scan(): Service temporarily"
               << " unavailable due to maintenance or overloading."
               << " Try again later." << std::endl;
     return false;
@@ -312,7 +318,7 @@ bool ScannerMetascanOnline::scan(const std::string& filename, ScanData& scan_dat
   //response code should be 200
   if (cURL.getResponseCode() != 200)
   {
-    std::cerr << "Error in ScannerMetascanOnline::scan(): Unexpected HTTP status code "
+    std::cerr << "Error in Scanner::scan(): Unexpected HTTP status code "
               << cURL.getResponseCode() << "!" << std::endl;
     return false;
   }
@@ -329,7 +335,7 @@ bool ScannerMetascanOnline::scan(const std::string& filename, ScanData& scan_dat
   const bool success = jsonReader.parse(response, root, false);
   if (!success)
   {
-    std::cerr << "Error in ScannerMetascanOnline::scan(): Unable to parse "
+    std::cerr << "Error in Scanner::scan(): Unable to parse "
               << "JSON data!" << std::endl;
     return false;
   }
@@ -354,9 +360,13 @@ bool ScannerMetascanOnline::scan(const std::string& filename, ScanData& scan_dat
   return (!scan_data.data_id.empty() && !scan_data.rest_ip.empty());
 }
 
-int64_t ScannerMetascanOnline::maxScanSize() const
+int64_t Scanner::maxScanSize() const
 {
   //unknown? Assume 50 MB for starters.
   #warning TODO: Find out where the real limit is.
   return 50*1024*1024;
 }
+
+} //namespace
+
+} //namespace

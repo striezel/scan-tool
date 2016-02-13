@@ -21,7 +21,10 @@
 #ifndef METASCANDEFINITIONS_HPP
 #define METASCANDEFINITIONS_HPP
 
-namespace MSO
+namespace scantool
+{
+
+namespace metascan
 {
 
 /** \brief checks whether a scan_result_i value indicates infection of a file
@@ -32,6 +35,8 @@ namespace MSO
  */
 
 bool isInfected(const int scan_result_i);
+
+} //namespace
 
 } //namespace
 

@@ -23,8 +23,14 @@
 #include <iostream>
 #include "../../libthoro/filesystem/file.hpp"
 
+namespace scantool
+{
+
+namespace metascan
+{
+
 void showSummary(const std::map<std::string, std::string>& mapFileToHash,
-                 std::map<std::string, ReportMetascanOnline>& mapHashToReport,
+                 std::map<std::string, Report>& mapHashToReport,
                  std::vector<std::pair<std::string, int64_t> >& largeFiles)
 {
   //list possibly infected files
@@ -34,7 +40,7 @@ void showSummary(const std::map<std::string, std::string>& mapFileToHash,
     for (const auto& i : mapFileToHash)
     {
       std::clog << i.first << " may be infected!" << std::endl;
-      const ReportMetascanOnline& repMSO = mapHashToReport[i.second];
+      const Report& repMSO = mapHashToReport[i.second];
       for (const auto& engine : repMSO.scan_details)
       {
         if (engine.detected)
@@ -72,3 +78,7 @@ void showSummary(const std::map<std::string, std::string>& mapFileToHash,
     } //for (range-based)
   } //if there are some "large" files
 }
+
+} //namespace
+
+} //namespace

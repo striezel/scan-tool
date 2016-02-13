@@ -18,20 +18,22 @@
  -------------------------------------------------------------------------------
 */
 
-#ifndef ENGINEMETASCANONLINE_HPP
-#define ENGINEMETASCANONLINE_HPP
+#include "Engine.hpp"
 
-#include "../Engine.hpp"
-#include <chrono>
-
-struct EngineMetascanOnline: public scantool::Engine
+namespace scantool
 {
-  ///default constructor
-  EngineMetascanOnline();
 
-  int scan_result_i; /**< numeric value to represent scan result */
-  std::string def_time; /**< date of virus definitions of the antivirus engine */
-  std::chrono::milliseconds scan_time;  /**< time in milliseconds required for scan by this AV engine */
-}; //struct Engine
+namespace metascan
+{
 
-#endif // ENGINEMETASCANONLINE_HPP
+Engine::Engine()
+: scantool::Engine(),
+  scan_result_i(-1),
+  def_time(""),
+  scan_time(std::chrono::milliseconds(-1))
+{
+}
+
+} //namespace
+
+} //namespace

@@ -20,7 +20,10 @@
 
 #include "Definitions.hpp"
 
-namespace MSO
+namespace scantool
+{
+
+namespace metascan
 {
 
 bool isInfected(const int scan_result_i)
@@ -36,5 +39,7 @@ bool isInfected(const int scan_result_i)
          return false;
   } //swi
 }
+
+} //namespace
 
 } //namespace

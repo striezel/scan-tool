@@ -18,16 +18,22 @@
  -------------------------------------------------------------------------------
 */
 
-#ifndef SCANTOOL_SUMMARY_HPP
-#define SCANTOOL_SUMMARY_HPP
+#ifndef SCANTOOL_MSO_SUMMARY_HPP
+#define SCANTOOL_MSO_SUMMARY_HPP
 
 #include <map>
 #include <string>
 #include <unordered_map>
 #include <utility>
 #include <vector>
-#include "../metascan/ReportMetascanOnline.hpp"
-#include "../metascan/ScannerMetascanOnline.hpp"
+#include "../metascan/Report.hpp"
+#include "../metascan/Scanner.hpp"
+
+namespace scantool
+{
+
+namespace metascan
+{
 
 /** \brief shows the summary of a scan-tool-mso run
  *
@@ -36,7 +42,11 @@
  * \param largeFiles       list of files that exceed the file size for scans; first = file name, second = file size in octets
  */
 void showSummary(const std::map<std::string, std::string>& mapFileToHash,
-                 std::map<std::string, ReportMetascanOnline>& mapHashToReport,
+                 std::map<std::string, Report>& mapHashToReport,
                  std::vector<std::pair<std::string, int64_t> >& largeFiles);
 
-#endif // SCANTOOL_SUMMARY_HPP
+} //namespace
+
+} //namespace
+
+#endif // SCANTOOL_MSO_SUMMARY_HPP

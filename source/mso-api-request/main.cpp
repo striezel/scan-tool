@@ -22,8 +22,8 @@
 #include <iostream>
 #include <string>
 #include <unordered_set>
-#include "../metascan/ReportMetascanOnline.hpp"
-#include "../metascan/ScannerMetascanOnline.hpp"
+#include "../metascan/Report.hpp"
+#include "../metascan/Scanner.hpp"
 #include "../ReturnCodes.hpp"
 
 void showHelp()
@@ -200,12 +200,12 @@ int main(int argc, char ** argv)
   } //if no resources
 
   //initialize scanner instance
-  ScannerMetascanOnline scanMSO(key);
+  scantool::metascan::Scanner scanMSO(key);
 
   //iterate over all resources for rescan requests
   for(const std::string& i : file_IDs_rescan)
   {
-    ScannerMetascanOnline::ScanData scan_data;
+    scantool::metascan::Scanner::ScanData scan_data;
     if (!scanMSO.rescan(i, scan_data))
     {
       std::cout << "Error: Could not initiate rescan for file ID \""
@@ -221,7 +221,7 @@ int main(int argc, char ** argv)
   //iterate over all resources for report requests
   for(const std::string& i : resources_report)
   {
-    ReportMetascanOnline report;
+    scantool::metascan::Report report;
     if (!scanMSO.getReport(i, report))
     {
       std::cout << "Error: Could not retrieve report!" << std::endl;
@@ -239,7 +239,7 @@ int main(int argc, char ** argv)
     const unsigned int detection_count = std::count_if(
         report.scan_details.cbegin(), report.scan_details.cend(),
         // lambda expression to count all entries where detected == true
-        [](const EngineMetascanOnline& e) { return e.detected;}
+        [](const scantool::metascan::Engine& e) { return e.detected;}
                                                 );
     if (detection_count > 0)
     {
@@ -259,7 +259,7 @@ int main(int argc, char ** argv)
   //iterate over all files for scan requests
   for(const std::string& i : files_scan)
   {
-    ScannerMetascanOnline::ScanData scan_data;
+    scantool::metascan::Scanner::ScanData scan_data;
     if (!scanMSO.scan(i, scan_data))
     {
       std::cout << "Error: Could not initiate scan for \""
