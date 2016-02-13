@@ -18,15 +18,21 @@
  -------------------------------------------------------------------------------
 */
 
-#ifndef CACHEMANAGERVIRUSTOTALV2_HPP
-#define CACHEMANAGERVIRUSTOTALV2_HPP
+#ifndef SCANTOOL_VT_CACHEMANAGERV2_HPP
+#define SCANTOOL_VT_CACHEMANAGERV2_HPP
 
 #include <cstdint>
 #include <string>
 
-/** CacheManagerVirusTotalV2 can be used to manage the local request cache for
+namespace scantool
+{
+
+namespace virustotal
+{
+
+/** CacheManagerV2 can be used to manage the local request cache for
     VirusTotal API V2 reports. */
-class CacheManagerVirusTotalV2
+class CacheManagerV2
 {
   public:
     /** \brief default constructor
@@ -35,7 +41,7 @@ class CacheManagerVirusTotalV2
      *                   an empty string will result in the default path for
      *                   the cache directory
      */
-    CacheManagerVirusTotalV2(const std::string& cacheRoot = "");
+    CacheManagerV2(const std::string& cacheRoot = "");
 
 
     /** \brief gets the path of the default cache directory
@@ -154,4 +160,8 @@ class CacheManagerVirusTotalV2
     std::string m_CacheRoot; /**< path to the chosen root cache directory */
 }; //class
 
-#endif // CACHEMANAGERVIRUSTOTALV2_HPP
+} //namespace
+
+} //namespace
+
+#endif // SCANTOOL_VT_CACHEMANAGERV2_HPP

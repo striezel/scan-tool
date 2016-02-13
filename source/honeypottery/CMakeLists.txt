@@ -10,10 +10,10 @@ set(honeypottery_sources
     ../Curly.cpp
     ../Engine.cpp
     ../Report.cpp
+    ../virustotal/ReportBase.cpp
     ../virustotal/ReportHoneypot.cpp
-    ../virustotal/ReportVirusTotalBase.cpp
     ../Scanner.cpp
-    ../virustotal/ScannerVirusTotalHoneypot.cpp
+    ../virustotal/ScannerHoneypot.cpp
     ../StringToTimeT.cpp
     main.cpp)
 

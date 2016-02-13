@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2015  Thoronador
+    Copyright (C) 2015, 2016  Thoronador
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -20,8 +20,14 @@
 
 #include "ReportV2.hpp"
 
+namespace scantool
+{
+
+namespace virustotal
+{
+
 ReportV2::ReportV2()
-: ReportVirusTotalBase(),
+: ReportBase(),
   verbose_msg(""),
   resource(""),
   scan_id(""),
@@ -47,3 +53,7 @@ bool ReportV2::stillInQueue() const
   /* Response code -2 means that this stuff is still queued for analysis. */
   return (response_code == -2);
 }
+
+} //namespace
+
+} //namespace

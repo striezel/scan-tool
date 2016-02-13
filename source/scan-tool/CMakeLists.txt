@@ -13,15 +13,15 @@ set(scan-tool_sources
     ../../libthoro/hash/sha256/FileSourceUtility.cpp
     ../../libthoro/hash/sha256/MessageSource.cpp
     ../../libthoro/hash/sha256/sha256.cpp
-    ../CacheManagerVirusTotalV2.cpp
+    ../virustotal/CacheManagerV2.cpp
+    ../virustotal/EngineV2.cpp
+    ../virustotal/ReportV2.cpp
+    ../virustotal/ReportBase.cpp
+    ../virustotal/ScannerV2.cpp
     ../Curly.cpp
     ../Engine.cpp
-    ../virustotal/EngineV2.cpp
     ../Report.cpp
-    ../virustotal/ReportV2.cpp
-    ../virustotal/ReportVirusTotalBase.cpp
     ../Scanner.cpp
-    ../virustotal/ScannerVirusTotalV2.cpp
     ../StringToTimeT.cpp
     cachetransition.cpp
     summary.cpp

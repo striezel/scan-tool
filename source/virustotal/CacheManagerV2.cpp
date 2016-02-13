@@ -18,14 +18,20 @@
  -------------------------------------------------------------------------------
 */
 
-#include "CacheManagerVirusTotalV2.hpp"
-#include "virustotal/ScannerVirusTotalV2.hpp"
-#include "../libthoro/common/StringUtils.h"
-#include "../libthoro/filesystem/directory.hpp"
-#include "../libthoro/filesystem/file.hpp"
-#include "../libthoro/hash/sha256/sha256.hpp"
+#include "../../libthoro/common/StringUtils.h"
+#include "../../libthoro/filesystem/directory.hpp"
+#include "../../libthoro/filesystem/file.hpp"
+#include "../../libthoro/hash/sha256/sha256.hpp"
+#include "CacheManagerV2.hpp"
+#include "ScannerV2.hpp"
 
-CacheManagerVirusTotalV2::CacheManagerVirusTotalV2(const std::string& cacheRoot)
+namespace scantool
+{
+
+namespace virustotal
+{
+
+CacheManagerV2::CacheManagerV2(const std::string& cacheRoot)
 : m_CacheRoot(cacheRoot)
 {
   /* Nobody likes accidental directory traversals via malformed input. */
@@ -37,7 +43,7 @@ CacheManagerVirusTotalV2::CacheManagerVirusTotalV2(const std::string& cacheRoot)
     m_CacheRoot = getDefaultCacheDirectory();
 }
 
-std::string CacheManagerVirusTotalV2::getDefaultCacheDirectory()
+std::string CacheManagerV2::getDefaultCacheDirectory()
 {
   std::string homeDirectory;
   if (!libthoro::filesystem::directory::getHome(homeDirectory))
@@ -57,12 +63,12 @@ std::string CacheManagerVirusTotalV2::getDefaultCacheDirectory()
           + libthoro::filesystem::pathDelimiter + "vt-cache");
 }
 
-const std::string& CacheManagerVirusTotalV2::getCacheDirectory() const
+const std::string& CacheManagerV2::getCacheDirectory() const
 {
   return m_CacheRoot;
 }
 
-bool CacheManagerVirusTotalV2::createCacheDirectory()
+bool CacheManagerV2::createCacheDirectory()
 {
   if (!libthoro::filesystem::directory::exists(m_CacheRoot))
   {
@@ -91,12 +97,12 @@ bool CacheManagerVirusTotalV2::createCacheDirectory()
   return true;
 }
 
-std::string CacheManagerVirusTotalV2::getPathForCachedElement(const std::string& resourceID) const
+std::string CacheManagerV2::getPathForCachedElement(const std::string& resourceID) const
 {
   return getPathForCachedElement(resourceID, m_CacheRoot);
 }
 
-std::string CacheManagerVirusTotalV2::getPathForCachedElement(const std::string& resourceID, const std::string& cacheRoot)
+std::string CacheManagerV2::getPathForCachedElement(const std::string& resourceID, const std::string& cacheRoot)
 {
   /* Only SHA256 hashes are valid resource identifiers. Hashes with timestamp,
      e.g. "4beb421019d7d2177d46d08227103a930c6ae35b2eff6d17217734ed0c8ee96f-1450132861",
@@ -119,12 +125,12 @@ std::string CacheManagerVirusTotalV2::getPathForCachedElement(const std::string&
        + libthoro::filesystem::pathDelimiter + resourceID + ".json";
 }
 
-bool CacheManagerVirusTotalV2::deleteCachedElement(const std::string& resourceID)
+bool CacheManagerV2::deleteCachedElement(const std::string& resourceID)
 {
   return deleteCachedElement(resourceID, m_CacheRoot);
 }
 
-bool CacheManagerVirusTotalV2::deleteCachedElement(const std::string& resourceID, const std::string& cacheRoot)
+bool CacheManagerV2::deleteCachedElement(const std::string& resourceID, const std::string& cacheRoot)
 {
   const std::string cachedFile = getPathForCachedElement(resourceID, cacheRoot);
   //An empty string indicates invalid resource ID.
@@ -137,7 +143,7 @@ bool CacheManagerVirusTotalV2::deleteCachedElement(const std::string& resourceID
   return libthoro::filesystem::file::remove(cachedFile);
 }
 
-uint_least32_t CacheManagerVirusTotalV2::checkIntegrity(const bool deleteCorrupted, const bool deleteUnknown) const
+uint_least32_t CacheManagerV2::checkIntegrity(const bool deleteCorrupted, const bool deleteUnknown) const
 {
   // Does the cache exist? If not, exit.
   if (!libthoro::filesystem::directory::exists(m_CacheRoot))
@@ -242,7 +248,7 @@ uint_least32_t CacheManagerVirusTotalV2::checkIntegrity(const bool deleteCorrupt
   return corrupted;
 }
 
-uint_least32_t CacheManagerVirusTotalV2::transitionOneTo256()
+uint_least32_t CacheManagerV2::transitionOneTo256()
 {
   // Does the cache exist? If not, exit.
   if (!libthoro::filesystem::directory::exists(m_CacheRoot))
@@ -329,7 +335,7 @@ uint_least32_t CacheManagerVirusTotalV2::transitionOneTo256()
   return moved_files;
 }
 
-uint_least32_t CacheManagerVirusTotalV2::transition16To256()
+uint_least32_t CacheManagerV2::transition16To256()
 {
   // Does the cache exist? If not, exit.
   if (!libthoro::filesystem::directory::exists(m_CacheRoot))
@@ -432,3 +438,7 @@ uint_least32_t CacheManagerVirusTotalV2::transition16To256()
   } //for
   return moved_files;
 }
+
+} //namespace
+
+} //namespace

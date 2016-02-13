@@ -21,12 +21,12 @@
 #include "cachetransition.hpp"
 #include <iostream>
 #include "../../libthoro/filesystem/directory.hpp"
-#include "../CacheManagerVirusTotalV2.hpp"
 #include "../ReturnCodes.hpp"
+#include "../virustotal/CacheManagerV2.hpp"
 
 int performTransition()
 {
-  CacheManagerVirusTotalV2 cacheMgr;
+  scantool::virustotal::CacheManagerV2 cacheMgr;
 
   if (!libthoro::filesystem::directory::exists(cacheMgr.getCacheDirectory()))
   {

@@ -18,26 +18,22 @@
  -------------------------------------------------------------------------------
 */
 
-#ifndef REPORTVIRUSTOTALBASE_HPP
-#define REPORTVIRUSTOTALBASE_HPP
+#include "ReportBase.hpp"
 
-#include "../Report.hpp"
-
-/** \brief abstract base class for reports from VirusTotal API requests
- *
- * \remarks Encapsulates some data members that are common among different
- * VirusTotal APIs but not included in other APIs.
- */
-struct ReportVirusTotalBase: public scantool::Report
+namespace scantool
 {
-  ///default constructor
-  ReportVirusTotalBase();
 
-  int response_code;     /**< response code from VirusTotal API */
+namespace virustotal
+{
 
-  int positives; /**< number of engines that detected a virus */
+ReportBase::ReportBase()
+: Report(),
+  response_code(-1),
+  positives(-1),
+  permalink("")
+{
+}
 
-  std::string permalink; /**< permanent link to the scan result */
-}; //struct
+} //namespace
 
-#endif // REPORTVIRUSTOTALBASE_HPP
+} //namespace

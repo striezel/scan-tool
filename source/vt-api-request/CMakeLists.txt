@@ -10,15 +10,15 @@ set(vt-api-request_sources
     ../../libthoro/filesystem/directory.cpp
     ../../libthoro/filesystem/file.cpp
     ../../libthoro/hash/sha256/sha256.cpp
-    ../CacheManagerVirusTotalV2.cpp
+    ../virustotal/CacheManagerV2.cpp
     ../Curly.cpp
     ../Engine.cpp
     ../virustotal/EngineV2.cpp
     ../Report.cpp
+    ../virustotal/ReportBase.cpp
     ../virustotal/ReportV2.cpp
-    ../virustotal/ReportVirusTotalBase.cpp
     ../Scanner.cpp
-    ../virustotal/ScannerVirusTotalV2.cpp
+    ../virustotal/ScannerV2.cpp
     ../StringToTimeT.cpp
     main.cpp)
 

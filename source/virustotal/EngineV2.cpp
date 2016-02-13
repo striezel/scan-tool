@@ -20,9 +20,19 @@
 
 #include "EngineV2.hpp"
 
+namespace scantool
+{
+
+namespace virustotal
+{
+
 EngineV2::EngineV2()
 : Engine(),
   version(""),
   update("")
 {
 }
+
+} //namespace
+
+} //namespace

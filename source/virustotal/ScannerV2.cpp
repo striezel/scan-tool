@@ -18,19 +18,25 @@
  -------------------------------------------------------------------------------
 */
 
-#include "ScannerVirusTotalV2.hpp"
+#include "ScannerV2.hpp"
 #include <fstream>
 #include <iostream>
 #include <jsoncpp/json/reader.h>
-#include "../CacheManagerVirusTotalV2.hpp"
+#include "CacheManagerV2.hpp"
 #include "../Curly.hpp"
 #include "../StringToTimeT.hpp"
 #include "../../libthoro/filesystem/directory.hpp"
 #include "../../libthoro/filesystem/file.hpp"
 
-ScannerVirusTotalV2::Report reportFromJSONRoot(const Json::Value& root)
+namespace scantool
 {
-  ScannerVirusTotalV2::Report report;
+
+namespace virustotal
+{
+
+ScannerV2::Report reportFromJSONRoot(const Json::Value& root)
+{
+  ScannerV2::Report report;
   const Json::Value response_code = root["response_code"];
   const Json::Value verbose_msg = root["verbose_msg"];
   if (!response_code.empty() && response_code.isInt())
@@ -100,7 +106,7 @@ ScannerVirusTotalV2::Report reportFromJSONRoot(const Json::Value& root)
     const auto itEnd = members.cend();
     while (iter != itEnd)
     {
-      std::shared_ptr<ScannerVirusTotalV2::Report::Engine> data(new ScannerVirusTotalV2::Report::Engine());
+      std::shared_ptr<ScannerV2::Report::Engine> data(new ScannerV2::Report::Engine());
       data->engine = *iter;
 
       const Json::Value engVal = scans.get(*iter, Json::Value());
@@ -138,19 +144,19 @@ ScannerVirusTotalV2::Report reportFromJSONRoot(const Json::Value& root)
   return std::move(report);
 }
 
-ScannerVirusTotalV2::ScannerVirusTotalV2(const std::string& apikey, const bool honourTimeLimits, const bool silent)
+ScannerV2::ScannerV2(const std::string& apikey, const bool honourTimeLimits, const bool silent)
 : Scanner(honourTimeLimits, silent),
   m_apikey(apikey)
 {
 }
 
-void ScannerVirusTotalV2::setApiKey(const std::string& apikey)
+void ScannerV2::setApiKey(const std::string& apikey)
 {
   if (!apikey.empty())
     m_apikey = apikey;
 }
 
-std::chrono::milliseconds ScannerVirusTotalV2::timeBetweenConsecutiveScanRequests() const
+std::chrono::milliseconds ScannerV2::timeBetweenConsecutiveScanRequests() const
 {
   /* The public API allows four requests per minute, so we can perform one
      request every 15 seconds without hitting the rate limit.
@@ -158,7 +164,7 @@ std::chrono::milliseconds ScannerVirusTotalV2::timeBetweenConsecutiveScanRequest
   return std::chrono::milliseconds(15000);
 }
 
-std::chrono::milliseconds ScannerVirusTotalV2::timeBetweenConsecutiveHashLookups() const
+std::chrono::milliseconds ScannerV2::timeBetweenConsecutiveHashLookups() const
 {
   /* The public API allows four requests per minute, so we can perform one
      request every 15 seconds without hitting the rate limit.
@@ -166,7 +172,7 @@ std::chrono::milliseconds ScannerVirusTotalV2::timeBetweenConsecutiveHashLookups
   return std::chrono::milliseconds(15000);
 }
 
-void ScannerVirusTotalV2::scanRequestWasNow()
+void ScannerV2::scanRequestWasNow()
 {
   /* VirusTotal API does not distinguish between the different kinds of
      requests and all requests have the same time limit. That is why we have
@@ -175,7 +181,7 @@ void ScannerVirusTotalV2::scanRequestWasNow()
   m_LastHashLookup = m_LastScanRequest;
 }
 
-void ScannerVirusTotalV2::hashLookupWasNow()
+void ScannerV2::hashLookupWasNow()
 {
   /* VirusTotal API does not distinguish between the different kinds of
      requests and all requests have the same time limit. That is why we have
@@ -184,11 +190,11 @@ void ScannerVirusTotalV2::hashLookupWasNow()
   m_LastScanRequest = m_LastHashLookup;
 }
 
-bool ScannerVirusTotalV2::getReport(const std::string& resource, Report& report, const bool useCache,
+bool ScannerV2::getReport(const std::string& resource, Report& report, const bool useCache,
                    const std::string& cacheDir)
 {
   std::string response = "";
-  const std::string cachedFilePath = CacheManagerVirusTotalV2::getPathForCachedElement(resource, cacheDir);
+  const std::string cachedFilePath = CacheManagerV2::getPathForCachedElement(resource, cacheDir);
   if (useCache && !cacheDir.empty() && !cachedFilePath.empty()
       && libthoro::filesystem::file::exists(cachedFilePath))
   {
@@ -196,7 +202,7 @@ bool ScannerVirusTotalV2::getReport(const std::string& resource, Report& report,
     std::ifstream cachedJSON(cachedFilePath, std::ios_base::in | std::ios_base::binary);
     if (!cachedJSON.good())
     {
-      std::cerr << "Error in ScannerVirusTotalV2::getReport(): Cached JSON could not be opened." << std::endl;
+      std::cerr << "Error in ScannerV2::getReport(): Cached JSON could not be opened." << std::endl;
       return false;
     }
     std::string temp = "";
@@ -208,7 +214,7 @@ bool ScannerVirusTotalV2::getReport(const std::string& resource, Report& report,
     if (!cachedJSON.eof() || cachedJSON.bad() || cachedJSON.fail())
     {
       cachedJSON.close();
-      std::cerr << "Error in ScannerVirusTotalV2::getReport(): "
+      std::cerr << "Error in ScannerV2::getReport(): "
                 << "Cached JSON could not be read." << std::endl;
       return false;
     }
@@ -225,24 +231,24 @@ bool ScannerVirusTotalV2::getReport(const std::string& resource, Report& report,
 
     if (!cURL.perform(response))
     {
-      std::cerr << "Error in ScannerVirusTotalV2::getReport(): Request could not be performed." << std::endl;
+      std::cerr << "Error in ScannerV2::getReport(): Request could not be performed." << std::endl;
       return false;
     }
     hashLookupWasNow();
 
     if (cURL.getResponseCode() == 204)
     {
-      std::cerr << "Error in ScannerVirusTotalV2::getReport(): Rate limit exceeded!" << std::endl;
+      std::cerr << "Error in ScannerV2::getReport(): Rate limit exceeded!" << std::endl;
       return false;
     }
     if (cURL.getResponseCode() == 403)
     {
-      std::cerr << "Error in ScannerVirusTotalV2::getReport(): Access denied!" << std::endl;
+      std::cerr << "Error in ScannerV2::getReport(): Access denied!" << std::endl;
       return false;
     }
     if (cURL.getResponseCode() != 200)
     {
-      std::cerr << "Error in ScannerVirusTotalV2::getReport(): Unexpected HTTP status code "
+      std::cerr << "Error in ScannerV2::getReport(): Unexpected HTTP status code "
                 << cURL.getResponseCode() << "!" << std::endl;
       return false;
     }
@@ -258,14 +264,14 @@ bool ScannerVirusTotalV2::getReport(const std::string& resource, Report& report,
       std::ofstream cachedJSON(cachedFilePath, std::ios_base::out | std::ios_base::binary | std::ios_base::trunc);
       if (!cachedJSON.good())
       {
-        std::cerr << "Error in ScannerVirusTotalV2::getReport(): JSON data could not be opened for update!" << std::endl;
+        std::cerr << "Error in ScannerV2::getReport(): JSON data could not be opened for update!" << std::endl;
         return false;
       }
       cachedJSON.write(response.c_str(), response.size());
       if (!cachedJSON.good())
       {
         cachedJSON.close();
-        std::cerr << "Error in ScannerVirusTotalV2::getReport(): JSON data could not be written to cache!" << std::endl;
+        std::cerr << "Error in ScannerV2::getReport(): JSON data could not be written to cache!" << std::endl;
         return false;
       }
       cachedJSON.close();
@@ -276,14 +282,14 @@ bool ScannerVirusTotalV2::getReport(const std::string& resource, Report& report,
   const bool success = jsonReader.parse(response, root, false);
   if (!success)
   {
-    std::cerr << "Error in ScannerVirusTotalV2::getReport(): Unable to parse JSON data!" << std::endl;
+    std::cerr << "Error in ScannerV2::getReport(): Unable to parse JSON data!" << std::endl;
     /* If JSON data came from a cached file, then delete the file, because it
        is most likely corrupted, e.g. disk corruption or content manipulation.
     */
     if (useCache && !cacheDir.empty() && !cachedFilePath.empty()
       && libthoro::filesystem::file::exists(cachedFilePath))
     {
-      CacheManagerVirusTotalV2::deleteCachedElement(resource, cacheDir);
+      CacheManagerV2::deleteCachedElement(resource, cacheDir);
     } //if
     return false;
   }
@@ -304,7 +310,7 @@ bool ScannerVirusTotalV2::getReport(const std::string& resource, Report& report,
   return true;
 }
 
-bool ScannerVirusTotalV2::rescan(const std::string& resource, std::string& scan_id)
+bool ScannerV2::rescan(const std::string& resource, std::string& scan_id)
 {
   waitForScanLimitExpiration();
   //send request
@@ -316,24 +322,24 @@ bool ScannerVirusTotalV2::rescan(const std::string& resource, std::string& scan_
   std::string response = "";
   if (!cURL.perform(response))
   {
-    std::cerr << "Error in ScannerVirusTotalV2::rescan(): Request could not be performed." << std::endl;
+    std::cerr << "Error in Scanner::rescan(): Request could not be performed." << std::endl;
     return false;
   }
   scanRequestWasNow();
 
   if (cURL.getResponseCode() == 204)
   {
-    std::cerr << "Error in ScannerVirusTotalV2::rescan(): Rate limit exceeded!" << std::endl;
+    std::cerr << "Error in ScannerV2::rescan(): Rate limit exceeded!" << std::endl;
     return false;
   }
   if (cURL.getResponseCode() == 403)
   {
-    std::cerr << "Error in ScannerVirusTotalV2::rescan(): Access denied!" << std::endl;
+    std::cerr << "Error in ScannerV2::rescan(): Access denied!" << std::endl;
     return false;
   }
   if (cURL.getResponseCode() != 200)
   {
-    std::cerr << "Error in ScannerVirusTotalV2::rescan(): Unexpected HTTP status code "
+    std::cerr << "Error in ScannerV2::rescan(): Unexpected HTTP status code "
               << cURL.getResponseCode() << "!" << std::endl;
     return false;
   }
@@ -349,7 +355,7 @@ bool ScannerVirusTotalV2::rescan(const std::string& resource, std::string& scan_
   const bool success = jsonReader.parse(response, root, false);
   if (!success)
   {
-    std::cerr << "Error in ScannerVirusTotalV2::rescan(): Unable to parse JSON data!" << std::endl;
+    std::cerr << "Error in ScannerV2::rescan(): Unable to parse JSON data!" << std::endl;
     return false;
   }
 
@@ -387,7 +393,7 @@ bool ScannerVirusTotalV2::rescan(const std::string& resource, std::string& scan_
   return false;
 }
 
-bool ScannerVirusTotalV2::scan(const std::string& filename, std::string& scan_id)
+bool ScannerV2::scan(const std::string& filename, std::string& scan_id)
 {
   if (filename.empty())
     return false;
@@ -403,29 +409,29 @@ bool ScannerVirusTotalV2::scan(const std::string& filename, std::string& scan_id
   std::string response = "";
   if (!cURL.perform(response))
   {
-    std::cerr << "Error in ScannerVirusTotalV2::scan(): Request could not be performed." << std::endl;
+    std::cerr << "Error in ScannerV2::scan(): Request could not be performed." << std::endl;
     return false;
   }
   scanRequestWasNow();
 
   if (cURL.getResponseCode() == 204)
   {
-    std::cerr << "Error in ScannerVirusTotalV2::scan(): Rate limit exceeded!" << std::endl;
+    std::cerr << "Error in ScannerV2::scan(): Rate limit exceeded!" << std::endl;
     return false;
   }
   if (cURL.getResponseCode() == 403)
   {
-    std::cerr << "Error in ScannerVirusTotalV2::scan(): Access denied!" << std::endl;
+    std::cerr << "Error in ScannerV2::scan(): Access denied!" << std::endl;
     return false;
   }
   if (cURL.getResponseCode() == 413)
   {
-    std::cerr << "Error in ScannerVirusTotalV2::scan(): Code 413, Request entity is too large!" << std::endl;
+    std::cerr << "Error in ScannerV2::scan(): Code 413, Request entity is too large!" << std::endl;
     return false;
   }
   if (cURL.getResponseCode() != 200)
   {
-    std::cerr << "Error in ScannerVirusTotalV2::scan(): Unexpected HTTP status code "
+    std::cerr << "Error in ScannerV2::scan(): Unexpected HTTP status code "
               << cURL.getResponseCode() << "!" << std::endl;
     return false;
   }
@@ -441,7 +447,7 @@ bool ScannerVirusTotalV2::scan(const std::string& filename, std::string& scan_id
   const bool success = jsonReader.parse(response, root, false);
   if (!success)
   {
-    std::cerr << "Error in ScannerVirusTotalV2::scan(): Unable to parse JSON data!" << std::endl;
+    std::cerr << "Error in ScannerV2::scan(): Unable to parse JSON data!" << std::endl;
     return false;
   }
 
@@ -477,8 +483,12 @@ bool ScannerVirusTotalV2::scan(const std::string& filename, std::string& scan_id
   return false;
 }
 
-int64_t ScannerVirusTotalV2::maxScanSize() const
+int64_t ScannerV2::maxScanSize() const
 {
   //Maximum allowed scan size is 32 MB.
   return 32 * 1024 * 1024;
 }
+
+} //namespace
+
+} //namespace

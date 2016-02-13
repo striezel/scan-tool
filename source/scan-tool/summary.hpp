@@ -26,7 +26,13 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
-#include "../virustotal/ScannerVirusTotalV2.hpp"
+#include "../virustotal/ScannerV2.hpp"
+
+namespace scantool
+{
+
+namespace virustotal
+{
 
 /** \brief shows the summary of a scan-tool run
  *
@@ -36,8 +42,12 @@
  * \param largeFiles       list of files that exceed the file size for scans; first = file name, second = file size in octets
  */
 void showSummary(const std::map<std::string, std::string>& mapFileToHash,
-                 std::map<std::string, ScannerVirusTotalV2::Report>& mapHashToReport,
+                 std::map<std::string, ScannerV2::Report>& mapHashToReport,
                  const std::unordered_map<std::string, std::string>& queued_scans,
                  std::vector<std::pair<std::string, int64_t> >& largeFiles);
+
+} //namespace
+
+} //namespace
 
 #endif // SCANTOOL_SUMMARY_HPP

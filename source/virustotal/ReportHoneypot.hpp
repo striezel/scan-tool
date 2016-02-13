@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2015  Thoronador
+    Copyright (C) 2015, 2016  Thoronador
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,13 +18,19 @@
  -------------------------------------------------------------------------------
 */
 
-#ifndef REPORTHONEYPOT_HPP
-#define REPORTHONEYPOT_HPP
+#ifndef SCANTOOL_VT_REPORTHONEYPOT_HPP
+#define SCANTOOL_VT_REPORTHONEYPOT_HPP
 
-#include "ReportVirusTotalBase.hpp"
+#include "ReportBase.hpp"
+
+namespace scantool
+{
+
+namespace virustotal
+{
 
 ///structure for detection report
-struct ReportHoneypot: public ReportVirusTotalBase
+struct ReportHoneypot: public ReportBase
 {
   ///default constructor
   ReportHoneypot();
@@ -46,4 +52,8 @@ struct ReportHoneypot: public ReportVirusTotalBase
   virtual bool notFound() const override;
 }; //struct ReportHoneypot
 
-#endif // REPORTHONEYPOT_HPP
+} //namespace
+
+} //namespace
+
+#endif // SCANTOOL_VT_REPORTHONEYPOT_HPP

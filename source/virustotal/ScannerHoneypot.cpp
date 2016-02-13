@@ -18,15 +18,21 @@
  -------------------------------------------------------------------------------
 */
 
-#include "ScannerVirusTotalHoneypot.hpp"
+#include "ScannerHoneypot.hpp"
 #include <iostream>
 #include <jsoncpp/json/reader.h>
 #include "../Curly.hpp"
 #include "../StringToTimeT.hpp"
 
-ScannerVirusTotalHoneypot::Report honeypotReportFromJSONRoot(const Json::Value& root)
+namespace scantool
 {
-  ScannerVirusTotalHoneypot::Report report;
+
+namespace virustotal
+{
+
+ScannerHoneypot::Report honeypotReportFromJSONRoot(const Json::Value& root)
+{
+  ScannerHoneypot::Report report;
   const Json::Value result = root["result"];
   if (!result.empty() && result.isInt())
     report.response_code = result.asInt();
@@ -98,19 +104,19 @@ ScannerVirusTotalHoneypot::Report honeypotReportFromJSONRoot(const Json::Value& 
   return std::move(report);
 }
 
-ScannerVirusTotalHoneypot::ScannerVirusTotalHoneypot(const std::string& apikey, const bool honourTimeLimits, const bool silent)
+ScannerHoneypot::ScannerHoneypot(const std::string& apikey, const bool honourTimeLimits, const bool silent)
 : Scanner(honourTimeLimits, silent),
   m_apikey(apikey)
 {
 }
 
-void ScannerVirusTotalHoneypot::setApiKey(const std::string& apikey)
+void ScannerHoneypot::setApiKey(const std::string& apikey)
 {
   if (!apikey.empty())
     m_apikey = apikey;
 }
 
-std::chrono::milliseconds ScannerVirusTotalHoneypot::timeBetweenConsecutiveScanRequests() const
+std::chrono::milliseconds ScannerHoneypot::timeBetweenConsecutiveScanRequests() const
 {
   /* The public honeypot API allows 300 requests per five minutes, so we can
      perform one request every single second without hitting the rate limit.
@@ -118,7 +124,7 @@ std::chrono::milliseconds ScannerVirusTotalHoneypot::timeBetweenConsecutiveScanR
   return std::chrono::milliseconds(1000);
 }
 
-std::chrono::milliseconds ScannerVirusTotalHoneypot::timeBetweenConsecutiveHashLookups() const
+std::chrono::milliseconds ScannerHoneypot::timeBetweenConsecutiveHashLookups() const
 {
   /* The public honeypot API allows 300 requests per five minutes, so we can
      perform one request every single second without hitting the rate limit.
@@ -126,7 +132,7 @@ std::chrono::milliseconds ScannerVirusTotalHoneypot::timeBetweenConsecutiveHashL
   return std::chrono::milliseconds(1000);
 }
 
-void ScannerVirusTotalHoneypot::scanRequestWasNow()
+void ScannerHoneypot::scanRequestWasNow()
 {
   /* VirusTotal API does not distinguish between the different kinds of
      requests and all requests have the same time limit. That is why we have
@@ -135,7 +141,7 @@ void ScannerVirusTotalHoneypot::scanRequestWasNow()
   m_LastHashLookup = m_LastScanRequest;
 }
 
-void ScannerVirusTotalHoneypot::hashLookupWasNow()
+void ScannerHoneypot::hashLookupWasNow()
 {
   /* VirusTotal API does not distinguish between the different kinds of
      requests and all requests have the same time limit. That is why we have
@@ -144,7 +150,7 @@ void ScannerVirusTotalHoneypot::hashLookupWasNow()
   m_LastScanRequest = m_LastHashLookup;
 }
 
-bool ScannerVirusTotalHoneypot::getReport(const std::string& scan_id, Report& report)
+bool ScannerHoneypot::getReport(const std::string& scan_id, Report& report)
 {
   waitForHashLookupLimitExpiration();
   //send request
@@ -156,24 +162,24 @@ bool ScannerVirusTotalHoneypot::getReport(const std::string& scan_id, Report& re
   std::string response = "";
   if (!cURL.perform(response))
   {
-    std::cerr << "Error in ScannerVirusTotalHoneypot::getReport(): Request could not be performed." << std::endl;
+    std::cerr << "Error in ScannerHoneypot::getReport(): Request could not be performed." << std::endl;
     return false;
   }
   hashLookupWasNow();
 
   if (cURL.getResponseCode() == 204)
   {
-    std::cerr << "Error in ScannerVirusTotalHoneypot::getReport(): Rate limit exceeded!" << std::endl;
+    std::cerr << "Error in ScannerHoneypot::getReport(): Rate limit exceeded!" << std::endl;
     return false;
   }
   if (cURL.getResponseCode() == 403)
   {
-    std::cerr << "Error in ScannerVirusTotalHoneypot::getReport(): Access denied!" << std::endl;
+    std::cerr << "Error in ScannerHoneypot::getReport(): Access denied!" << std::endl;
     return false;
   }
   if (cURL.getResponseCode() != 200)
   {
-    std::cerr << "Error in ScannerVirusTotalHoneypot::getReport(): Unexpected HTTP status code "
+    std::cerr << "Error in ScannerHoneypot::getReport(): Unexpected HTTP status code "
               << cURL.getResponseCode() << "!" << std::endl;
     return false;
   }
@@ -188,7 +194,7 @@ bool ScannerVirusTotalHoneypot::getReport(const std::string& scan_id, Report& re
   const bool success = jsonReader.parse(response, root, false);
   if (!success)
   {
-    std::cerr << "Error in ScannerVirusTotalHoneypot::getReport(): Unable to parse JSON data!" << std::endl;
+    std::cerr << "Error in ScannerHoneypot::getReport(): Unable to parse JSON data!" << std::endl;
     return false;
   }
   #ifdef SCAN_TOOL_DEBUG
@@ -202,7 +208,7 @@ bool ScannerVirusTotalHoneypot::getReport(const std::string& scan_id, Report& re
   return false;
 }
 
-bool ScannerVirusTotalHoneypot::scan(const std::string& filename, std::string& scan_id)
+bool ScannerHoneypot::scan(const std::string& filename, std::string& scan_id)
 {
   if (filename.empty())
     return false;
@@ -218,29 +224,29 @@ bool ScannerVirusTotalHoneypot::scan(const std::string& filename, std::string& s
   std::string response = "";
   if (!cURL.perform(response))
   {
-    std::cerr << "Error in ScannerVirusTotalHoneypot::scan(): Request could not be performed." << std::endl;
+    std::cerr << "Error in ScannerHoneypot::scan(): Request could not be performed." << std::endl;
     return false;
   }
   scanRequestWasNow();
 
   if (cURL.getResponseCode() == 204)
   {
-    std::cerr << "Error in ScannerVirusTotalHoneypot::scan(): Rate limit exceeded!" << std::endl;
+    std::cerr << "Error in ScannerHoneypot::scan(): Rate limit exceeded!" << std::endl;
     return false;
   }
   if (cURL.getResponseCode() == 403)
   {
-    std::cerr << "Error in ScannerVirusTotalHoneypot::scan(): Access denied!" << std::endl;
+    std::cerr << "Error in ScannerHoneypot::scan(): Access denied!" << std::endl;
     return false;
   }
   if (cURL.getResponseCode() == 413)
   {
-    std::cerr << "Error in ScannerVirusTotalHoneypot::scan(): Code 413, Request entity is too large!" << std::endl;
+    std::cerr << "Error in ScannerHoneypot::scan(): Code 413, Request entity is too large!" << std::endl;
     return false;
   }
   if (cURL.getResponseCode() != 200)
   {
-    std::cerr << "Error in ScannerVirusTotalHoneypot::scan(): Unexpected HTTP status code "
+    std::cerr << "Error in ScannerHoneypot::scan(): Unexpected HTTP status code "
               << cURL.getResponseCode() << "!" << std::endl;
     return false;
   }
@@ -256,7 +262,7 @@ bool ScannerVirusTotalHoneypot::scan(const std::string& filename, std::string& s
   const bool success = jsonReader.parse(response, root, false);
   if (!success)
   {
-    std::cerr << "Error in ScannerVirusTotalHoneypot::scan(): Unable to parse JSON data!" << std::endl;
+    std::cerr << "Error in ScannerHoneypot::scan(): Unable to parse JSON data!" << std::endl;
     return false;
   }
 
@@ -287,8 +293,12 @@ bool ScannerVirusTotalHoneypot::scan(const std::string& filename, std::string& s
   return false;
 }
 
-int64_t ScannerVirusTotalHoneypot::maxScanSize() const
+int64_t ScannerHoneypot::maxScanSize() const
 {
   //Maximum allowed scan size should be 32 MB.
   return 32 * 1024 * 1024;
 }
+
+} //namespace
+
+} //namespace

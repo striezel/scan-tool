@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2015  Thoronador
+    Copyright (C) 2015, 2016  Thoronador
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,12 +18,36 @@
  -------------------------------------------------------------------------------
 */
 
-#include "ReportVirusTotalBase.hpp"
+#ifndef SCANTOOL_VT_REPORTBASE_HPP
+#define SCANTOOL_VT_REPORTBASE_HPP
 
-ReportVirusTotalBase::ReportVirusTotalBase()
-: Report(),
-  response_code(-1),
-  positives(-1),
-  permalink("")
+#include "../Report.hpp"
+
+namespace scantool
 {
-}
+
+namespace virustotal
+{
+
+/** \brief abstract base class for reports from VirusTotal API requests
+ *
+ * \remarks Encapsulates some data members that are common among different
+ * VirusTotal APIs but not included in other APIs.
+ */
+struct ReportBase: public scantool::Report
+{
+  ///default constructor
+  ReportBase();
+
+  int response_code;     /**< response code from VirusTotal API */
+
+  int positives; /**< number of engines that detected a virus */
+
+  std::string permalink; /**< permanent link to the scan result */
+}; //struct
+
+} //namespace
+
+} //namespace
+
+#endif // SCANTOOL_VT_REPORTBASE_HPP

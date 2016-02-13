@@ -22,7 +22,7 @@
 #include <string>
 #include <unordered_set>
 #include "../ReturnCodes.hpp"
-#include "../virustotal/ScannerVirusTotalHoneypot.hpp"
+#include "../virustotal/ScannerHoneypot.hpp"
 
 void showVersion()
 {
@@ -176,7 +176,7 @@ int main(int argc, char** argv)
   } //if no resources given
 
 
-  ScannerVirusTotalHoneypot scanHP(key);
+  scantool::virustotal::ScannerHoneypot scanHP(key);
 
   //iterate over all files for scan requests
   for(const std::string& i : files_scan)
@@ -195,7 +195,7 @@ int main(int argc, char** argv)
   //iterate over all resources for report requests
   for(const std::string& i : resources_report)
   {
-    ScannerVirusTotalHoneypot::Report report;
+    scantool::virustotal::ScannerHoneypot::Report report;
     if (!scanHP.getReport(i, report))
     {
       std::cout << "Error: Could not retrieve report!" << std::endl;

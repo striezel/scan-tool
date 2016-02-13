@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2015  Thoronador
+    Copyright (C) 2015, 2016  Thoronador
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,14 +18,20 @@
  -------------------------------------------------------------------------------
 */
 
-#ifndef REPORTV2_HPP
-#define REPORTV2_HPP
+#ifndef SCANTOOL_VT_REPORTV2_HPP
+#define SCANTOOL_VT_REPORTV2_HPP
 
-#include "ReportVirusTotalBase.hpp"
+#include "ReportBase.hpp"
 #include "EngineV2.hpp"
 
+namespace scantool
+{
+
+namespace virustotal
+{
+
 ///structure for detection report
-struct ReportV2: public ReportVirusTotalBase
+struct ReportV2: public ReportBase
 {
   typedef EngineV2 Engine;
 
@@ -68,4 +74,8 @@ struct ReportV2: public ReportVirusTotalBase
   std::string sha256; /**< SHA256 hash of the file */
 }; //struct Report
 
-#endif // REPORTV2_HPP
+} //namespace
+
+} //namespace
+
+#endif // SCANTOOL_VT_REPORTV2_HPP

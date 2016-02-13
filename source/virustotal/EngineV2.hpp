@@ -23,6 +23,12 @@
 
 #include "../Engine.hpp"
 
+namespace scantool
+{
+
+namespace virustotal
+{
+
 struct EngineV2: public scantool::Engine
 {
   ///default constructor
@@ -31,5 +37,9 @@ struct EngineV2: public scantool::Engine
   std::string version; /**< version of the antivirus engine */
   std::string update;  /**< last update of the antivirus engine */
 }; //struct Engine
+
+} //namespace
+
+} //namespace
 
 #endif // ENGINEV2_HPP

@@ -32,9 +32,9 @@
 #endif
 #include "cachetransition.hpp"
 #include "summary.hpp"
-#include "../CacheManagerVirusTotalV2.hpp"
 #include "../Curly.hpp"
-#include "../virustotal/ScannerVirusTotalV2.hpp"
+#include "../virustotal/CacheManagerV2.hpp"
+#include "../virustotal/ScannerV2.hpp"
 #include "../../libthoro/common/StringUtils.h"
 #include "../../libthoro/filesystem/file.hpp"
 #include "../../libthoro/hash/sha256/FileSourceUtility.hpp"
@@ -90,7 +90,7 @@ void showVersion()
 /* Four variables that will be used in main() but also in signal handling
    function and are therefore declared as global variables. */
 //maps SHA256 hashes to corresponding report; key = SHA256 hash, value = scan report
-std::map<std::string, ScannerVirusTotalV2::Report> mapHashToReport;
+std::map<std::string, scantool::virustotal::ScannerV2::Report> mapHashToReport;
 //maps filename to hash; key = file name, value = SHA256 hash
 std::map<std::string, std::string> mapFileToHash = std::map<std::string, std::string>();
 //list of queued scan requests; key = scan_id, value = file name
@@ -380,7 +380,7 @@ int main(int argc, char ** argv)
         {
           std::cout << "Checking cache for corrupt files. This may take a while ..."
                     << std::endl;
-          CacheManagerVirusTotalV2 cacheMgr;
+          scantool::virustotal::CacheManagerV2 cacheMgr;
           const auto corruptFiles = cacheMgr.checkIntegrity(true, true);
           if (corruptFiles == 0)
             std::cout << "There seem to be no corrupt files." << std::endl;
@@ -444,7 +444,7 @@ int main(int argc, char ** argv)
   const auto ageLimit = std::chrono::system_clock::now() - std::chrono::hours(24*maxAgeInDays);
 
   //handle request cache settings
-  CacheManagerVirusTotalV2 cacheMgr;
+  scantool::virustotal::CacheManagerV2 cacheMgr;
   std::string requestCacheDirVT = "";
   if (useRequestCache)
   {
@@ -510,7 +510,7 @@ int main(int argc, char ** argv)
   #endif // defined
 
   //create scanner: pass API key, honour time limits, set silent mode
-  ScannerVirusTotalV2 scanVT(key, true, silent);
+  scantool::virustotal::ScannerV2 scanVT(key, true, silent);
   //time when last scan was queued
   std::chrono::steady_clock::time_point lastQueuedScanTime = std::chrono::steady_clock::now() - std::chrono::hours(24);
 
@@ -525,7 +525,7 @@ int main(int argc, char ** argv)
       return scantool::rcFileError;
     } //if no hash
     const std::string hashString = fileHash.toHexString();
-    ScannerVirusTotalV2::Report report;
+    scantool::virustotal::ScannerV2::Report report;
     if (scanVT.getReport(hashString, report, useRequestCache, requestCacheDirVT))
     {
       if (report.successfulRetrieval())
@@ -648,7 +648,7 @@ int main(int argc, char ** argv)
     {
       const std::string& scan_id = qsIter->first;
       const std::string& filename = qsIter->second;
-      ScannerVirusTotalV2::Report report;
+      scantool::virustotal::ScannerV2::Report report;
       if (scanVT.getReport(scan_id, report, false, std::string()))
       {
         if (report.successfulRetrieval())

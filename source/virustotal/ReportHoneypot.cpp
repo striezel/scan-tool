@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2015  Thoronador
+    Copyright (C) 2015, 2016  Thoronador
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -20,8 +20,14 @@
 
 #include "ReportHoneypot.hpp"
 
+namespace scantool
+{
+
+namespace virustotal
+{
+
 ReportHoneypot::ReportHoneypot()
-: ReportVirusTotalBase()
+: ReportBase()
 {
 }
 
@@ -41,3 +47,7 @@ bool ReportHoneypot::stillInQueue() const
   #warning Result code for this state is not known.
 }
 */
+
+} //namespace
+
+} //namespace

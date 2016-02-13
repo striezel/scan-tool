@@ -18,20 +18,24 @@
  -------------------------------------------------------------------------------
 */
 
-#ifndef SCANNERVIRUSTOTAL_HPP
-#define SCANNERVIRUSTOTAL_HPP
+#ifndef SCANTOOL_VT_SCANNERHONEYPOT_HPP
+#define SCANTOOL_VT_SCANNERHONEYPOT_HPP
 
 #include <string>
 #include <vector>
-#include <jsoncpp/json/reader.h>
 #include "../Scanner.hpp"
-#include "ReportV2.hpp"
+#include "ReportHoneypot.hpp"
 
-class ScannerVirusTotalV2: public scantool::Scanner
+namespace scantool
+{
+
+namespace virustotal
+{
+
+class ScannerHoneypot: public scantool::Scanner
 {
   public:
-    ///structure for detection report
-    typedef ReportV2 Report;
+    typedef ReportHoneypot Report;
 
     /** \brief default constructor
      *
@@ -39,7 +43,7 @@ class ScannerVirusTotalV2: public scantool::Scanner
      * \param honourTimeLimits   whether or not time limits should be honoured
      * \param silent             whether or not output to the standard output should be reduced
      */
-    ScannerVirusTotalV2(const std::string& apikey, const bool honourTimeLimits = true, const bool silent = false);
+    ScannerHoneypot(const std::string& apikey, const bool honourTimeLimits = true, const bool silent = false);
 
 
     /** \brief sets a new API key
@@ -75,30 +79,12 @@ class ScannerVirusTotalV2: public scantool::Scanner
 
     /** \brief retrieves a scan report
      *
-     * \param resource   resource identifier
+     * \param scan_id    scan ID of a previously submitted file
      * \param report     reference to a Report structure where the report's data will be stored
-     * \param useCache   If set to true, the scanner tries to use the cached reports from the cache directory @cacheDir
-     * \param cacheDir   directory of the report cache (is only used, if @useCache is true)
      * \return Returns true, if the report could be retrieved.
      *         Returns false, if retrieval failed.
      */
-    bool getReport(const std::string& resource, Report& report, const bool useCache,
-                   const std::string& cacheDir);
-
-
-    /** \brief requests a re-scan of an already uploaded file
-     *
-     * \param resource   resource identifier
-     * \param scan_id    the scan_id (resource) which can be used to query the report later
-     * \return Returns true, if the rescan was initiated.
-     *         Returns false, if request failed.
-     * \remarks Files sent using the API have the lowest scanning priority.
-     * Depending on VirusTotal's load, it may take several hours before the
-     * file is scanned, so query the report at regular intervals until the
-     * result shows up and do not keep sending the file rescan requests over
-     * and over again.
-     */
-    bool rescan(const std::string& resource, std::string& scan_id);
+    bool getReport(const std::string& scan_id, Report& report);
 
 
     /** \brief upload a file and request a scan of the file
@@ -125,11 +111,8 @@ class ScannerVirusTotalV2: public scantool::Scanner
     std::string m_apikey; /**< holds the VirusTotal API key */
 }; //class
 
-/** \brief gets a report from a JSON object
- *
- * \param root  the root element of the JSON
- * \return Returns the report. Might be only partially filled.
- */
-ScannerVirusTotalV2::Report reportFromJSONRoot(const Json::Value& root);
+} //namespace
 
-#endif // SCANNERVIRUSTOTAL_HPP
+} //namespace
+
+#endif // SCANTOOL_VT_SCANNERHONEYPOT_HPP

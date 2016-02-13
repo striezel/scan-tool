@@ -24,7 +24,7 @@
 #include <unordered_set>
 #include "../Curly.hpp"
 #include "../ReturnCodes.hpp"
-#include "../virustotal/ScannerVirusTotalV2.hpp"
+#include "../virustotal/ScannerV2.hpp"
 
 
 void showHelp()
@@ -218,7 +218,7 @@ int main(int argc, char ** argv)
     return scantool::rcInvalidParameter;
   } //if not resources
 
-  ScannerVirusTotalV2 scanVT(key);
+  scantool::virustotal::ScannerV2 scanVT(key);
 
   //initial wait to avoid exceeding the rate limit
   if (initial_wait)
@@ -246,7 +246,7 @@ int main(int argc, char ** argv)
   //iterate over all resources for report requests
   for(const std::string& i : resources_report)
   {
-    ScannerVirusTotalV2::Report report;
+    scantool::virustotal::ScannerV2::Report report;
     if (!scanVT.getReport(i, report, false, std::string()))
     {
       std::cout << "Error: Could not retrieve report!" << std::endl;
@@ -265,7 +265,7 @@ int main(int argc, char ** argv)
               << "  SHA256: " << report.sha256 << std::endl;
     for (const auto& eng : report.scans)
     {
-      const auto eng2 = static_cast<EngineV2*>(eng.get());
+      const auto eng2 = static_cast<scantool::virustotal::EngineV2*>(eng.get());
       std::cout << "    Engine " << eng->engine << " (version " << eng2->version
                 << " of " << eng2->update << ")";
       if (eng->detected)

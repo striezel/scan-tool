@@ -23,8 +23,14 @@
 #include <iostream>
 #include "../../libthoro/filesystem/file.hpp"
 
+namespace scantool
+{
+
+namespace virustotal
+{
+
 void showSummary(const std::map<std::string, std::string>& mapFileToHash,
-                 std::map<std::string, ScannerVirusTotalV2::Report>& mapHashToReport,
+                 std::map<std::string, ScannerV2::Report>& mapHashToReport,
                  const std::unordered_map<std::string, std::string>& queued_scans,
                  std::vector<std::pair<std::string, int64_t> >& largeFiles)
 {
@@ -35,7 +41,7 @@ void showSummary(const std::map<std::string, std::string>& mapFileToHash,
     for (const auto& i : mapFileToHash)
     {
       std::clog << i.first << " may be infected!" << std::endl;
-      const ScannerVirusTotalV2::Report& repVT = mapHashToReport[i.second];
+      const ScannerV2::Report& repVT = mapHashToReport[i.second];
       std::clog << repVT.positives << " out of " << repVT.total
                 << " scanners detected a threat";
       if (!repVT.scan_date.empty())
@@ -89,3 +95,7 @@ void showSummary(const std::map<std::string, std::string>& mapFileToHash,
     } //for (range-based)
   } //if there are some "large" files
 }
+
+} //namespace
+
+} //namespace
