@@ -24,7 +24,6 @@
 #include <jsoncpp/json/reader.h>
 #include "CacheManagerV2.hpp"
 #include "../Curly.hpp"
-#include "../StringToTimeT.hpp"
 #include "../../libthoro/filesystem/directory.hpp"
 #include "../../libthoro/filesystem/file.hpp"
 
@@ -33,116 +32,6 @@ namespace scantool
 
 namespace virustotal
 {
-
-ScannerV2::Report reportFromJSONRoot(const Json::Value& root)
-{
-  ScannerV2::Report report;
-  const Json::Value response_code = root["response_code"];
-  const Json::Value verbose_msg = root["verbose_msg"];
-  if (!response_code.empty() && response_code.isInt())
-    report.response_code = response_code.asInt();
-  else
-    report.response_code = 0;
-  if (!verbose_msg.empty() && verbose_msg.isString())
-    report.verbose_msg = verbose_msg.asString();
-  Json::Value val = root["resource"];
-  if (!val.empty() && val.isString())
-    report.resource = val.asString();
-  else
-    report.resource = "";
-  val = root["scan_id"];
-  if (!val.empty() && val.isString())
-    report.scan_id = val.asString();
-  else
-    report.scan_id = "";
-  val = root["scan_date"];
-  if (!val.empty() && val.isString())
-  {
-    report.scan_date = val.asString();
-    if (!stringToTimeT(report.scan_date, report.scan_date_t))
-      report.scan_date_t = static_cast<std::time_t>(-1);
-  }
-  else
-  {
-    report.scan_date = "";
-    report.scan_date_t = static_cast<std::time_t>(-1);
-  }
-  val = root["total"];
-  if (!val.empty() && val.isInt())
-    report.total = val.asInt();
-  else
-    report.total = -1;
-  val = root["positives"];
-  if (!val.empty() && val.isInt())
-    report.positives = val.asInt();
-  else
-    report.positives = -1;
-  val = root["permalink"];
-  if (!val.empty() && val.isString())
-    report.permalink = val.asString();
-  else
-    report.permalink = "";
-  val = root["md5"];
-  if (!val.empty() && val.isString())
-    report.md5 = val.asString();
-  else
-    report.md5 = "";
-  val = root["sha1"];
-  if (!val.empty() && val.isString())
-    report.sha1 = val.asString();
-  else
-    report.sha1 = "";
-  val = root["sha256"];
-  if (!val.empty() && val.isString())
-    report.sha256 = val.asString();
-  else
-    report.sha256 = "";
-  const Json::Value scans = root["scans"];
-  if (!scans.empty() && scans.isObject())
-  {
-    report.scans.clear();
-    const auto members = scans.getMemberNames();
-    auto iter = members.cbegin();
-    const auto itEnd = members.cend();
-    while (iter != itEnd)
-    {
-      std::shared_ptr<ScannerV2::Report::Engine> data(new ScannerV2::Report::Engine());
-      data->engine = *iter;
-
-      const Json::Value engVal = scans.get(*iter, Json::Value());
-      //detected
-      Json::Value val = engVal["detected"];
-      if (!val.empty() && val.isBool())
-        data->detected = val.asBool();
-      else
-        data->detected = false;
-      //version
-      val = engVal["version"];
-      if (!val.empty() && val.isString())
-        data->version = val.asString();
-      else
-        data->version = "";
-      //result
-      val = engVal["result"];
-      if (!val.empty() && val.isString())
-        data->result = val.asString();
-      else
-        data->result = "";
-      //update
-      val = engVal["update"];
-      if (!val.empty() && val.isString())
-        data->update = val.asString();
-      else
-        data->update = "";
-      report.scans.push_back(std::move(data));
-      ++iter;
-    } //while
-  } //if "scans" is present
-  else
-    report.scans.clear();
-
-  return std::move(report);
-}
 
 ScannerV2::ScannerV2(const std::string& apikey, const bool honourTimeLimits, const bool silent)
 : Scanner(honourTimeLimits, silent),
@@ -306,8 +195,7 @@ bool ScannerV2::getReport(const std::string& resource, Report& report, const boo
     std::cout << "verbose_msg: " << verbose_msg.asString() << std::endl;
   }
   #endif
-  report = reportFromJSONRoot(root);
-  return true;
+  return report.fromJSONRoot(root);
 }
 
 bool ScannerV2::rescan(const std::string& resource, std::string& scan_id)

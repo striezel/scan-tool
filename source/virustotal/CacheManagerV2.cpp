@@ -23,7 +23,7 @@
 #include "../../libthoro/filesystem/file.hpp"
 #include "../../libthoro/hash/sha256/sha256.hpp"
 #include "CacheManagerV2.hpp"
-#include "ScannerV2.hpp"
+#include "ReportV2.hpp"
 
 namespace scantool
 {
@@ -206,25 +206,35 @@ uint_least32_t CacheManagerV2::checkIntegrity(const bool deleteCorrupted, const 
                 } //if parsing failed
                 else
                 {
-                  const auto report = reportFromJSONRoot(root);
-                  //response code zero means: file not known to VirusTotal
-                  if (deleteUnknown && (report.response_code == 0))
+                  ReportV2 report;
+                  if (report.fromJSONRoot(root))
                   {
-                    std::cout << "Info: " << fileName << " contains no relevant data." << std::endl;
-                    libthoro::filesystem::file::remove(fileName);
-                  } //if report can be deleted
-                  //check SHA256 hash
-                  else if ((report.sha256 != file.fileName.substr(0, 64))
-                           or (firstChar != file.fileName[0])
-                           or (secondChar != file.fileName[1]))
+                    //response code zero means: file not known to VirusTotal
+                    if (deleteUnknown && (report.response_code == 0))
+                    {
+                      std::cout << "Info: " << fileName << " contains no relevant data." << std::endl;
+                      libthoro::filesystem::file::remove(fileName);
+                    } //if report can be deleted
+                    //check SHA256 hash
+                    else if ((report.sha256 != file.fileName.substr(0, 64))
+                             or (firstChar != file.fileName[0])
+                             or (secondChar != file.fileName[1]))
+                    {
+                      std::cout << "Info: SHA256 hash of " << file.fileName
+                                << " is " << report.sha256 << " and does not "
+                                << " match file name." << std::endl;
+                      ++corrupted;
+                      if (deleteCorrupted)
+                        libthoro::filesystem::file::remove(fileName);
+                    } //else if SHA256 does not match
+                  } //if report could be filled from JSON
+                  else
                   {
-                    std::cout << "Info: SHA256 hash of " << file.fileName
-                              << " is " << report.sha256 << " and does not "
-                              << " match file name." << std::endl;
+                    //JSON data is probably not a report
                     ++corrupted;
                     if (deleteCorrupted)
                       libthoro::filesystem::file::remove(fileName);
-                  } //else if SHA256 does not match
+                  }
                 } //else (JSON parsing was successful)
               } //if file was read
               else
@@ -298,24 +308,32 @@ uint_least32_t CacheManagerV2::transitionOneTo256()
           } //if parsing failed
           else
           {
-            const auto report = reportFromJSONRoot(root);
-            //response code zero means: file not known to VirusTotal
-            if (report.response_code == 0)
+            ReportV2 report;
+            if (report.fromJSONRoot(root))
             {
-              std::cout << "Info: " << fileName << " contains no relevant data." << std::endl;
-              libthoro::filesystem::file::remove(fileName);
-            } //if report can be deleted
-            else
-            {
-              const std::string newPath = getPathForCachedElement(file.fileName.substr(0, 64));
-              if (libthoro::filesystem::file::rename(fileName, newPath))
-                ++moved_files;
+              //response code zero means: file not known to VirusTotal
+              if (report.response_code == 0)
+              {
+                std::cout << "Info: " << fileName << " contains no relevant data." << std::endl;
+                libthoro::filesystem::file::remove(fileName);
+              } //if report can be deleted
               else
               {
-                std::cout << "Error: Could not move file " << fileName
-                          << " to " << newPath << "!" << std::endl;
-              }
-            } //else (file contains relevant data)
+                const std::string newPath = getPathForCachedElement(file.fileName.substr(0, 64));
+                if (libthoro::filesystem::file::rename(fileName, newPath))
+                  ++moved_files;
+                else
+                {
+                  std::cout << "Error: Could not move file " << fileName
+                            << " to " << newPath << "!" << std::endl;
+                }
+              } //else (file contains relevant data)
+            } //if report could be filled from JSON data
+            else
+            {
+              //JSON data is probably not a report
+              libthoro::filesystem::file::remove(fileName);
+            }
           } //else (JSON parsing was successful)
         } //if file was read
         else
@@ -393,24 +411,32 @@ uint_least32_t CacheManagerV2::transition16To256()
               } //if parsing failed
               else
               {
-                const auto report = reportFromJSONRoot(root);
-                //response code zero means: file not known to VirusTotal
-                if (report.response_code == 0)
+                ReportV2 report;
+                if (report.fromJSONRoot(root))
                 {
-                  std::cout << "Info: " << fileName << " contains no relevant data." << std::endl;
-                  libthoro::filesystem::file::remove(fileName);
-                } //if report can be deleted
-                else
-                {
-                  const std::string newPath = getPathForCachedElement(file.fileName.substr(0, 64));
-                  if (libthoro::filesystem::file::rename(fileName, newPath))
-                    ++moved_files;
+                  //response code zero means: file not known to VirusTotal
+                  if (report.response_code == 0)
+                  {
+                    std::cout << "Info: " << fileName << " contains no relevant data." << std::endl;
+                    libthoro::filesystem::file::remove(fileName);
+                  } //if report can be deleted
                   else
                   {
-                    std::cout << "Error: Could not move file " << fileName
-                              << " to " << newPath << "!" << std::endl;
-                  }
-                } //else (file contains relevant data)
+                    const std::string newPath = getPathForCachedElement(file.fileName.substr(0, 64));
+                    if (libthoro::filesystem::file::rename(fileName, newPath))
+                      ++moved_files;
+                    else
+                    {
+                      std::cout << "Error: Could not move file " << fileName
+                                << " to " << newPath << "!" << std::endl;
+                    }
+                  } //else (file contains relevant data)
+                } //if report could be filled from JSON data
+                else
+                {
+                  //JSON data is probably not a report
+                  libthoro::filesystem::file::remove(fileName);
+                }
               } //else (JSON parsing was successful)
             } //if file was read
             else

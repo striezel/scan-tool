@@ -22,6 +22,7 @@
 #define SCANTOOL_VT_REPORTV2_HPP
 
 #include "ReportBase.hpp"
+#include <jsoncpp/json/reader.h>
 #include "EngineV2.hpp"
 
 namespace scantool
@@ -37,6 +38,17 @@ struct ReportV2: public ReportBase
 
   ///default constructor
   ReportV2();
+
+  /** \brief gets a report from a JSON object
+   *
+   * \param root  the root element of the JSON
+   * \return Returns true, if the report could be filled. Might be only partially filled.
+   *         Returns false, if an unrecoverable error occurred.
+   * \remarks If the function returns false, the content of the report object
+   *          may be partially undefined.
+   */
+  bool fromJSONRoot(const Json::Value& root);
+
 
   /** \brief checks whether the response code indicates, that the requested resource
    * is present/was found and could be retrieved
