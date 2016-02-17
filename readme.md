@@ -65,16 +65,16 @@ created during the build process and then type:
 If all tests succeeded, the output of the above command should end with
 something like:
 
-    100% tests passed, 0 tests failed out of 13
+    100% tests passed, 0 tests failed out of 34
 
-    Total Test time (real) =   2.53 sec
+    Total Test time (real) =  85.99 sec
 
 That's an indication that the basic functionality of scan-tool still works as
 it was intended by the developer.
 
 ## Copyright and Licensing
 
-Copyright 2015 Thoronador
+Copyright 2015, 2016 Thoronador
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
