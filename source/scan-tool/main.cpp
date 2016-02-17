@@ -71,19 +71,12 @@ void showHelp()
             << "                     Default value is " << cDefaultMaxAge << " days.\n"
             << "  --cache          - cache API requests locally to avoid requesting reports on\n"
             << "                     files that have been requested recently. This option is\n"
-            << "                     disabled by default.\n"
-            << "  --integrity      - performs an integrity check of the cached reports and\n"
-            << "                     removes any corrupted reports. Exits after check.\n"
-            << "  --transition     - performs cache transition from 16 to 256 subdirectories.\n"
-            << "                     This can be used to give older caches (v0.25 and earlier)\n"
-            << "                     the current cache directory structure so that these older\n"
-            << "                     cache files can be used by the current version program.\n"
-            << "                     The program exits after the transition.\n";
+            << "                     disabled by default.\n";
 }
 
 void showVersion()
 {
-  std::cout << "scan-tool, version 0.27b, 2016-02-03\n";
+  std::cout << "scan-tool, version 0.28, 2016-02-17\n";
 }
 
 /* Four variables that will be used in main() but also in signal handling
@@ -377,22 +370,18 @@ int main(int argc, char ** argv)
         } //request cache
         else if ((param == "--integrity") or (param == "-i"))
         {
-          std::cout << "Checking cache for corrupt files. This may take a while ..."
+          //add note about new executable for cache stuff
+          std::cout << "Error: Checking cache for corrupt files is now done "
+                    << "by scan-tool-cache. Use scan-tool-cache instead."
                     << std::endl;
-          scantool::virustotal::CacheManagerV2 cacheMgr;
-          const auto corruptFiles = cacheMgr.checkIntegrity(true, true);
-          if (corruptFiles == 0)
-            std::cout << "There seem to be no corrupt files." << std::endl;
-          else if (corruptFiles == 1)
-            std::cout << "There was one corrupt file." << std::endl;
-          else
-            std::cout << "There were " << corruptFiles << " corrupt files." << std::endl;
-          return 0;
+          return scantool::rcInvalidParameter;
         } //integrity check
         else if ((param == "--transition") or (param == "--cache-transition"))
         {
-          scantool::virustotal::CacheManagerV2 cacheMgr;
-          return cacheMgr.performTransition();
+          //add note about new executable for cache stuff
+          std::cout << "Error: Cache transition is now done by scan-tool-cache."
+                    << " Use scan-tool-cache instead." << std::endl;
+          return scantool::rcInvalidParameter;
         } //cache transition to current directory structure
         //file for scan
         else if (libthoro::filesystem::file::exists(param))

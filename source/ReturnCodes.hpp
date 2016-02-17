@@ -35,6 +35,8 @@ const int rcScanError = 3;
 const int rcSignalHandlerError = 4;
 // -- program was terminated by an intercepted signal
 const int rcProgramTerminationBySignal = 5;
+// -- cache manager exit code for missing cache directory
+const int rcCacheDirectoryMissing = 6;
 
 } //namespace
 

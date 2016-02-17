@@ -6,6 +6,9 @@ program.
 For the changelog of scan-tool see [source/scan-tool/ChangeLog.md]
 (./source/scan-tool/ChangeLog.md).
 
+For the changelog of scan-tool-cache see [source/scan-tool-cache/ChangeLog.md]
+(./source/scan-tool-cache/ChangeLog.md).
+
 For the changelog of honeypottery see [source/honeypottery/ChangeLog.md]
 (./source/honeypottery/ChangeLog.md).
 

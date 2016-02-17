@@ -7,6 +7,9 @@ add_subdirectory (curly)
 # Recurse into subdirectory for the main executable tests.
 add_subdirectory (scan-tool)
 
+# Recurse into subdirectory for scan-tool-cache tests.
+add_subdirectory (scan-tool-cache)
+
 # Recurse into subdirectory for the mso-api-request executable tests.
 add_subdirectory (mso-api-request)
 

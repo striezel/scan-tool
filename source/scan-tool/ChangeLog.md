@@ -1,5 +1,9 @@
 # ChangeLog for scan-tool
 
+## Version 0.28 (2016-02-17)
+  - Transition and integrity check features from scan-tool 0.27b and earlier
+    are moved to scan-tool-cache, because they are cache-related operations.
+
 ## Version 0.27b (2016-02-03)
   - improve integrity check (again)
 

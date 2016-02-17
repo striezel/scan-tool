@@ -120,15 +120,15 @@ class CacheManagerV2
     static bool deleteCachedElement(const std::string& resourceID, const std::string& cacheRoot);
 
 
-     /** \brief checks all present cache files for integrity
-      *
-      * \param deleteCorrupted  If set to true, corrupted cache files will be deleted.
-      * \param deleteUnknown    If set to true, all reports of resources that are not
-      *                         known to VT will be deleted. These reports do not count
-      *                         as corrupted and do not influence the return value.
-      * \return Returns the number of corrupted files that were found.
-      *         Returns zero, if no corrupted files were found.
-      */
+    /** \brief checks all present cache files for integrity
+     *
+     * \param deleteCorrupted  If set to true, corrupted cache files will be deleted.
+     * \param deleteUnknown    If set to true, all reports of resources that are not
+     *                         known to VT will be deleted. These reports do not count
+     *                         as corrupted and do not influence the return value.
+     * \return Returns the number of corrupted files that were found.
+     *         Returns zero, if no corrupted files were found.
+     */
     uint_least32_t checkIntegrity(const bool deleteCorrupted, const bool deleteUnknown) const;
 
 
