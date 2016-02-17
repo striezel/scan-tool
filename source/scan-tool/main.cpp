@@ -195,12 +195,12 @@ int main(int argc, char ** argv)
   //files that will be checked
   std::set<std::string> files_scan = std::set<std::string>();
 
-  if ((argc>1) and (argv!=NULL))
+  if ((argc > 1) and (argv != nullptr))
   {
     int i=1;
     while (i<argc)
     {
-      if (argv[i]!=NULL)
+      if (argv[i] != nullptr)
       {
         const std::string param = std::string(argv[i]);
         //help parameter
@@ -218,7 +218,7 @@ int main(int argc, char ** argv)
         else if ((param=="--key") or (param=="--apikey"))
         {
           //enough parameters?
-          if ((i+1<argc) and (argv[i+1]!=NULL))
+          if ((i+1 < argc) and (argv[i+1] != nullptr))
           {
             key = std::string(argv[i+1]);
             ++i; //Skip next parameter, because it's used as API key already.
@@ -248,7 +248,7 @@ int main(int argc, char ** argv)
         else if ((param=="--maybe") or (param=="--limit"))
         {
           //enough parameters?
-          if ((i+1<argc) and (argv[i+1]!=NULL))
+          if ((i+1 < argc) and (argv[i+1] != nullptr))
           {
             const std::string integer = std::string(argv[i+1]);
             int limit = -1;
@@ -276,7 +276,7 @@ int main(int argc, char ** argv)
         else if ((param=="--files") or (param=="--list"))
         {
           //enough parameters?
-          if ((i+1<argc) and (argv[i+1]!=NULL))
+          if ((i+1 < argc) and (argv[i+1] != nullptr))
           {
             const std::string listFile = std::string(argv[i+1]);
             ++i; //Skip next parameter, because it's used as list file already.
@@ -333,7 +333,7 @@ int main(int argc, char ** argv)
             return scantool::rcInvalidParameter;
           }
           //enough parameters?
-          if ((i+1<argc) and (argv[i+1]!=NULL))
+          if ((i+1 < argc) and (argv[i+1] != nullptr))
           {
             const std::string integer = std::string(argv[i+1]);
             unsigned int limit = 0;
@@ -409,7 +409,7 @@ int main(int argc, char ** argv)
       } //if parameter exists
       else
       {
-        std::cout << "Parameter at index " << i << " is NULL." << std::endl;
+        std::cout << "Parameter at index " << i << " is null pointer." << std::endl;
         return scantool::rcInvalidParameter;
       }
       ++i;//on to next parameter
@@ -470,28 +470,28 @@ int main(int argc, char ** argv)
   sigemptyset(&sa.sa_mask);
   sa.sa_flags = 0;
   //Install one for SIGINT ...
-  if (sigaction(SIGINT, &sa, NULL) != 0)
+  if (sigaction(SIGINT, &sa, nullptr) != 0)
   {
     std::clog << "Error: Could not set signal handling function for SIGINT!"
               << std::endl;
     return scantool::rcSignalHandlerError;
   }
   // ... and one for SIGTERM.
-  if (sigaction(SIGTERM, &sa, NULL) != 0)
+  if (sigaction(SIGTERM, &sa, nullptr) != 0)
   {
     std::clog << "Error: Could not set signal handling function for SIGTERM!"
               << std::endl;
     return scantool::rcSignalHandlerError;
   }
   // ... and one for SIGUSR1, ...
-  if (sigaction(SIGUSR1, &sa, NULL) != 0)
+  if (sigaction(SIGUSR1, &sa, nullptr) != 0)
   {
     std::clog << "Error: Could not set signal handling function for SIGUSR1!"
               << std::endl;
     return scantool::rcSignalHandlerError;
   }
   // ... and one for SIGUSR2.
-  if (sigaction(SIGUSR2, &sa, NULL) != 0)
+  if (sigaction(SIGUSR2, &sa, nullptr) != 0)
   {
     std::clog << "Error: Could not set signal handling function for SIGUSR2!"
               << std::endl;

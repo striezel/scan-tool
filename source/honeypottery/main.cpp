@@ -66,12 +66,12 @@ int main(int argc, char** argv)
   //files for which an upload and scan are requested
   std::unordered_set<std::string> files_scan = std::unordered_set<std::string>();
 
-  if ((argc>1) and (argv!=NULL))
+  if ((argc > 1) and (argv != nullptr))
   {
     int i=1;
     while (i<argc)
     {
-      if (argv[i]!=NULL)
+      if (argv[i] != nullptr)
       {
         const std::string param = std::string(argv[i]);
         //help parameter
@@ -89,7 +89,7 @@ int main(int argc, char** argv)
         else if ((param=="--key") or (param=="--apikey"))
         {
           //enough parameters?
-          if ((i+1<argc) and (argv[i+1]!=NULL))
+          if ((i+1<argc) and (argv[i+1]!=nullptr))
           {
             key = std::string(argv[i+1]);
             ++i; //skip next parameter, because it's used as API key already
@@ -105,7 +105,7 @@ int main(int argc, char** argv)
         else if ((param=="--report") or (param=="--resource"))
         {
           //enough parameters?
-          if ((i+1<argc) and (argv[i+1]!=NULL))
+          if ((i+1<argc) and (argv[i+1]!=nullptr))
           {
             const std::string next_resource = std::string(argv[i+1]);
             ++i; //skip next parameter, because it's used as resource identifier already
@@ -126,7 +126,7 @@ int main(int argc, char** argv)
         else if ((param=="--file") or (param=="--scan"))
         {
           //enough parameters?
-          if ((i+1<argc) and (argv[i+1]!=NULL))
+          if ((i+1<argc) and (argv[i+1]!=nullptr))
           {
             const std::string next_file = std::string(argv[i+1]);
             ++i; //Skip next parameter, because it's used as filename already.
@@ -154,7 +154,7 @@ int main(int argc, char** argv)
       }//parameter exists
       else
       {
-        std::cout << "Parameter at index " << i << " is NULL." << std::endl;
+        std::cout << "Parameter at index " << i << " is null pointer." << std::endl;
         return scantool::rcInvalidParameter;
       }
       ++i;//on to next parameter

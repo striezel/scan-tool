@@ -30,7 +30,7 @@ size_t writeCallbackString(char *ptr, size_t size, size_t nmemb, void *userdata)
   const size_t actualSize = size * nmemb;
   if (userdata == nullptr)
   {
-    std::cerr << "Error: write callback received NULL pointer!" << std::endl;
+    std::cerr << "Error: write callback received null pointer!" << std::endl;
     return 0;
   }
 
@@ -65,14 +65,14 @@ size_t readCallbackString(char *buffer, size_t size, size_t nitems, void *instre
     return 0;
   if (nullptr == instream)
   {
-    std::cerr << "Error: read callback received NULL pointer!" << std::endl;
+    std::cerr << "Error: read callback received null pointer!" << std::endl;
     return CURL_READFUNC_ABORT;
   }
   //cast it to string data
   StringData * sd = reinterpret_cast<StringData*>(instream);
   if (nullptr == sd->data)
   {
-    std::cerr << "Error: read callback received NULL pointer for string data!"
+    std::cerr << "Error: read callback received null pointer for string data!"
               << std::endl;
     return CURL_READFUNC_ABORT;
   }
@@ -218,7 +218,7 @@ bool Curly::perform(std::string& response)
   std::clog << "curl_easy_init()..." << std::endl;
   #endif
   CURL * handle = curl_easy_init();
-  if (NULL==handle)
+  if (nullptr == handle)
   {
     //cURL error
     std::cerr << "cURL easy init failed!" << std::endl;;
@@ -500,7 +500,7 @@ bool Curly::perform(std::string& response)
     m_LastContentType.erase();
     return false;
   }
-  if (contType == NULL)
+  if (contType == nullptr)
     m_LastContentType.erase();
   else
     m_LastContentType = std::string(m_LastContentType);
