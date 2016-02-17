@@ -132,6 +132,16 @@ class CacheManagerV2
     uint_least32_t checkIntegrity(const bool deleteCorrupted, const bool deleteUnknown) const;
 
 
+    /** \brief tries to perform the request cache transition from old to new
+     * directory structure.
+     *
+     * \return Returns zero in case of success.
+     * Returns a non-zero value, if an error occurred.
+     * \remarks The returned value is suitable as exit code for the program's
+     * main() function.
+     */
+    int performTransition();
+  private:
     /** \brief moves cached files from the old cache directory structure
      *         without subdirectories to their new location in the current
      *         directory structure with 256 subdirectories
@@ -156,7 +166,8 @@ class CacheManagerV2
      *          already be present. Call createCacheDirectory() to achieve that.
      */
     uint_least32_t transition16To256();
-  private:
+
+
     std::string m_CacheRoot; /**< path to the chosen root cache directory */
 }; //class
 

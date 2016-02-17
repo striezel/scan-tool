@@ -22,6 +22,7 @@
 #include "../../libthoro/filesystem/directory.hpp"
 #include "../../libthoro/filesystem/file.hpp"
 #include "../../libthoro/hash/sha256/sha256.hpp"
+#include "../ReturnCodes.hpp"
 #include "CacheManagerV2.hpp"
 #include "ReportV2.hpp"
 
@@ -256,6 +257,36 @@ uint_least32_t CacheManagerV2::checkIntegrity(const bool deleteCorrupted, const 
     } //for (2nd char)
   } //for (1st char)
   return corrupted;
+}
+
+int CacheManagerV2::performTransition()
+{
+  if (!libthoro::filesystem::directory::exists(getCacheDirectory()))
+  {
+    std::cout << "Warning: The cache directory " << getCacheDirectory()
+              << " does not exist. Nothing to do here." << std::endl;
+    return 0;
+  }
+
+  //create new cache directory structure
+  if (!createCacheDirectory())
+  {
+    std::cout << "Error: Could not create new cache directory structure!" << std::endl;
+    return scantool::rcFileError;
+  }
+
+  std::cout << "Performing cache transition. This may take a while ..." << std::endl;
+  //transition for very old cache files (v0.20 and v0.21)
+  auto movedFiles = transitionOneTo256();
+  //transition for mildly old cache files (v0.22 - v0.25)
+  movedFiles += transition16To256();
+  if (movedFiles == 0)
+    std::cout << "No cached files were moved." << std::endl;
+  else if (movedFiles == 1)
+    std::cout << "One cached file was moved." << std::endl;
+  else
+    std::cout << movedFiles << " cached files were moved." << std::endl;
+  return 0;
 }
 
 uint_least32_t CacheManagerV2::transitionOneTo256()

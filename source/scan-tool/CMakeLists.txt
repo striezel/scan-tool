@@ -23,7 +23,6 @@ set(scan-tool_sources
     ../Report.cpp
     ../Scanner.cpp
     ../StringToTimeT.cpp
-    cachetransition.cpp
     summary.cpp
     main.cpp)
 

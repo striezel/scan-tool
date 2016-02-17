@@ -30,7 +30,6 @@
 #elif defined(_WIN32)
 #include <Windows.h>
 #endif
-#include "cachetransition.hpp"
 #include "summary.hpp"
 #include "../Curly.hpp"
 #include "../virustotal/CacheManagerV2.hpp"
@@ -392,8 +391,8 @@ int main(int argc, char ** argv)
         } //integrity check
         else if ((param == "--transition") or (param == "--cache-transition"))
         {
-          const int rc = performTransition();
-          return rc;
+          scantool::virustotal::CacheManagerV2 cacheMgr;
+          return cacheMgr.performTransition();
         } //cache transition to current directory structure
         //file for scan
         else if (libthoro::filesystem::file::exists(param))
