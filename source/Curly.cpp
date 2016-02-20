@@ -100,6 +100,7 @@ Curly::Curly()
   m_headers(std::vector<std::string>()),
   m_PostBody(""),
   m_UsePostBody(false),
+  m_certFile(""),
   m_LastResponseCode(0),
   m_LastContentType("")
 {
@@ -207,6 +208,17 @@ bool Curly::setPostBody(const std::string& body)
     return false;
 }
 
+bool Curly::setCertificateFile(const std::string& certFile)
+{
+  //path should not be empty and should not contain NUL bytes
+  if (!certFile.empty() && (certFile.find('\0') == std::string::npos))
+  {
+    m_certFile = certFile;
+    return true;
+  }
+  return false;
+}
+
 bool Curly::perform(std::string& response)
 {
   //"minimum" URL should be something like "http://a.bc"
@@ -237,6 +249,34 @@ bool Curly::perform(std::string& response)
     curl_easy_cleanup(handle);
     return false;
   }
+
+  //set certificate file
+  if (!m_certFile.empty())
+  {
+    #ifdef DEBUG_MODE
+    std::clog << "curl_easy_setopt(..., CURLOPT_CAINFO, ...)..." << std::endl;
+    #endif
+    retCode = curl_easy_setopt(handle, CURLOPT_CAINFO, m_certFile.c_str());
+    if (retCode != CURLE_OK)
+    {
+      std::cerr << "cURL error: setting custom certificate file failed!" << std::endl;
+      switch (retCode)
+      {
+        case CURLE_UNKNOWN_OPTION:
+             std::cerr << "Option is not supported!" << std::endl;
+             break;
+        case CURLE_OUT_OF_MEMORY:
+             std::cerr << "Insufficient heap memory!" << std::endl;
+             break;
+        default:
+             //should not happen, according to libcurl documentation
+             break;
+      } //swi
+      std::cerr << curl_easy_strerror(retCode) << std::endl;
+      curl_easy_cleanup(handle);
+      return false;
+    }
+  } //if cert file was set
 
   //add custom headers
   struct curl_slist * header_list = nullptr;

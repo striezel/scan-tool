@@ -138,6 +138,15 @@ class Curly
     bool setPostBody(const std::string& body);
 
 
+    /** \brief sets the path to a certificate file to verify the peer with
+     *
+     * \param certFile  path to the file holding one or more certificates
+     * \return Returns true, if the path could be set.
+     * Returns false, if the operation failed.
+     */
+    bool setCertificateFile(const std::string& certFile);
+
+
     /** \brief performs the (POST) request
      *
      * \param response  reference to a string that will be filled with the
@@ -200,6 +209,7 @@ class Curly
     std::vector<std::string> m_headers; /**< additional / custom headers (HTTP only) */
     std::string m_PostBody; /**< plain post body */
     bool m_UsePostBody; /**< whether to use the explicit post body */
+    std::string m_certFile; /**< the path to the certificate file to verify the peer with */
     long m_LastResponseCode;
     std::string m_LastContentType;
 }; //class Curly
