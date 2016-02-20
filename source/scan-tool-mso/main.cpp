@@ -55,12 +55,13 @@ void showHelp()
             << "                     times, if you want to scan several files.\n"
             << "  --list FILE      - read the files which shall be scanned from the file FILE,\n"
             << "                     one per line.\n"
-            << "  --files FILE     - same as --list FILE\n";
+            << "  --files FILE     - same as --list FILE\n"
+            << "  --certfile FILE  - use the certificates in FILE to verify peers with.\n";
 }
 
 void showVersion()
 {
-  std::cout << "scan-tool-mso, version 0.01, 2016-02-02\n";
+  std::cout << "scan-tool-mso, version 0.02, 2016-02-20\n";
 }
 
 /* Four variables that will be used in main() but also in signal handling
@@ -161,6 +162,8 @@ int main(int argc, char ** argv)
   bool silent = false;
   // limit for "maybe infected"; higher count means infected
   int maybeLimit = 0;
+  //path for custom certificate file
+  std::string certificateFile = "";
   //files that will be checked
   std::set<std::string> files_scan = std::set<std::string>();
 
@@ -265,6 +268,32 @@ int main(int argc, char ** argv)
             return scantool::rcInvalidParameter;
           } //else
         } //list of files
+        else if ((param=="--certfile") or (param=="--certs") or (param=="--cacert"))
+        {
+          //enough parameters?
+          if ((i+1 < argc) and (argv[i+1] != nullptr))
+          {
+            const std::string customCertFile = std::string(argv[i+1]);
+            ++i; //Skip next parameter, because it's used as certificate file already.
+            if (!libthoro::filesystem::file::exists(customCertFile))
+            {
+              std::cout << "Error: File " << customCertFile << " does not exist!"
+                        << std::endl;
+              return scantool::rcFileError;
+            }
+            //set certificate file name
+            certificateFile = customCertFile;
+            if (!silent)
+              std::cout << "Using custom certificate file " << customCertFile
+                        << " to verify peers." << std::endl;
+          } //if
+          else
+          {
+            std::cout << "Error: You have to enter a file name after \""
+                      << param <<"\"." << std::endl;
+            return scantool::rcInvalidParameter;
+          } //else
+        } //certificate file
         //file for scan
         else if (libthoro::filesystem::file::exists(param))
         {
@@ -353,7 +382,7 @@ int main(int argc, char ** argv)
   #endif // defined
 
   //create scanner: pass API key, honour time limits, set silent mode
-  scantool::metascan::Scanner scanMSO(key, true, silent);
+  scantool::metascan::Scanner scanMSO(key, true, silent, certificateFile);
   //time when last scan was queued
   std::chrono::steady_clock::time_point lastQueuedScanTime = std::chrono::steady_clock::now() - std::chrono::hours(24);
 

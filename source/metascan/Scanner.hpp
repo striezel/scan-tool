@@ -39,8 +39,9 @@ class Scanner: public scantool::Scanner
      * \param apikey   the Metascan Online API key used for scanning
      * \param honourTimeLimits   whether or not time limits should be honoured
      * \param silent             whether or not output to the standard output should be reduced
+     * \param certFile           path to certificate file to use in peer verification
      */
-    Scanner(const std::string& apikey, const bool honourTimeLimits = true, const bool silent = false);
+    Scanner(const std::string& apikey, const bool honourTimeLimits = true, const bool silent = false, const std::string& certFile = "");
 
 
     struct ScanData
@@ -121,6 +122,7 @@ class Scanner: public scantool::Scanner
     virtual int64_t maxScanSize() const override;
   private:
     std::string m_apikey; /**< holds the Metascan Online API key */
+    std::string m_certFile; /**< certificate file for peer verification */
 }; //class
 
 } //namespace

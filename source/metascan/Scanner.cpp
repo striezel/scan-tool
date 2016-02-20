@@ -31,9 +31,10 @@ namespace scantool
 namespace metascan
 {
 
-Scanner::Scanner(const std::string& apikey, const bool honourTimeLimits, const bool silent)
+Scanner::Scanner(const std::string& apikey, const bool honourTimeLimits, const bool silent, const std::string& certFile)
 : scantool::Scanner(honourTimeLimits, silent),
-  m_apikey(apikey)
+  m_apikey(apikey),
+  m_certFile(certFile)
 {
 }
 
@@ -87,6 +88,15 @@ bool Scanner::getReport(const std::string& resource, Report& report)
   cURL.addHeader("apikey: "+m_apikey);
   //indicate that we want more meta data for the file
   cURL.addHeader("file_metadata: 1");
+
+  if (!m_certFile.empty())
+  {
+    if (!cURL.setCertificateFile(m_certFile))
+    {
+      std::cerr << "Error in Scanner::getReport(): Certificate file could not be set." << std::endl;
+      return false;
+    }
+  } //if certificate file
 
   if (!cURL.perform(response))
   {
@@ -159,6 +169,15 @@ bool Scanner::rescan(const std::string& file_id, ScanData& scan_data)
   cURL.setURL("https://scan.metascan-online.com/v2/rescan/" + file_id);
   //add API key
   cURL.addHeader("apikey: "+m_apikey);
+
+  if (!m_certFile.empty())
+  {
+    if (!cURL.setCertificateFile(m_certFile))
+    {
+      std::cerr << "Error in Scanner::rescan(): Certificate file could not be set." << std::endl;
+      return false;
+    }
+  } //if certificate file
 
   //perform request
   if (!cURL.perform(response))
@@ -274,6 +293,16 @@ bool Scanner::scan(const std::string& filename, ScanData& scan_data)
 
   //set file content as HTTP POST body
   cURL.setPostBody(content);
+
+  //set certificate file, if one was specified
+  if (!m_certFile.empty())
+  {
+    if (!cURL.setCertificateFile(m_certFile))
+    {
+      std::cerr << "Error in Scanner::scan(): Certificate file could not be set." << std::endl;
+      return false;
+    }
+  } //if certificate file
 
   std::string response = "";
   if (!cURL.perform(response))
