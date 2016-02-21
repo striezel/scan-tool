@@ -22,6 +22,7 @@
 #include <iostream>
 #include <string>
 #include <unordered_set>
+#include "../../libthoro/filesystem/file.hpp"
 #include "../metascan/Report.hpp"
 #include "../metascan/Scanner.hpp"
 #include "../ReturnCodes.hpp"
@@ -50,16 +51,19 @@ void showHelp()
             << "                     depending on the current load and number of queued scans.\n"
             << "                     Can be repeated multiple times, if you want to scan\n"
             << "                     several files.\n"
-            << "  --scan FILE      - same as --file FILE\n";
+            << "  --scan FILE      - same as --file FILE\n"
+            << "  --certfile FILE  - use the certificates in FILE to verify peers with.\n";
 }
 
 void showVersion()
 {
-  std::cout << "mso-api-request, version 0.0.6, 2016-01-25\n";
+  std::cout << "mso-api-request, version 0.0.7, 2016-02-21\n";
 }
 
 int main(int argc, char ** argv)
 {
+  //path for custom certificate file
+  std::string certificateFile = "";
   //string that will hold the API key
   std::string key = "";
   //resources that will be queried
@@ -168,6 +172,38 @@ int main(int argc, char ** argv)
             return scantool::rcInvalidParameter;
           }
         }//scan file
+        else if ((param=="--certfile") or (param=="--certs") or (param=="--cacert"))
+        {
+          //only one file is permitted
+          if (!certificateFile.empty())
+          {
+            std::cout << "Error: You must not specify " << param
+                      << " more than once!" << std::endl;
+            return scantool::rcInvalidParameter;
+          }
+          //enough parameters?
+          if ((i+1 < argc) and (argv[i+1] != nullptr))
+          {
+            const std::string customCertFile = std::string(argv[i+1]);
+            ++i; //Skip next parameter, because it's used as certificate file already.
+            if (!libthoro::filesystem::file::exists(customCertFile))
+            {
+              std::cout << "Error: File " << customCertFile << " does not exist!"
+                        << std::endl;
+              return scantool::rcFileError;
+            }
+            //set certificate file name
+            certificateFile = customCertFile;
+            std::cout << "Using custom certificate file " << customCertFile
+                      << " to verify peers." << std::endl;
+          } //if
+          else
+          {
+            std::cout << "Error: You have to enter a file name after \""
+                      << param <<"\"." << std::endl;
+            return scantool::rcInvalidParameter;
+          } //else
+        } //certificate file
         else
         {
           //unknown or wrong parameter
@@ -200,7 +236,7 @@ int main(int argc, char ** argv)
   } //if no resources
 
   //initialize scanner instance
-  scantool::metascan::Scanner scanMSO(key);
+  scantool::metascan::Scanner scanMSO(key, true, false, certificateFile);
 
   //iterate over all resources for rescan requests
   for(const std::string& i : file_IDs_rescan)

@@ -270,6 +270,13 @@ int main(int argc, char ** argv)
         } //list of files
         else if ((param=="--certfile") or (param=="--certs") or (param=="--cacert"))
         {
+          //only one file is permitted
+          if (!certificateFile.empty())
+          {
+            std::cout << "Error: You must not specify " << param
+                      << " more than once!" << std::endl;
+            return scantool::rcInvalidParameter;
+          }
           //enough parameters?
           if ((i+1 < argc) and (argv[i+1] != nullptr))
           {
