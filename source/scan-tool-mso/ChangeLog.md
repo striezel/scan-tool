@@ -1,5 +1,8 @@
 # ChangeLog for scan-tool-mso
 
+## Version 0.03 (2016-02-24)
+  - add "burst mode" which does not honour time limits /rate limits
+
 ## Version 0.02 (2016-02-20)
   - add option to set custom certificate file for peer verification, similar
     to curl's --cacert option

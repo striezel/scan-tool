@@ -56,12 +56,15 @@ void showHelp()
             << "  --list FILE      - read the files which shall be scanned from the file FILE,\n"
             << "                     one per line.\n"
             << "  --files FILE     - same as --list FILE\n"
-            << "  --certfile FILE  - use the certificates in FILE to verify peers with.\n";
+            << "  --certfile FILE  - use the certificates in FILE to verify peers with.\n"
+            << "  --burst          - enable burst mode, i.e. disregard any rate limits and\n"
+            << "                     just send one request after the other until the rate\n"
+            << "                     limit is hit.\n";
 }
 
 void showVersion()
 {
-  std::cout << "scan-tool-mso, version 0.02, 2016-02-20\n";
+  std::cout << "scan-tool-mso, version 0.03, 2016-02-24\n";
 }
 
 /* Four variables that will be used in main() but also in signal handling
@@ -160,6 +163,8 @@ int main(int argc, char ** argv)
   std::string key = "";
   //whether output will be reduced
   bool silent = false;
+  //flag for burst mode
+  bool burst = false;
   // limit for "maybe infected"; higher count means infected
   int maybeLimit = 0;
   //path for custom certificate file
@@ -217,6 +222,17 @@ int main(int argc, char ** argv)
           }
           silent = true;
         } //silent
+        else if ((param=="--burst") or (param=="-b"))
+        {
+          //Has the burst parameter already been set?
+          if (burst)
+          {
+            std::cout << "Error: Parameter " << param << " must not occur more than once!"
+                      << std::endl;
+            return scantool::rcInvalidParameter;
+          }
+          burst = true;
+        } //burst mode
         else if ((param=="--files") or (param=="--list"))
         {
           //enough parameters?
@@ -388,8 +404,8 @@ int main(int argc, char ** argv)
     #error Unknown operating system! No known signal handing facility.
   #endif // defined
 
-  //create scanner: pass API key, honour time limits, set silent mode
-  scantool::metascan::Scanner scanMSO(key, true, silent, certificateFile);
+  //create scanner: pass API key, honour time limits (if not in burst mode), set silent mode
+  scantool::metascan::Scanner scanMSO(key, !burst, silent, certificateFile);
   //time when last scan was queued
   std::chrono::steady_clock::time_point lastQueuedScanTime = std::chrono::steady_clock::now() - std::chrono::hours(24);
 
