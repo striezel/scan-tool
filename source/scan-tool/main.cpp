@@ -408,7 +408,7 @@ int main(int argc, char ** argv)
   if (key.empty())
   {
     std::cout << "Error: This program won't work properly without an API key! "
-              << "Use --apikey to specifiy the VirusTotal API key." << std::endl;
+              << "Use --apikey to specify the VirusTotal API key." << std::endl;
     return scantool::rcInvalidParameter;
   }
   if (files_scan.empty())
