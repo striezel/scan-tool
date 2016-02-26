@@ -18,6 +18,8 @@ set(scan-tool-cache_sources
     ../Engine.cpp
     ../Report.cpp
     ../StringToTimeT.cpp
+    CacheIteration.cpp
+    IterationOperationStatistics.cpp
     main.cpp)
 
 if (CMAKE_COMPILER_IS_GNUCC)

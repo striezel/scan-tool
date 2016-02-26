@@ -26,6 +26,10 @@ add_test(NAME scan-tool-cache_directory
 add_test(NAME scan-tool-cache_integrity_check
          COMMAND $<TARGET_FILE:scan-tool-cache> --integrity)
 
+# cache statistics
+add_test(NAME scan-tool-cache_statistics
+         COMMAND $<TARGET_FILE:scan-tool-cache> --statistics)
+
 # cache transition
 add_test(NAME scan-tool-cache_transition
          COMMAND $<TARGET_FILE:scan-tool-cache> --transition)

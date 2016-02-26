@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2015, 2016  Thoronador
+    Copyright (C) 2016  Thoronador
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,28 +18,37 @@
  -------------------------------------------------------------------------------
 */
 
-#ifndef SCANTOOL_RETURNCODES_HPP
-#define SCANTOOL_RETURNCODES_HPP
+#ifndef SCANTOOL_VT_CACHEITERATION_HPP
+#define SCANTOOL_VT_CACHEITERATION_HPP
+
+#include <string>
+#include "IterationOperation.hpp"
 
 namespace scantool
 {
 
-//return codes
-// -- invalid/malformed parameter value
-const int rcInvalidParameter = 1;
-// -- file I/O error
-const int rcFileError = 2;
-// -- scanner-related error
-const int rcScanError = 3;
-// -- an error related to the signal handler occurred
-const int rcSignalHandlerError = 4;
-// -- program was terminated by an intercepted signal
-const int rcProgramTerminationBySignal = 5;
-// -- cache manager exit code for missing cache directory
-const int rcCacheDirectoryMissing = 6;
-// -- error while trying to iterate over cached files
-const int rcIterationError = 7;
+namespace virustotal
+{
+
+class CacheIteration
+{
+  public:
+    ///constructor
+    CacheIteration();
+
+
+    /** \brief iterates over all files in the request cache
+     *
+     * \param cacheDir  the root directory of the request cache
+     * \param op        class that performs the iteration operation for each file
+     * \return Returns true, if iteration took place.
+     *         Returns false, if not (error occurred).
+     */
+    bool iterate(const std::string& cacheDir, IterationOperation& op);
+}; //class
 
 } //namespace
 
-#endif // SCANTOOL_RETURNCODES_HPP
+} //namespace
+
+#endif // SCANTOOL_VT_CACHEITERATION_HPP

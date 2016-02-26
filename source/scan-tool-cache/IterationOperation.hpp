@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2015, 2016  Thoronador
+    Copyright (C) 2016  Thoronador
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,28 +18,33 @@
  -------------------------------------------------------------------------------
 */
 
-#ifndef SCANTOOL_RETURNCODES_HPP
-#define SCANTOOL_RETURNCODES_HPP
+#ifndef SCANTOOL_VT_CACHE_ITERATIONOPERATION_HPP
+#define SCANTOOL_VT_CACHE_ITERATIONOPERATION_HPP
+
+#include <string>
 
 namespace scantool
 {
 
-//return codes
-// -- invalid/malformed parameter value
-const int rcInvalidParameter = 1;
-// -- file I/O error
-const int rcFileError = 2;
-// -- scanner-related error
-const int rcScanError = 3;
-// -- an error related to the signal handler occurred
-const int rcSignalHandlerError = 4;
-// -- program was terminated by an intercepted signal
-const int rcProgramTerminationBySignal = 5;
-// -- cache manager exit code for missing cache directory
-const int rcCacheDirectoryMissing = 6;
-// -- error while trying to iterate over cached files
-const int rcIterationError = 7;
+namespace virustotal
+{
+
+class IterationOperation
+{
+  public:
+    /** \brief performs the operation for a single cached element
+     *
+     * \param fileName   file name of the cached element
+     * \remarks Has to be implemented by descendant class.
+     */
+    virtual void process(const std::string& fileName) = 0;
+
+    /// virtual destructor
+    virtual ~IterationOperation() {}
+}; //class
 
 } //namespace
 
-#endif // SCANTOOL_RETURNCODES_HPP
+} //namespace
+
+#endif // SCANTOOL_VT_CACHE_ITERATIONOPERATION_HPP

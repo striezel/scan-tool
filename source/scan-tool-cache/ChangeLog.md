@@ -1,5 +1,8 @@
 # ChangeLog for scan-tool-cache
 
+## Version 0.29 (2016-02-27)
+  - add option to show some statistics about cache
+
 ## Version 0.28 (2016-02-17)
   - initial version with basic features
   - Transition and integrity check features from scan-tool 0.27b and earlier

@@ -24,6 +24,8 @@
 #include "../virustotal/CacheManagerV2.hpp"
 //return codes
 #include "../ReturnCodes.hpp"
+#include "CacheIteration.hpp"
+#include "IterationOperationStatistics.hpp"
 
 void showHelp()
 {
@@ -43,12 +45,13 @@ void showHelp()
             << "                     This can be used to give older caches (v0.25 and earlier)\n"
             << "                     the current cache directory structure so that these older\n"
             << "                     cache files can be used by the current version program.\n"
-            << "                     The program exits after the transition.\n";
+            << "                     The program exits after the transition.\n"
+            << "  --statistics     - show some statistics about the request cache.\n";
 }
 
 void showVersion()
 {
-  std::cout << "scan-tool-cache, version 0.28, 2016-02-17\n";
+  std::cout << "scan-tool-cache, version 0.29, 2016-02-27\n";
 }
 
 int main(int argc, char ** argv)
@@ -104,6 +107,44 @@ int main(int argc, char ** argv)
             std::cout << "There were " << corruptFiles << " corrupt files." << std::endl;
           return 0;
         } //integrity check
+        else if ((param == "--statistics") or (param == "--stats"))
+        {
+          scantool::virustotal::CacheManagerV2 cacheMgr;
+          scantool::virustotal::CacheIteration ci;
+          scantool::virustotal::IterationOperationStatistics opStats;
+          std::cout << "Collecting information, this may take a while ..." << std::endl;
+          if (!ci.iterate(cacheMgr.getCacheDirectory(), opStats))
+          {
+            std::cout << "Error: Could not collect cache information!" << std::endl;
+            return scantool::rcIterationError;
+          }
+          std::cout << std::endl << "Cache statistics:" << std::endl
+                    << "Total number of files: " << opStats.total() << std::endl
+                    << "Files that failed to parse: " << opStats.unparsable() << std::endl
+                    << "Files not found by VirusTotal: " << opStats.unknown() << std::endl
+                    << "Oldest cached scan's date: ";
+          if (opStats.oldest() != static_cast<std::time_t>(-1))
+          {
+            const auto t = opStats.oldest();
+            std::cout << std::asctime(std::localtime(&t));
+          }
+          else
+          {
+            std::cout << "(none)";
+          }
+          std::cout << std::endl << "Newest cached scan's date: ";
+          if (opStats.newest() != static_cast<std::time_t>(-1))
+          {
+            const auto t = opStats.newest();
+            std::cout << std::asctime(std::localtime(&t));
+          }
+          else
+          {
+            std::cout << "(none)";
+          }
+          std::cout << std::endl;
+          return 0;
+        } //cache statistics
         else if ((param == "--transition") or (param == "--cache-transition"))
         {
           scantool::virustotal::CacheManagerV2 cacheMgr;
