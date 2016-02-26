@@ -65,6 +65,11 @@
 		<Unit filename="../virustotal/ReportBase.hpp" />
 		<Unit filename="../virustotal/ReportV2.cpp" />
 		<Unit filename="../virustotal/ReportV2.hpp" />
+		<Unit filename="CacheIteration.cpp" />
+		<Unit filename="CacheIteration.hpp" />
+		<Unit filename="IterationOperation.hpp" />
+		<Unit filename="IterationOperationStatistics.cpp" />
+		<Unit filename="IterationOperationStatistics.hpp" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />
