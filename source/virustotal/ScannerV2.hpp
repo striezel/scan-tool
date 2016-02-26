@@ -83,7 +83,10 @@ class ScannerV2: public scantool::Scanner
      * \param resource   resource identifier
      * \param report     reference to a Report structure where the report's data will be stored
      * \param useCache   If set to true, the scanner tries to use the cached reports from the cache directory @cacheDir
-     * \param cacheDir   directory of the report cache (is only used, if @useCache is true)
+     * \param cacheDir   directory of the report cache (Value has to be set, if @useCache is true.)
+     *                   If the @cacheDir is non-empty, the JSON data of the
+     *                   the report will be written to the cache directory.
+     *                   Even if @useCache is false.
      * \return Returns true, if the report could be retrieved.
      *         Returns false, if retrieval failed.
      */

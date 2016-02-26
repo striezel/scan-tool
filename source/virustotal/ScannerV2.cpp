@@ -147,13 +147,16 @@ bool ScannerV2::getReport(const std::string& resource, Report& report, const boo
               << "Content-Type: " << cURL.getContentType() << std::endl
               << "Response text: " << response << std::endl;
     #endif
-    //write JSON data to request cache, if request cache is enabled
-    if (useCache && !cacheDir.empty() && libthoro::filesystem::directory::exists(cacheDir))
+    /* write JSON data to request cache, if request cache directory is given,
+       independent of cache use during previous request
+    */
+    if (!cacheDir.empty() && libthoro::filesystem::directory::exists(cacheDir)
+        && !cachedFilePath.empty())
     {
       std::ofstream cachedJSON(cachedFilePath, std::ios_base::out | std::ios_base::binary | std::ios_base::trunc);
       if (!cachedJSON.good())
       {
-        std::cerr << "Error in ScannerV2::getReport(): JSON data could not be opened for update!" << std::endl;
+        std::cerr << "Error in ScannerV2::getReport(): JSON data file could not be opened for update!" << std::endl;
         return false;
       }
       cachedJSON.write(response.c_str(), response.size());
