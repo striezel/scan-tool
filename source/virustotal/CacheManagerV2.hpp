@@ -120,6 +120,15 @@ class CacheManagerV2
     static bool deleteCachedElement(const std::string& resourceID, const std::string& cacheRoot);
 
 
+    /** \brief checks whether the given file name (basename only) is a valid for a cached element
+     *
+     * \param basename  the basename of the file
+     * \return Returns true, if the given basename could identify a cached element.
+     * Returns false otherwise.
+     */
+    static bool isCachedElementName(const std::string& basename);
+
+
     /** \brief checks all present cache files for integrity
      *
      * \param deleteCorrupted  If set to true, corrupted cache files will be deleted.

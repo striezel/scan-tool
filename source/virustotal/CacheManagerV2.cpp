@@ -144,6 +144,17 @@ bool CacheManagerV2::deleteCachedElement(const std::string& resourceID, const st
   return libthoro::filesystem::file::remove(cachedFile);
 }
 
+bool CacheManagerV2::isCachedElementName(const std::string& basename)
+{
+  //file name has to end with ".json"
+  return (stringEndsWith(basename, ".json")
+    // first 64 characters must form a valid SHA256 hash
+    && SHA256::isValidHash(basename.substr(0, 64))
+    // ... and total length has to be 69 characters
+    // (that is: 64 chars from hash, 5 chars for extension ".json")
+    && (basename.size() == 69));
+}
+
 uint_least32_t CacheManagerV2::checkIntegrity(const bool deleteCorrupted, const bool deleteUnknown) const
 {
   // Does the cache exist? If not, exit.
@@ -169,13 +180,8 @@ uint_least32_t CacheManagerV2::checkIntegrity(const bool deleteCorrupted, const 
         #endif // SCAN_TOOL_DEBUG
         for (auto const & file : files)
         {
-          if (//entry must not be a directory and file name has to end with ".json"
-              !file.isDirectory && stringEndsWith(file.fileName, ".json")
-              // first 64 characters must form a valid SHA256 hash
-              && SHA256::isValidHash(file.fileName.substr(0, 64))
-              // ... and total length has to be 69 characters
-              // (that is: 64 chars from hash, 5 chars for extension ".json")
-              && file.fileName.size() == 69)
+          //entry must not be a directory and have valid file name
+          if (!file.isDirectory && isCachedElementName(file.fileName))
           {
             const auto fileName = currentSubDirectory
                   + libthoro::filesystem::pathDelimiter + file.fileName;
@@ -305,13 +311,8 @@ uint_least32_t CacheManagerV2::transitionOneTo256()
   #endif // SCAN_TOOL_DEBUG
   for (auto const & file : files)
   {
-    if (//entry must not be a directory and file name has to end with ".json"
-        !file.isDirectory && stringEndsWith(file.fileName, ".json")
-        // first 64 characters must form a valid SHA256 hash
-        && SHA256::isValidHash(file.fileName.substr(0, 64))
-        // ... and total length has to be 69 characters
-        // (that is: 64 chars from hash, 5 chars for extension ".json")
-        && file.fileName.size() == 69)
+    //entry must not be a directory and have a valid file name
+    if (!file.isDirectory && isCachedElementName(file.fileName))
     {
       const auto fileName = libthoro::filesystem::slashify(m_CacheRoot)
                           + file.fileName;
@@ -408,13 +409,8 @@ uint_least32_t CacheManagerV2::transition16To256()
 
       for (auto const & file : files)
       {
-        if (//entry must not be a directory and file name has to end with ".json"
-            !file.isDirectory && stringEndsWith(file.fileName, ".json")
-            // first 64 characters must form a valid SHA256 hash
-            && SHA256::isValidHash(file.fileName.substr(0, 64))
-            // ... and total length has to be 69 characters
-            // (that is: 64 chars from hash, 5 chars for extension ".json")
-            && file.fileName.size() == 69)
+        //entry must not be a directory and file name has to be valid
+        if (!file.isDirectory && isCachedElementName(file.fileName))
         {
           const auto fileName = currentSubDirectory
                 + libthoro::filesystem::pathDelimiter + file.fileName;
