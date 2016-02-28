@@ -25,6 +25,7 @@
 //return codes
 #include "../ReturnCodes.hpp"
 #include "CacheIteration.hpp"
+#include "CacheOperation.hpp"
 #include "IterationOperationStatistics.hpp"
 
 void showHelp()
@@ -56,6 +57,9 @@ void showVersion()
 
 int main(int argc, char ** argv)
 {
+  //requested operation
+  scantool::virustotal::CacheOperation op = scantool::virustotal::CacheOperation::None;
+
   if ((argc>1) and (argv!=nullptr))
   {
     int i=1;
@@ -95,55 +99,23 @@ int main(int argc, char ** argv)
         } //cache directory existence
         else if ((param == "--integrity") or (param == "-i"))
         {
-          std::cout << "Checking cache for corrupt files. This may take a while ..."
-                    << std::endl;
-          scantool::virustotal::CacheManagerV2 cacheMgr;
-          const auto corruptFiles = cacheMgr.checkIntegrity(true, true);
-          if (corruptFiles == 0)
-            std::cout << "There seem to be no corrupt files." << std::endl;
-          else if (corruptFiles == 1)
-            std::cout << "There was one corrupt file." << std::endl;
-          else
-            std::cout << "There were " << corruptFiles << " corrupt files." << std::endl;
-          return 0;
+          if (op != scantool::virustotal::CacheOperation::None)
+          {
+            std::cout << "Error: Operation must not be specified more than once!" << std::endl;
+            return scantool::rcInvalidParameter;
+          }
+          //operation: integrity check
+          op = scantool::virustotal::CacheOperation::IntegrityCheck;
         } //integrity check
         else if ((param == "--statistics") or (param == "--stats"))
         {
-          scantool::virustotal::CacheManagerV2 cacheMgr;
-          scantool::virustotal::CacheIteration ci;
-          scantool::virustotal::IterationOperationStatistics opStats;
-          std::cout << "Collecting information, this may take a while ..." << std::endl;
-          if (!ci.iterate(cacheMgr.getCacheDirectory(), opStats))
+          if (op != scantool::virustotal::CacheOperation::None)
           {
-            std::cout << "Error: Could not collect cache information!" << std::endl;
-            return scantool::rcIterationError;
+            std::cout << "Error: More than one operation was specified!" << std::endl;
+            return scantool::rcInvalidParameter;
           }
-          std::cout << std::endl << "Cache statistics:" << std::endl
-                    << "Total number of files: " << opStats.total() << std::endl
-                    << "Files that failed to parse: " << opStats.unparsable() << std::endl
-                    << "Files not found by VirusTotal: " << opStats.unknown() << std::endl
-                    << "Oldest cached scan's date: ";
-          if (opStats.oldest() != static_cast<std::time_t>(-1))
-          {
-            const auto t = opStats.oldest();
-            std::cout << std::asctime(std::localtime(&t));
-          }
-          else
-          {
-            std::cout << "(none)";
-          }
-          std::cout << std::endl << "Newest cached scan's date: ";
-          if (opStats.newest() != static_cast<std::time_t>(-1))
-          {
-            const auto t = opStats.newest();
-            std::cout << std::asctime(std::localtime(&t));
-          }
-          else
-          {
-            std::cout << "(none)";
-          }
-          std::cout << std::endl;
-          return 0;
+          // operation: stats
+          op = scantool::virustotal::CacheOperation::Statistics;
         } //cache statistics
         else if ((param == "--transition") or (param == "--cache-transition"))
         {
@@ -167,5 +139,71 @@ int main(int argc, char ** argv)
     } //while
   } //if arguments present
 
-  return 0;
+
+  //check operation
+  if (scantool::virustotal::CacheOperation::None == op)
+  {
+    std::cout << "Error: No operation parameter was specified!" << std::endl;
+    return scantool::rcInvalidParameter;
+  }
+
+  //integrity check
+  if (op == scantool::virustotal::CacheOperation::IntegrityCheck)
+  {
+    std::cout << "Checking cache for corrupt files. This may take a while ..."
+              << std::endl;
+    scantool::virustotal::CacheManagerV2 cacheMgr;
+    const auto corruptFiles = cacheMgr.checkIntegrity(true, true);
+    if (corruptFiles == 0)
+      std::cout << "There seem to be no corrupt files." << std::endl;
+    else if (corruptFiles == 1)
+      std::cout << "There was one corrupt file." << std::endl;
+    else
+      std::cout << "There were " << corruptFiles << " corrupt files." << std::endl;
+    return 0;
+  } //if integrity check
+
+  //statistics
+  if (op == scantool::virustotal::CacheOperation::Statistics)
+  {
+    scantool::virustotal::CacheManagerV2 cacheMgr;
+    scantool::virustotal::CacheIteration ci;
+    scantool::virustotal::IterationOperationStatistics opStats;
+    std::cout << "Collecting information, this may take a while ..." << std::endl;
+    if (!ci.iterate(cacheMgr.getCacheDirectory(), opStats))
+    {
+      std::cout << "Error: Could not collect cache information!" << std::endl;
+      return scantool::rcIterationError;
+    }
+    std::cout << std::endl << "Cache statistics:" << std::endl
+              << "Total number of files: " << opStats.total() << std::endl
+              << "Files that failed to parse: " << opStats.unparsable() << std::endl
+              << "Files not found by VirusTotal: " << opStats.unknown() << std::endl
+              << "Oldest cached scan's date: ";
+    if (opStats.oldest() != static_cast<std::time_t>(-1))
+    {
+      const auto t = opStats.oldest();
+      std::cout << std::asctime(std::localtime(&t));
+    }
+    else
+    {
+      std::cout << "(none)";
+    }
+    std::cout << std::endl << "Newest cached scan's date: ";
+    if (opStats.newest() != static_cast<std::time_t>(-1))
+    {
+      const auto t = opStats.newest();
+      std::cout << std::asctime(std::localtime(&t));
+    }
+    else
+    {
+      std::cout << "(none)";
+    }
+    std::cout << std::endl;
+    return 0;
+  } //if statistics
+
+  //program flow should never reach that point
+  std::cout << "Error: Operation is not implemented yet!" << std::endl;
+  return scantool::rcInvalidParameter;
 }
