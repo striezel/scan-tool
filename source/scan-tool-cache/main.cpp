@@ -66,7 +66,7 @@ void showHelp()
 
 void showVersion()
 {
-  std::cout << "scan-tool-cache, version 0.29, 2016-02-27\n";
+  std::cout << "scan-tool-cache, version 0.30, 2016-02-29\n";
 }
 
 int main(int argc, char ** argv)

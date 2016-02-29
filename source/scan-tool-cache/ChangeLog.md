@@ -1,5 +1,8 @@
 # ChangeLog for scan-tool-cache
 
+## Version 0.30 (2016-02-29)
+  - add option to update old files in the request cache
+
 ## Version 0.29 (2016-02-27)
   - add option to show some statistics about cache
 
