@@ -15,11 +15,15 @@ set(scan-tool-cache_sources
     ../virustotal/EngineV2.cpp
     ../virustotal/ReportV2.cpp
     ../virustotal/ReportBase.cpp
+    ../virustotal/ScannerV2.cpp
+    ../Curly.cpp
     ../Engine.cpp
     ../Report.cpp
+    ../Scanner.cpp
     ../StringToTimeT.cpp
     CacheIteration.cpp
     IterationOperationStatistics.cpp
+    IterationOperationUpdate.cpp
     main.cpp)
 
 if (CMAKE_COMPILER_IS_GNUCC)

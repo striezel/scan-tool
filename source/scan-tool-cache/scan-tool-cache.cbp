@@ -49,12 +49,16 @@
 		<Unit filename="../../libthoro/hash/sha256/MessageSource.hpp" />
 		<Unit filename="../../libthoro/hash/sha256/sha256.cpp" />
 		<Unit filename="../../libthoro/hash/sha256/sha256.hpp" />
+		<Unit filename="../Constants.hpp" />
 		<Unit filename="../Curly.cpp" />
+		<Unit filename="../Curly.hpp" />
 		<Unit filename="../Engine.cpp" />
 		<Unit filename="../Engine.hpp" />
 		<Unit filename="../Report.cpp" />
 		<Unit filename="../Report.hpp" />
 		<Unit filename="../ReturnCodes.hpp" />
+		<Unit filename="../Scanner.cpp" />
+		<Unit filename="../Scanner.hpp" />
 		<Unit filename="../StringToTimeT.cpp" />
 		<Unit filename="../StringToTimeT.hpp" />
 		<Unit filename="../virustotal/CacheManagerV2.cpp" />
@@ -65,12 +69,16 @@
 		<Unit filename="../virustotal/ReportBase.hpp" />
 		<Unit filename="../virustotal/ReportV2.cpp" />
 		<Unit filename="../virustotal/ReportV2.hpp" />
+		<Unit filename="../virustotal/ScannerV2.cpp" />
+		<Unit filename="../virustotal/ScannerV2.hpp" />
 		<Unit filename="CacheIteration.cpp" />
 		<Unit filename="CacheIteration.hpp" />
 		<Unit filename="CacheOperation.hpp" />
 		<Unit filename="IterationOperation.hpp" />
 		<Unit filename="IterationOperationStatistics.cpp" />
 		<Unit filename="IterationOperationStatistics.hpp" />
+		<Unit filename="IterationOperationUpdate.cpp" />
+		<Unit filename="IterationOperationUpdate.hpp" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />
