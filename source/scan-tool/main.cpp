@@ -38,15 +38,9 @@
 #include "../../libthoro/filesystem/file.hpp"
 #include "../../libthoro/hash/sha256/FileSourceUtility.hpp"
 #include "../../libthoro/hash/sha256/sha256.hpp"
+#include "../Constants.hpp"
 //return codes
 #include "../ReturnCodes.hpp"
-
-/* default value for maximum scan report age
-
-   Three months should be a a reasonable default value that does not put too
-   much load on the scanner.
-*/
-const unsigned int cDefaultMaxAge = 90;
 
 void showHelp()
 {
@@ -210,6 +204,12 @@ int main(int argc, char ** argv)
         } //version
         else if ((param=="--key") or (param=="--apikey"))
         {
+          //only one key required
+          if (!key.empty())
+          {
+            std::cout << "Error: API key was already specified!" << std::endl;
+            return scantool::rcInvalidParameter;
+          }
           //enough parameters?
           if ((i+1 < argc) and (argv[i+1] != nullptr))
           {
