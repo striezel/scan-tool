@@ -73,6 +73,9 @@ void IterationOperationUpdate::process(const std::string& fileName)
                   {
                     //add to list for later retrieval
                     m_pendingRescans.push_back(currentSHA256);
+                    if (!m_silent)
+                      std::cout << "Rescan for resource " << currentSHA256
+                                << " was initiated." << std::endl;
                   }
                   else if (!m_silent)
                   {
@@ -80,6 +83,13 @@ void IterationOperationUpdate::process(const std::string& fileName)
                               << currentSHA256 << "!" << std::endl;
                   }
                 } //if rescan required
+                else
+                {
+                  //current report is newer than age limit
+                  if (!m_silent)
+                    std::cout << "Cached file for resource " << currentSHA256
+                              << " was updated." << std::endl;
+                } //else
               } //if successful
             } //if getReport()
             else if (!m_silent)
