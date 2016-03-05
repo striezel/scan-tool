@@ -36,6 +36,7 @@
 #include "../virustotal/ScannerV2.hpp"
 #include "../../libthoro/common/StringUtils.h"
 #include "../../libthoro/filesystem/file.hpp"
+#include "../../libthoro/filesystem/directory.hpp"
 #include "../../libthoro/hash/sha256/FileSourceUtility.hpp"
 #include "../../libthoro/hash/sha256/sha256.hpp"
 #include "../Constants.hpp"
@@ -65,12 +66,17 @@ void showHelp()
             << "                     Default value is " << cDefaultMaxAge << " days.\n"
             << "  --cache          - cache API requests locally to avoid requesting reports on\n"
             << "                     files that have been requested recently. This option is\n"
-            << "                     disabled by default.\n";
+            << "                     disabled by default.\n"
+            << "  --cache-dir DIR  - uses DIR as cache directory. This option only has an\n"
+            << "                     effect, if the --cache option is specified, too. If no\n"
+            << "                     cache directory is specified, the program will try to use\n"
+            << "                     a preset directory (usually ~/.scan-tool/vt-cache, as in\n"
+            << "                     earlier versions).\n";
 }
 
 void showVersion()
 {
-  std::cout << "scan-tool, version 0.30, 2016-02-29\n";
+  std::cout << "scan-tool, version 0.31, 2016-03-05\n";
 }
 
 /* Four variables that will be used in main() but also in signal handling
@@ -179,6 +185,8 @@ int main(int argc, char ** argv)
   int maxAgeInDays = 0;
   // flag for using request cache
   bool useRequestCache = false;
+  // custom cache directory path
+  std::string requestCacheDirVT = "";
   //files that will be checked
   std::set<std::string> files_scan = std::set<std::string>();
 
@@ -368,6 +376,28 @@ int main(int argc, char ** argv)
           }
           useRequestCache = true;
         } //request cache
+        //set custom directory for request cache
+        else if ((param=="--cache-dir") or (param=="--cache-directory") or (param=="--request-cache-directory"))
+        {
+          if (!requestCacheDirVT.empty())
+          {
+            std::cout << "Error: Request cache directory was already set to "
+                      << requestCacheDirVT << "!" << std::endl;
+            return scantool::rcInvalidParameter;
+          }
+          //enough parameters?
+          if ((i+1 < argc) and (argv[i+1] != nullptr))
+          {
+            requestCacheDirVT = libthoro::filesystem::unslashify(std::string(argv[i+1]));
+            ++i; //Skip next parameter, because it's already used as directory.
+          }
+          else
+          {
+            std::cout << "Error: You have to enter a directory path after \""
+                      << param <<"\"." << std::endl;
+            return scantool::rcInvalidParameter;
+          }
+        } //request cache directory
         else if ((param == "--integrity") or (param == "-i"))
         {
           //add note about new executable for cache stuff
@@ -432,8 +462,7 @@ int main(int argc, char ** argv)
   const auto ageLimit = std::chrono::system_clock::now() - std::chrono::hours(24*maxAgeInDays);
 
   //handle request cache settings
-  scantool::virustotal::CacheManagerV2 cacheMgr;
-  std::string requestCacheDirVT = "";
+  scantool::virustotal::CacheManagerV2 cacheMgr(requestCacheDirVT);
   if (useRequestCache)
   {
     if (!cacheMgr.createCacheDirectory())
@@ -441,7 +470,7 @@ int main(int argc, char ** argv)
       std::cerr << "Error: Could not create request cache directory!" << std::endl;
       return scantool::rcFileError;
     } //if directory could not be created
-    // cache directory is ~/.scan-tool/vt-cache/
+    // cache directory is ~/.scan-tool/vt-cache/ or a user-defined location
     requestCacheDirVT = cacheMgr.getCacheDirectory();
     if (!silent)
       std::clog << "Info: Request cache is enabled. "

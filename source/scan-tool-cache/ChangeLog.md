@@ -1,5 +1,8 @@
 # ChangeLog for scan-tool-cache
 
+## Version 0.31 (2016-03-05)
+  - add option to set a custom location for cache directory
+
 ## Version 0.30 (2016-02-29)
   - add option to update old files in the request cache
 

@@ -29,6 +29,7 @@ namespace virustotal
 
 ///enumeration for possible cache operations
 enum class CacheOperation { None, //none yet
+                            ExistenceCheck, //check existence of cache directory
                             IntegrityCheck, //integrity check for cached files
                             Statistics, //cache statistics
                             Update //update existing files

@@ -61,12 +61,15 @@ void showHelp()
             << "                     reports are older than N days will be updated during the\n"
             << "                     update operation (see --update).\n"
             << "                     Default value is " << cDefaultMaxAge << " days.\n"
-            << "  --silent         - produce less text on the standard output\n";
+            << "  --silent         - produce less text on the standard output\n"
+            << "  --cache-dir DIR  - uses DIR as cache directory. If no cache directory is\n"
+            << "                     specified, the program will try to use a preset directory\n"
+            << "                     (usually ~/.scan-tool/vt-cache, as in earlier versions).\n";
 }
 
 void showVersion()
 {
-  std::cout << "scan-tool-cache, version 0.30, 2016-02-29\n";
+  std::cout << "scan-tool-cache, version 0.31, 2016-03-05\n";
 }
 
 int main(int argc, char ** argv)
@@ -79,6 +82,8 @@ int main(int argc, char ** argv)
   bool silent = false;
   // maximum age of scan reports in days where no update is required
   int maxAgeInDays = 0;
+  // custom cache directory path
+  std::string requestCacheDirVT = "";
 
   if ((argc>1) and (argv!=nullptr))
   {
@@ -118,15 +123,13 @@ int main(int argc, char ** argv)
         } //cache directory path
         else if ((param == "--exists") or (param == "-x"))
         {
-          const std::string cacheDirectory = scantool::virustotal::CacheManagerV2::getDefaultCacheDirectory();
-          if (libthoro::filesystem::directory::exists(cacheDirectory))
+          if (op != scantool::virustotal::CacheOperation::None)
           {
-            std::cout << "Info: The cache directory exists." << std::endl;
-            return 0;
+            std::cout << "Error: Operation must not be specified more than once!" << std::endl;
+            return scantool::rcInvalidParameter;
           }
-          //directory does not exist
-          std::cout << "Info: The cache directory does NOT exist." << std::endl;
-          return scantool::rcCacheDirectoryMissing;
+          //operation: existence check
+          op = scantool::virustotal::CacheOperation::ExistenceCheck;
         } //cache directory existence
         else if ((param == "--integrity") or (param == "-i"))
         {
@@ -229,6 +232,28 @@ int main(int argc, char ** argv)
             return scantool::rcInvalidParameter;
           }
         } //age limit
+        //set custom directory for request cache
+        else if ((param=="--cache-dir") or (param=="--cache-directory") or (param=="--request-cache-directory"))
+        {
+          if (!requestCacheDirVT.empty())
+          {
+            std::cout << "Error: Request cache directory was already set to "
+                      << requestCacheDirVT << "!" << std::endl;
+            return scantool::rcInvalidParameter;
+          }
+          //enough parameters?
+          if ((i+1 < argc) and (argv[i+1] != nullptr))
+          {
+            requestCacheDirVT = libthoro::filesystem::unslashify(std::string(argv[i+1]));
+            ++i; //Skip next parameter, because it's already used as directory.
+          }
+          else
+          {
+            std::cout << "Error: You have to enter a directory path after \""
+                      << param <<"\"." << std::endl;
+            return scantool::rcInvalidParameter;
+          }
+        } //request cache directory
         else
         {
           //unknown or wrong parameter
@@ -254,12 +279,27 @@ int main(int argc, char ** argv)
     return scantool::rcInvalidParameter;
   }
 
+  //existence check
+  if (op == scantool::virustotal::CacheOperation::ExistenceCheck)
+  {
+    scantool::virustotal::CacheManagerV2 cacheMgr(requestCacheDirVT);
+    const std::string cacheDirectory = cacheMgr.getCacheDirectory();
+    if (libthoro::filesystem::directory::exists(cacheDirectory))
+    {
+      std::cout << "Info: The cache directory exists." << std::endl;
+      return 0;
+    }
+    //directory does not exist
+    std::cout << "Info: The cache directory does NOT exist." << std::endl;
+    return scantool::rcCacheDirectoryMissing;
+  } //if existence check
+
   //integrity check
   if (op == scantool::virustotal::CacheOperation::IntegrityCheck)
   {
     std::cout << "Checking cache for corrupt files. This may take a while ..."
               << std::endl;
-    scantool::virustotal::CacheManagerV2 cacheMgr;
+    scantool::virustotal::CacheManagerV2 cacheMgr(requestCacheDirVT);
     const auto corruptFiles = cacheMgr.checkIntegrity(true, true);
     if (corruptFiles == 0)
       std::cout << "There seem to be no corrupt files." << std::endl;
@@ -273,7 +313,7 @@ int main(int argc, char ** argv)
   //statistics
   if (op == scantool::virustotal::CacheOperation::Statistics)
   {
-    scantool::virustotal::CacheManagerV2 cacheMgr;
+    scantool::virustotal::CacheManagerV2 cacheMgr(requestCacheDirVT);
     scantool::virustotal::CacheIteration ci;
     scantool::virustotal::IterationOperationStatistics opStats;
     std::cout << "Collecting information, this may take a while ..." << std::endl;
@@ -334,7 +374,7 @@ int main(int argc, char ** argv)
     scantool::virustotal::CacheIteration ci;
     scantool::virustotal::IterationOperationUpdate opUpdate(key, silent, ageLimit);
     std::cout << "Updating cache information, this may take a while ..." << std::endl;
-    scantool::virustotal::CacheManagerV2 cacheMgr;
+    scantool::virustotal::CacheManagerV2 cacheMgr(requestCacheDirVT);
     if (!ci.iterate(cacheMgr.getCacheDirectory(), opUpdate))
     {
       std::cout << "Error: Could not update cached information!" << std::endl;
