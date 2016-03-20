@@ -20,7 +20,7 @@
 
 #include <iostream>
 #include <vector>
-#include "../../../libthoro/common/StringUtils.h"
+#include "../../../libthoro/common/StringUtils.hpp"
 #include "../../../source/Curly.hpp"
 
 int main()

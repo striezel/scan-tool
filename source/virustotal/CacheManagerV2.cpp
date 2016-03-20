@@ -18,7 +18,7 @@
  -------------------------------------------------------------------------------
 */
 
-#include "../../libthoro/common/StringUtils.h"
+#include "../../libthoro/common/StringUtils.hpp"
 #include "../../libthoro/filesystem/directory.hpp"
 #include "../../libthoro/filesystem/file.hpp"
 #include "../../libthoro/hash/sha256/sha256.hpp"

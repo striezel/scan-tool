@@ -34,7 +34,7 @@
 #include "../Curly.hpp"
 #include "../metascan/Definitions.hpp"
 #include "../metascan/Scanner.hpp"
-#include "../../libthoro/common/StringUtils.h"
+#include "../../libthoro/common/StringUtils.hpp"
 #include "../../libthoro/filesystem/file.hpp"
 #include "../../libthoro/hash/sha256/FileSourceUtility.hpp"
 #include "../../libthoro/hash/sha256/sha256.hpp"

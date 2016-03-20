@@ -29,7 +29,7 @@
 			<Add library="jsoncpp" />
 		</Linker>
 		<Unit filename="../../../libthoro/common/StringUtils.cpp" />
-		<Unit filename="../../../libthoro/common/StringUtils.h" />
+		<Unit filename="../../../libthoro/common/StringUtils.hpp" />
 		<Unit filename="../../../libthoro/filesystem/file.cpp" />
 		<Unit filename="../../../libthoro/filesystem/file.hpp" />
 		<Unit filename="../../../source/Curly.cpp" />

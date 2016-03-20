@@ -21,7 +21,7 @@
 #include <chrono>
 #include <iostream>
 #include <string>
-#include "../../libthoro/common/StringUtils.h"
+#include "../../libthoro/common/StringUtils.hpp"
 #include "../../libthoro/filesystem/directory.hpp"
 #include "../virustotal/CacheManagerV2.hpp"
 #include "../Constants.hpp"

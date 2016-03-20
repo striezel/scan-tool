@@ -34,7 +34,7 @@
 #include "../Curly.hpp"
 #include "../virustotal/CacheManagerV2.hpp"
 #include "../virustotal/ScannerV2.hpp"
-#include "../../libthoro/common/StringUtils.h"
+#include "../../libthoro/common/StringUtils.hpp"
 #include "../../libthoro/filesystem/file.hpp"
 #include "../../libthoro/filesystem/directory.hpp"
 #include "../../libthoro/hash/sha256/FileSourceUtility.hpp"

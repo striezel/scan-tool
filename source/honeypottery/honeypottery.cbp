@@ -38,7 +38,7 @@
 			<Add library="jsoncpp" />
 		</Linker>
 		<Unit filename="../../libthoro/common/StringUtils.cpp" />
-		<Unit filename="../../libthoro/common/StringUtils.h" />
+		<Unit filename="../../libthoro/common/StringUtils.hpp" />
 		<Unit filename="../Curly.cpp" />
 		<Unit filename="../Curly.hpp" />
 		<Unit filename="../Engine.cpp" />

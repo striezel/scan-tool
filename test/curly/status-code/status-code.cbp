@@ -28,7 +28,7 @@
 			<Add library="curl" />
 		</Linker>
 		<Unit filename="../../../libthoro/common/StringUtils.cpp" />
-		<Unit filename="../../../libthoro/common/StringUtils.h" />
+		<Unit filename="../../../libthoro/common/StringUtils.hpp" />
 		<Unit filename="../../../source/Curly.cpp" />
 		<Unit filename="../../../source/Curly.hpp" />
 		<Unit filename="status-code.cpp" />
