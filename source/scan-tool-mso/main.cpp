@@ -49,7 +49,7 @@ void showHelp()
             << "  -?               - same as --help\n"
             << "  --version        - displays the version of the program and quits\n"
             << "  -v               - same as --version\n"
-            << "  --apikey KEY     - sets the API key for MetascanOnline\n"
+            << "  --apikey KEY     - sets the API key for Metadefender Cloud\n"
             << "  --silent         - produce less text on the standard output\n"
             << "  FILE             - file that shall be scanned. Can be repeated multiple\n"
             << "                     times, if you want to scan several files.\n"
@@ -64,7 +64,7 @@ void showHelp()
 
 void showVersion()
 {
-  std::cout << "scan-tool-mso, version 0.03, 2016-02-24\n";
+  std::cout << "scan-tool-mso, version 0.04, 2016-03-22\n";
 }
 
 /* Four variables that will be used in main() but also in signal handling
@@ -342,7 +342,7 @@ int main(int argc, char ** argv)
   if (key.empty())
   {
     std::cout << "Error: This program won't work properly without an API key! "
-              << "Use --apikey to specify the Metascan Online API key." << std::endl;
+              << "Use --apikey to specify the Metadefender Cloud API key." << std::endl;
     return scantool::rcInvalidParameter;
   }
   if (files_scan.empty())

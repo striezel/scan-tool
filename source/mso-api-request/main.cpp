@@ -35,19 +35,19 @@ void showHelp()
             << "  -?               - same as --help\n"
             << "  --version        - displays the version of the program and quits\n"
             << "  -v               - same as --version\n"
-            << "  --apikey KEY     - sets the API key for Metascan Online\n"
-            << "  --report ID      - request the report with the given ID from Metascan\n"
-            << "                     Online. Can occur multiple times, if more than one report\n"
+            << "  --apikey KEY     - sets the API key for Metadefender Cloud\n"
+            << "  --report ID      - request the report with the given ID from Metadefender\n"
+            << "                     Cloud. Can occur multiple times, if more than one report\n"
             << "                     shall be requested.\n"
             << "  --rescan FILE_ID - request rescan of a file with the given ID that was\n"
             << "                     uploaded earlier. The file ID usually is a 32 digit hex\n"
             << "                     number. This parameter can occur multiple times.\n"
             << "  --re FILE_ID     - same as --rescan FILE_ID\n"
-            << "  -- file FILE     - request to scan the file FILE by Metascan Online.\n"
+            << "  --file FILE      - request to scan the file FILE by Metadefender Cloud.\n"
             << "                     FILE must be a local file that can be read by the user\n"
             << "                     that runs this program. The program will print the scan\n"
             << "                     data of the file to the standard output. Note that it can\n"
-            << "                     take some time for Metascan Online to scan this file,\n"
+            << "                     take some time for Metadefender Cloud to scan this file,\n"
             << "                     depending on the current load and number of queued scans.\n"
             << "                     Can be repeated multiple times, if you want to scan\n"
             << "                     several files.\n"
@@ -57,7 +57,7 @@ void showHelp()
 
 void showVersion()
 {
-  std::cout << "mso-api-request, version 0.0.7, 2016-02-21\n";
+  std::cout << "mso-api-request, version 0.0.8, 2016-03-22\n";
 }
 
 int main(int argc, char ** argv)
@@ -224,7 +224,7 @@ int main(int argc, char ** argv)
   if (key.empty())
   {
     std::cout << "Error: This program won't work properly without an API key! "
-              << "Use --apikey to specify the Metascan Online API key."
+              << "Use --apikey to specify the MetaDefender Cloud API key."
               << std::endl;
     return scantool::rcInvalidParameter;
   }

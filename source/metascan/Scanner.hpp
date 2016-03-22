@@ -36,7 +36,7 @@ class Scanner: public scantool::Scanner
   public:
     /** \brief default constructor
      *
-     * \param apikey   the Metascan Online API key used for scanning
+     * \param apikey   the Metadefender Cloud API key used for scanning
      * \param honourTimeLimits   whether or not time limits should be honoured
      * \param silent             whether or not output to the standard output should be reduced
      * \param certFile           path to certificate file to use in peer verification
@@ -66,7 +66,7 @@ class Scanner: public scantool::Scanner
 
     /** \brief sets a new API key
      *
-     * \param apikey   the Metascan Online API key used for scanning
+     * \param apikey   the Metadefender Cloud API key used for scanning
      */
     void setApiKey(const std::string& apikey);
 
@@ -121,7 +121,7 @@ class Scanner: public scantool::Scanner
      */
     virtual int64_t maxScanSize() const override;
   private:
-    std::string m_apikey; /**< holds the Metascan Online API key */
+    std::string m_apikey; /**< holds the Metadefender Cloud API key */
     std::string m_certFile; /**< certificate file for peer verification */
 }; //class
 

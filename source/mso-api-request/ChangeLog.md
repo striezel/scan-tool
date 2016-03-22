@@ -1,5 +1,10 @@
 # ChangeLog for mso-api-request
 
+## Version 0.0.8 (2016-03-22)
+  - raise file size limit for scans to 140 MB
+  - use new *.metadefender.com URLs instead of old *.metascan-online.com URLs
+    for scanner requests
+
 ## Version 0.0.7 (2016-02-21)
   - add option to set custom certificate file for peer verification, similar
     to curl's --cacert option

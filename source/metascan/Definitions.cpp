@@ -28,7 +28,7 @@ namespace metascan
 
 bool isInfected(const int scan_result_i)
 {
-  //See https://www.metascan-online.com/public-api#!/definitions
+  //See https://www.metadefender.com/public-api#!/definitions
   switch (scan_result_i)
   {
     case 1: //"infected"

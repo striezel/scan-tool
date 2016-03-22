@@ -61,14 +61,14 @@ void Scanner::setApiKey(const std::string& apikey)
 
 std::chrono::milliseconds Scanner::timeBetweenConsecutiveScanRequests() const
 {
-  /* Metascan Online allows 25 file scans per hour,
+  /* Metadefender Cloud allows 25 file scans per hour,
      i.e. one scan every 144 seconds. */
   return std::chrono::milliseconds(144000);
 }
 
 std::chrono::milliseconds Scanner::timeBetweenConsecutiveHashLookups() const
 {
-  /* Metascan Online allows 1500 hash lookups per hour,
+  /* Metadefender Cloud allows 1500 hash lookups per hour,
      i.e. one request every 2.4 seconds. */
   return std::chrono::milliseconds(2400);
 }
@@ -83,7 +83,7 @@ bool Scanner::getReport(const std::string& resource, Report& report)
   waitForHashLookupLimitExpiration();
   //send request via cURL
   Curly cURL;
-  cURL.setURL("https://hashlookup.metascan-online.com/v2/hash/"+resource);
+  cURL.setURL("https://hashlookup.metadefender.com/v2/hash/"+resource);
   //add API key
   cURL.addHeader("apikey: "+m_apikey);
   //indicate that we want more meta data for the file
@@ -166,7 +166,7 @@ bool Scanner::rescan(const std::string& file_id, ScanData& scan_data)
   waitForScanLimitExpiration();
   //send request via cURL
   Curly cURL;
-  cURL.setURL("https://scan.metascan-online.com/v2/rescan/" + file_id);
+  cURL.setURL("https://scan.metadefender.com/v2/rescan/" + file_id);
   //add API key
   cURL.addHeader("apikey: "+m_apikey);
 
@@ -275,7 +275,7 @@ bool Scanner::scan(const std::string& filename, ScanData& scan_data)
 
   //send request
   Curly cURL;
-  cURL.setURL("https://scan.metascan-online.com/v2/file");
+  cURL.setURL("https://scan.metadefender.com/v2/file");
   cURL.addHeader("apikey: " + m_apikey);
   //scope for "basename" stuff
   {
@@ -391,9 +391,9 @@ bool Scanner::scan(const std::string& filename, ScanData& scan_data)
 
 int64_t Scanner::maxScanSize() const
 {
-  //unknown? Assume 50 MB for starters.
+  //Assume 140 MB like on the web interface.
   #warning TODO: Find out where the real limit is.
-  return 50*1024*1024;
+  return 140*1024*1024;
 }
 
 } //namespace
