@@ -53,6 +53,8 @@
 		<Unit filename="../../libthoro/hash/sha256/MessageSource.hpp" />
 		<Unit filename="../../libthoro/hash/sha256/sha256.cpp" />
 		<Unit filename="../../libthoro/hash/sha256/sha256.hpp" />
+		<Unit filename="../Configuration.cpp" />
+		<Unit filename="../Configuration.hpp" />
 		<Unit filename="../Curly.cpp" />
 		<Unit filename="../Curly.hpp" />
 		<Unit filename="../Engine.cpp" />

@@ -7,6 +7,8 @@ project(honeypottery)
 
 set(honeypottery_sources
     ../../libthoro/common/StringUtils.cpp
+    ../../libthoro/filesystem/file.cpp
+    ../Configuration.cpp
     ../Curly.cpp
     ../Engine.cpp
     ../Report.cpp

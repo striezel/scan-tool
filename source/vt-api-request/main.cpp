@@ -22,6 +22,8 @@
 #include <string>
 #include <thread>
 #include <unordered_set>
+#include "../../libthoro/filesystem/file.hpp"
+#include "../Configuration.hpp"
 #include "../Curly.hpp"
 #include "../ReturnCodes.hpp"
 #include "../virustotal/ScannerV2.hpp"
@@ -36,6 +38,10 @@ void showHelp()
             << "  --version        - displays the version of the program and quits\n"
             << "  -v               - same as --version\n"
             << "  --apikey KEY     - sets the API key for VirusTotal\n"
+            << "  --keyfile FILE   - read the API key for VirusTotal from the file FILE.\n"
+            << "                     This way the API key will not appear in the process list\n"
+            << "                     and/or shell history. However, the file name can still be\n"
+            << "                     seen, so proper file permissions should be set.\n"
             << "  --report ID      - request the report with the given ID from VirusTotal.\n"
             << "                     Can occur multiple times, if more than one report shall\n"
             << "                     be requested.\n"
@@ -63,7 +69,7 @@ void showHelp()
 
 void showVersion()
 {
-  std::cout << "vt-api-request, version 1.0.2, 2015-12-30\n";
+  std::cout << "vt-api-request, version 1.0.3, 2016-03-24\n";
 }
 
 int main(int argc, char ** argv)
@@ -106,7 +112,9 @@ int main(int argc, char ** argv)
           {
             key = std::string(argv[i+1]);
             ++i; //skip next parameter, because it's used as API key already
+            #ifdef SCAN_TOOL_DEBUG
             std::cout << "API key was set to \"" << key << "\"." << std::endl;
+            #endif
           }
           else
           {
@@ -115,6 +123,54 @@ int main(int argc, char ** argv)
             return scantool::rcInvalidParameter;
           }
         }//API key
+        else if (param=="--keyfile")
+        {
+          //only one key required
+          if (!key.empty())
+          {
+            std::cout << "Error: API key was already specified!" << std::endl;
+            return scantool::rcInvalidParameter;
+          }
+          //enough parameters?
+          if ((i+1 < argc) and (argv[i+1] != nullptr))
+          {
+            const std::string keyfile = std::string(argv[i+1]);
+            if (!libthoro::filesystem::file::exists(keyfile))
+            {
+              std::cout << "Error: The specified key file " << keyfile
+                        << " does not exist!" << std::endl;
+              /* Technically it's a file error, but let's return "invalid
+                 parameter" here, because the file name parameter is wrong/
+                 invalid.
+              */
+              return scantool::rcInvalidParameter;
+            } //if file does not exist
+            Configuration conf;
+            if (!conf.loadFromFile(keyfile))
+            {
+              std::cout << "Error: Could not load key from file " << keyfile
+                        << "!" << std::endl;
+              return scantool::rcFileError;
+            }
+            if (conf.apikey().empty())
+            {
+              std::cout << "Error: Key file " << keyfile << " does not contain"
+                        << " an API key!" << std::endl;
+              return scantool::rcFileError;
+            }
+            key = conf.apikey();
+            ++i; //Skip next parameter, because it's used as key file already.
+            #ifdef SCAN_TOOL_DEBUG
+            std::cout << "API key was set to \"" << key << "\"." << std::endl;
+            #endif
+          }
+          else
+          {
+            std::cout << "Error: You have to enter a file name after \""
+                      << param <<"\"." << std::endl;
+            return scantool::rcInvalidParameter;
+          }
+        } //API key from file
         else if ((param=="--report") or (param=="--resource"))
         {
           //enough parameters?

@@ -1,5 +1,11 @@
 # ChangeLog for vt-api-request
 
+## Version 1.0.3 (2016-03-24)
+  - add option to read the API key from a file
+    This way the API key will not appear in the process list and/or shell
+    history. However, the file name can still be  seen, so proper file
+    permissions should be set to avoid that other users can read the API key.
+
 ## Version 1.0.2 (2015-12-30)
   - fix spelling + add missing whitespace in text message
 

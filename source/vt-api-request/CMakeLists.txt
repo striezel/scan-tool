@@ -11,6 +11,7 @@ set(vt-api-request_sources
     ../../libthoro/filesystem/file.cpp
     ../../libthoro/hash/sha256/sha256.cpp
     ../virustotal/CacheManagerV2.cpp
+    ../Configuration.cpp
     ../Curly.cpp
     ../Engine.cpp
     ../virustotal/EngineV2.cpp

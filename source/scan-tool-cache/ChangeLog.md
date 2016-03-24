@@ -1,5 +1,11 @@
 # ChangeLog for scan-tool-cache
 
+## Version 0.32 (2016-03-24)
+  - add option to read the API key from a file
+    This way the API key will not appear in the process list and/or shell
+    history. However, the file name can still be  seen, so proper file
+    permissions should be set to avoid that other users can read the API key.
+
 ## Version 0.31 (2016-03-05)
   - add option to set a custom location for cache directory
 

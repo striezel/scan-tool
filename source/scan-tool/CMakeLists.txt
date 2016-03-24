@@ -18,6 +18,7 @@ set(scan-tool_sources
     ../virustotal/ReportV2.cpp
     ../virustotal/ReportBase.cpp
     ../virustotal/ScannerV2.cpp
+    ../Configuration.cpp
     ../Curly.cpp
     ../Engine.cpp
     ../Report.cpp
