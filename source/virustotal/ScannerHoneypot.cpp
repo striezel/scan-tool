@@ -181,6 +181,12 @@ bool ScannerHoneypot::getReport(const std::string& scan_id, Report& report)
   {
     std::cerr << "Error in ScannerHoneypot::getReport(): Unexpected HTTP status code "
               << cURL.getResponseCode() << "!" << std::endl;
+    const auto & rh = cURL.responseHeaders();
+    std::cerr << "HTTP response headers (" << rh.size() << "):" << std::endl;
+    for (const auto & s : rh)
+    {
+      std::cerr << "    " << s << std::endl;
+    }
     return false;
   }
   #ifdef SCAN_TOOL_DEBUG
@@ -248,6 +254,12 @@ bool ScannerHoneypot::scan(const std::string& filename, std::string& scan_id)
   {
     std::cerr << "Error in ScannerHoneypot::scan(): Unexpected HTTP status code "
               << cURL.getResponseCode() << "!" << std::endl;
+    const auto & rh = cURL.responseHeaders();
+    std::cerr << "HTTP response headers (" << rh.size() << "):" << std::endl;
+    for (const auto & s : rh)
+    {
+      std::cerr << "    " << s << std::endl;
+    }
     return false;
   }
 

@@ -139,6 +139,12 @@ bool ScannerV2::getReport(const std::string& resource, Report& report, const boo
     {
       std::cerr << "Error in ScannerV2::getReport(): Unexpected HTTP status code "
                 << cURL.getResponseCode() << "!" << std::endl;
+      const auto & rh = cURL.responseHeaders();
+      std::cerr << "HTTP response headers (" << rh.size() << "):" << std::endl;
+      for (const auto & s : rh)
+      {
+        std::cerr << "    " << s << std::endl;
+      }
       return false;
     }
     #ifdef SCAN_TOOL_DEBUG
@@ -232,6 +238,12 @@ bool ScannerV2::rescan(const std::string& resource, std::string& scan_id)
   {
     std::cerr << "Error in ScannerV2::rescan(): Unexpected HTTP status code "
               << cURL.getResponseCode() << "!" << std::endl;
+    const auto & rh = cURL.responseHeaders();
+    std::cerr << "HTTP response headers (" << rh.size() << "):" << std::endl;
+    for (const auto & s : rh)
+    {
+      std::cerr << "    " << s << std::endl;
+    }
     return false;
   }
 
@@ -324,6 +336,12 @@ bool ScannerV2::scan(const std::string& filename, std::string& scan_id)
   {
     std::cerr << "Error in ScannerV2::scan(): Unexpected HTTP status code "
               << cURL.getResponseCode() << "!" << std::endl;
+    const auto & rh = cURL.responseHeaders();
+    std::cerr << "HTTP response headers (" << rh.size() << "):" << std::endl;
+    for (const auto & s : rh)
+    {
+      std::cerr << "    " << s << std::endl;
+    }
     return false;
   }
 
