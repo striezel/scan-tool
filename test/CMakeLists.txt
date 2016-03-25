@@ -21,3 +21,6 @@ add_subdirectory (honeypottery)
 
 # Recurse into subdirectory for the date conversion tests.
 add_subdirectory (date)
+
+# Recurse into subdirectory for configuration test.
+add_subdirectory (configuration)
