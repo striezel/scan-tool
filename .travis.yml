@@ -18,11 +18,7 @@ addons:
     - ubuntu-toolchain-r-test
     packages:
     - g++-4.8
-    - gcc-4.8
-    - iputils-ping
-    - libcurl3-gnutls
     - libcurl4-gnutls-dev
-    - libjsoncpp0
     - libjsoncpp-dev
 notifications:
   email: false
