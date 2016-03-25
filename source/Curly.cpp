@@ -102,7 +102,8 @@ Curly::Curly()
   m_UsePostBody(false),
   m_certFile(""),
   m_LastResponseCode(0),
-  m_LastContentType("")
+  m_LastContentType(""),
+  m_ResponseHeaders(std::vector<std::string>())
 {
 }
 
@@ -245,6 +246,28 @@ bool Curly::perform(std::string& response)
   if (retCode != CURLE_OK)
   {
     std::cerr << "cURL error: setting URL failed!" << std::endl;
+    std::cerr << curl_easy_strerror(retCode) << std::endl;
+    curl_easy_cleanup(handle);
+    return false;
+  }
+
+  //set header read function
+  #ifdef DEBUG_MODE
+  std::clog << "curl_easy_setopt(..., CURLOPT_HEADERFUNCTION, ...)..." << std::endl;
+  #endif
+  retCode = curl_easy_setopt(handle, CURLOPT_HEADERFUNCTION, Curly::headerCallback);
+  if (retCode != CURLE_OK)
+  {
+    std::cerr << "cURL error: setting header function failed!" << std::endl;
+    std::cerr << curl_easy_strerror(retCode) << std::endl;
+    curl_easy_cleanup(handle);
+    return false;
+  }
+  //set header data
+  retCode = curl_easy_setopt(handle, CURLOPT_HEADERDATA, this);
+  if (retCode != CURLE_OK)
+  {
+    std::cerr << "cURL error: setting header data pointer failed!" << std::endl;
     std::cerr << curl_easy_strerror(retCode) << std::endl;
     curl_easy_cleanup(handle);
     return false;
@@ -613,4 +636,68 @@ Curly::VersionData Curly::curlVersion()
   if (data->libssh_version != nullptr)
     vd.ssh = std::string(data->libssh_version);
   return vd;
+}
+
+size_t Curly::headerCallback(char* buffer, size_t size, size_t nitems, void* userdata)
+{
+  const size_t actualSize = size * nitems;
+  if (userdata == nullptr)
+  {
+    std::cerr << "Error: header callback received null pointer as buffer!" << std::endl;
+    return 0;
+  }
+  if (nullptr == userdata)
+  {
+    std::cerr << "Error: header callback received null pointer as user data!" << std::endl;
+    return 0;
+  }
+  Curly* instance = reinterpret_cast<Curly*>(userdata);
+  if (nullptr == instance)
+  {
+    std::cerr << "Error: header callback's user data is not a Curly instance!" << std::endl;
+    return 0;
+  }
+  instance->addResponseHeader(std::string(buffer, actualSize));
+  instance = nullptr;
+  return actualSize;
+}
+
+void Curly::addResponseHeader(std::string respHeader)
+{
+  //erase leading whitespaces
+  std::string::size_type firstNonWhitespace = std::string::npos;
+  {
+    std::string::size_type i;
+    for (i = 0; i < respHeader.size(); ++i)
+    {
+      if (!std::isspace(respHeader[i]))
+      {
+        firstNonWhitespace = i;
+        break;
+      }
+    } //for
+  } //scope for i
+  respHeader.erase(0, firstNonWhitespace);
+  //erase trailing whitespaces
+  std::string::size_type lastNonWhitespace = std::string::npos;
+  int si;
+  for (si = respHeader.size() -1; si >= 0; --si)
+  {
+    if (!std::isspace(respHeader[si]))
+    {
+      lastNonWhitespace = si;
+      break;
+    }
+  } //for
+  if ((std::string::npos != lastNonWhitespace) && (lastNonWhitespace + 1 < respHeader.size()))
+    respHeader.erase(lastNonWhitespace+1);
+
+  //only add non-empty headers
+  if (!respHeader.empty())
+    m_ResponseHeaders.push_back(respHeader);
+}
+
+const std::vector<std::string>& Curly::responseHeaders() const
+{
+  return m_ResponseHeaders;
 }

@@ -202,7 +202,36 @@ class Curly
      *          library is too old to provide version information about itself.
      */
     static VersionData curlVersion();
+
+
+    /** \brief gets the list of header lines that were returned by the request
+     *
+     * \return Returns a vector of strings, one string for each header line.
+     * \remarks This list will only be filled, after perform() was called and
+     *          was successful. Otherwise, the list will be empty or contain
+     *          header data from the previous request.
+     *
+     *          Do not mix this up with the headers that were sent (by using
+     *          the addHeader() function), these are the response's headers.
+     */
+    const std::vector<std::string>& responseHeaders() const;
   private:
+    /** \brief callback for response headers
+     *
+     * \param buffer   data of header (might not be NUL-terminated)
+     * \param size     size of an item
+     * \param nitems   number of items
+     * \param userdata pointer to user data (if any)
+     * \return Returns the size of the read data.
+     */
+    static size_t headerCallback(char* buffer, size_t size, size_t nitems, void* userdata);
+
+    /** \brief adds a new header to the list of response headers
+     *
+     * \param respHeader   the new header line
+     */
+    void addResponseHeader(std::string respHeader);
+
     std::string m_URL; /**< URL for the request */
     std::unordered_map<std::string, std::string> m_PostFields; /**< post fields; key = name; value = field's value */
     std::unordered_map<std::string, std::string> m_Files; /**< added files; key = field name, value = file name */
@@ -210,8 +239,9 @@ class Curly
     std::string m_PostBody; /**< plain post body */
     bool m_UsePostBody; /**< whether to use the explicit post body */
     std::string m_certFile; /**< the path to the certificate file to verify the peer with */
-    long m_LastResponseCode;
-    std::string m_LastContentType;
+    long m_LastResponseCode; /**< response code of the last request */
+    std::string m_LastContentType; /**< string that holds the last content type */
+    std::vector<std::string> m_ResponseHeaders; /**< response headers returned by the last request */
 }; //class Curly
 
 #endif // SCANTOOL_CURLY_HPP
