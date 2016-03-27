@@ -44,7 +44,7 @@ int ScanStrategyDefault::scan(ScannerV2& scanVT, const std::string& fileName,
               std::map<std::string, ScannerV2::Report>& mapHashToReport,
               std::map<std::string, std::string>& mapFileToHash,
               std::unordered_map<std::string, std::string>& queued_scans,
-              std::chrono::time_point<std::chrono::system_clock>& lastQueuedScanTime,
+              std::chrono::time_point<std::chrono::steady_clock>& lastQueuedScanTime,
               std::vector<std::pair<std::string, int64_t> >& largeFiles)
 {
   const SHA256::MessageDigest fileHash = SHA256::computeFromFile(fileName);
