@@ -63,17 +63,6 @@ int main()
   }
   std::cout << std::endl;
 
-  if (headers.size() >= 12)
-  {
-    std::cout << "headers[11] is ";
-    int i;
-    for(i = 0; i< headers[11].size(); ++i)
-    {
-      std::cout << (int) (headers[11].at(i)) << " ";
-    }
-    std::cout << std::endl;
-  }
-
   //check for "Key: value"
   std::vector<std::string>::const_iterator iter = std::find(headers.begin(), headers.end(), "Key: value");
   if (iter == headers.end())
