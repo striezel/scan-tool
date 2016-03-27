@@ -30,6 +30,7 @@
 #elif defined(_WIN32)
 #include <Windows.h>
 #endif
+#include "ScanStrategyDefault.hpp"
 #include "summary.hpp"
 #include "../Configuration.hpp"
 #include "../Curly.hpp"
@@ -92,7 +93,7 @@ std::map<std::string, scantool::virustotal::ScannerV2::Report> mapHashToReport;
 std::map<std::string, std::string> mapFileToHash = std::map<std::string, std::string>();
 //list of queued scan requests; key = scan_id, value = file name
 std::unordered_map<std::string, std::string> queued_scans = std::unordered_map<std::string, std::string>();
-//list of files that exceed the file size for scans; ; first = file name, second = file size in octets
+//list of files that exceed the file size for scans; first = file name, second = file size in octets
 std::vector<std::pair<std::string, int64_t> > largeFiles;
 // for statistics: total number of files
 std::set<std::string>::size_type totalFiles;
@@ -585,118 +586,19 @@ int main(int argc, char ** argv)
   //time when last scan was queued
   std::chrono::steady_clock::time_point lastQueuedScanTime = std::chrono::steady_clock::now() - std::chrono::hours(24);
 
+  scantool::virustotal::ScanStrategyDefault strategy;
+
   //iterate over all files for scan requests
   for(const std::string& i : files_scan)
   {
-    const SHA256::MessageDigest fileHash = SHA256::computeFromFile(i);
-    if (fileHash.isNull())
-    {
-      std::cout << "Error: Could not determine SHA256 hash of " << i
-                << "!" << std::endl;
-      return scantool::rcFileError;
-    } //if no hash
-    const std::string hashString = fileHash.toHexString();
-    scantool::virustotal::ScannerV2::Report report;
-    if (scanVT.getReport(hashString, report, useRequestCache, requestCacheDirVT))
-    {
-      if (report.successfulRetrieval())
-      {
-        //got report
-        if (report.positives == 0)
-        {
-          if (!silent)
-            std::cout << i << " OK" << std::endl;
-        }
-        else if (report.positives <= maybeLimit)
-        {
-          if (!silent)
-            std::clog << i << " might be infected, got " << report.positives
-                      << " positives." << std::endl;
-          //add file to list of infected files
-          mapFileToHash[i] = hashString;
-          mapHashToReport[hashString] = report;
-        }
-        else if (report.positives > maybeLimit)
-        {
-          if (!silent)
-            std::clog << i << " is INFECTED, got " << report.positives
-                      << " positives." << std::endl;
-          //add file to list of infected files
-          mapFileToHash[i] = hashString;
-          mapHashToReport[hashString] = report;
-        } //else (file is probably infected)
-
-        //check, if rescan is required because of age
-        if (report.hasTime_t()
-            && (std::chrono::system_clock::from_time_t(report.scan_date_t) < ageLimit))
-        {
-          std::string scan_id = "";
-          if (!scanVT.rescan(hashString, scan_id))
-          {
-            std::cerr << "Error: Could not initiate rescan for file " << i
-                      << "!" << std::endl;
-            return scantool::rcScanError;
-          }
-          if (!silent)
-            std::clog << "Info: " << i << " was queued for re-scan, because "
-                      << "report is from " << report.scan_date
-                      << " and thus it is older than " << maxAgeInDays
-                      << " days. Scan ID for retrieval is " << scan_id
-                      << "." << std::endl;
-          /* Delete a possibly existing cached entry for that file, because
-             it is now potentially outdated, as soon as the next request for
-             that report is performed. */
-          cacheMgr.deleteCachedElement(hashString);
-        } //if rescan because of old report
-      } //if file was in report database
-      else if (report.notFound())
-      {
-        //no data present for file
-        const int64_t fileSize = libthoro::filesystem::file::getSize64(i);
-        if ((fileSize <= scanVT.maxScanSize()) && (fileSize >= 0))
-        {
-          std::string scan_id = "";
-          if (!scanVT.scan(i, scan_id))
-          {
-            std::cerr << "Error: Could not submit file " << i << " for scanning."
-                      << std::endl;
-            return scantool::rcScanError;
-          }
-          //remember time of last scan request
-          lastQueuedScanTime = std::chrono::steady_clock::now();
-          //add scan ID to list of queued scans for later retrieval
-          queued_scans[scan_id] = i;
-          if (!silent)
-            std::clog << "Info: File " << i << " was queued for scan. Scan ID is "
-                      << scan_id << "." << std::endl;
-          //delete previous report, because it contains no relevant data
-          cacheMgr.deleteCachedElement(hashString);
-        } //if file size is below limit
-        else
-        {
-          //File is too large.
-          if (!silent)
-            std::cout << "Warning: File " << i << " is "
-                      << libthoro::filesystem::getSizeString(fileSize)
-                      << " and exceeds maximum file size for scan! "
-                      << "File will be skipped." << std::endl;
-          //save file name + size for later
-          largeFiles.push_back(std::pair<std::string, int64_t>(i, fileSize));
-        } //else (file too large)
-      } //else if report not found
-      else
-      {
-        //unexpected response code
-        std::cerr << "Error: Got unexpected response code ("<<report.response_code
-                  << ") for report of file " << i << "." << std::endl;
-        return scantool::rcScanError;
-      }
-    }
-    else
-    {
-      if (!silent)
-        std::clog << "Warning: Could not get report for file " << i << "!" << std::endl;
-    }
+    //apply strategy to current file
+    const int exitCode = strategy.scan(scanVT, i, cacheMgr, requestCacheDirVT,
+        useRequestCache, silent, maybeLimit, maxAgeInDays, ageLimit,
+        mapHashToReport, mapFileToHash, queued_scans, lastQueuedScanTime,
+        largeFiles);
+    //exit early, if an error occurred
+    if (exitCode != 0)
+      return exitCode;
     // increase number of processed files
     ++processedFiles;
   } //for (range-based)

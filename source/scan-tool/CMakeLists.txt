@@ -24,6 +24,7 @@ set(scan-tool_sources
     ../Report.cpp
     ../Scanner.cpp
     ../StringToTimeT.cpp
+    ScanStrategyDefault.cpp
     summary.cpp
     main.cpp)
 

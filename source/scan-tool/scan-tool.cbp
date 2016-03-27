@@ -76,6 +76,11 @@
 		<Unit filename="../virustotal/ReportV2.hpp" />
 		<Unit filename="../virustotal/ScannerV2.cpp" />
 		<Unit filename="../virustotal/ScannerV2.hpp" />
+		<Unit filename="ScanStrategy.hpp" />
+		<Unit filename="ScanStrategyDefault.cpp" />
+		<Unit filename="ScanStrategyDefault.hpp" />
+		<Unit filename="Strategies.cpp" />
+		<Unit filename="Strategies.hpp" />
 		<Unit filename="main.cpp" />
 		<Unit filename="summary.cpp" />
 		<Unit filename="summary.hpp" />
