@@ -79,6 +79,8 @@
 		<Unit filename="ScanStrategy.hpp" />
 		<Unit filename="ScanStrategyDefault.cpp" />
 		<Unit filename="ScanStrategyDefault.hpp" />
+		<Unit filename="ScanStrategyDirectScan.cpp" />
+		<Unit filename="ScanStrategyDirectScan.hpp" />
 		<Unit filename="Strategies.cpp" />
 		<Unit filename="Strategies.hpp" />
 		<Unit filename="main.cpp" />
