@@ -34,6 +34,8 @@ std::string strategyToString(const Strategy s)
          return "none";
     case Strategy::Default:
          return "default";
+    case Strategy::DirectScan:
+         return "direct";
     //fallback for future, unknown values
     default:
          return "none";
@@ -44,6 +46,8 @@ Strategy stringToStrategy(const std::string& str)
 {
   if (str == "default")
     return Strategy::Default;
+  if ((str == "direct") || (str == "directscan") || (str == "scan"))
+    return Strategy::DirectScan;
   //no matching strategy found
   return Strategy::None;
 }

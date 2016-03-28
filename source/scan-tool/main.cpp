@@ -30,7 +30,9 @@
 #elif defined(_WIN32)
 #include <Windows.h>
 #endif
+#include "Strategies.hpp"
 #include "ScanStrategyDefault.hpp"
+#include "ScanStrategyDirectScan.hpp"
 #include "summary.hpp"
 #include "../Configuration.hpp"
 #include "../Curly.hpp"
@@ -77,12 +79,18 @@ void showHelp()
             << "                     effect, if the --cache option is specified, too. If no\n"
             << "                     cache directory is specified, the program will try to use\n"
             << "                     a preset directory (usually ~/.scan-tool/vt-cache, as in\n"
-            << "                     earlier versions).\n";
+            << "                     earlier versions).\n"
+            << "  --strategy STRA  - sets the scan strategy to STRA. Possible strategies are:\n"
+            << "                     default - checks for existing reports before submitting a\n"
+            << "                               file for scan to VirusTotal\n"
+            << "                     direct - submits files directly to VirusTotal and gets\n"
+            << "                              the scan results after all files have been sub-\n"
+            << "                              mitted.\n";
 }
 
 void showVersion()
 {
-  std::cout << "scan-tool, version 0.32, 2016-03-24\n";
+  std::cout << "scan-tool, version 0.33, 2016-03-28\n";
 }
 
 /* Four variables that will be used in main() but also in signal handling
@@ -195,6 +203,8 @@ int main(int argc, char ** argv)
   std::string requestCacheDirVT = "";
   //files that will be checked
   std::set<std::string> files_scan = std::set<std::string>();
+  //scan strategy
+  scantool::virustotal::Strategy selectedStrategy = scantool::virustotal::Strategy::None;
 
   if ((argc > 1) and (argv != nullptr))
   {
@@ -421,6 +431,38 @@ int main(int argc, char ** argv)
             return scantool::rcInvalidParameter;
           }
         } //age limit
+        else if ((param=="--strategy") or (param=="--logic"))
+        {
+          //only one strategy is possible
+          if (selectedStrategy != scantool::virustotal::Strategy::None)
+          {
+            std::cout << "Error: Scan strategy was already specified!" << std::endl;
+            return scantool::rcInvalidParameter;
+          }
+          //enough parameters?
+          if ((i+1 < argc) and (argv[i+1] != nullptr))
+          {
+            selectedStrategy = scantool::virustotal::stringToStrategy(std::string(argv[i+1]));
+            //Is it a recognized strategy?
+            if (selectedStrategy == scantool::virustotal::Strategy::None)
+            {
+              std::cout << "Error: \"" << std::string(argv[i+1]) << "\" is not"
+                        << " a known scan strategy." << std::endl;
+              return scantool::rcInvalidParameter;
+            }
+            ++i; //Skip next parameter, because it's used as strategy already.
+            if (!silent)
+              std::cout << "Info: Scan strategy was set to \""
+                        << scantool::virustotal::strategyToString(selectedStrategy)
+                        << "\"." << std::endl;
+          }
+          else
+          {
+            std::cout << "Error: You have to enter some text after \""
+                      << param <<"\"." << std::endl;
+            return scantool::rcInvalidParameter;
+          }
+        } //scan strategy
         //use request cache
         else if ((param=="--cache") or (param=="--request-cache") or (param=="--cache-requests"))
         {
@@ -586,13 +628,25 @@ int main(int argc, char ** argv)
   //time when last scan was queued
   std::chrono::steady_clock::time_point lastQueuedScanTime = std::chrono::steady_clock::now() - std::chrono::hours(24);
 
-  scantool::virustotal::ScanStrategyDefault strategy;
+  std::unique_ptr<scantool::virustotal::ScanStrategy> strategy = nullptr;
+  switch (selectedStrategy)
+  {
+    case scantool::virustotal::Strategy::DirectScan:
+         strategy = std::unique_ptr<scantool::virustotal::ScanStrategyDirectScan>(new scantool::virustotal::ScanStrategyDirectScan());
+         break;
+    case scantool::virustotal::Strategy::Default:
+    case scantool::virustotal::Strategy::None:
+    default:
+         //Use default strategy in all other cases.
+         strategy = std::unique_ptr<scantool::virustotal::ScanStrategyDefault>(new scantool::virustotal::ScanStrategyDefault());
+         break;
+  } //switch
 
   //iterate over all files for scan requests
   for(const std::string& i : files_scan)
   {
     //apply strategy to current file
-    const int exitCode = strategy.scan(scanVT, i, cacheMgr, requestCacheDirVT,
+    const int exitCode = strategy->scan(scanVT, i, cacheMgr, requestCacheDirVT,
         useRequestCache, silent, maybeLimit, maxAgeInDays, ageLimit,
         mapHashToReport, mapFileToHash, queued_scans, lastQueuedScanTime,
         largeFiles);

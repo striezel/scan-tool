@@ -1,5 +1,10 @@
 # ChangeLog for scan-tool
 
+## Version 0.33 (2016-03-28)
+  - add second scan strategy
+  - current strategies: "default" (usual scan strategy as before), and
+    "direct" (submits/scans file first, regardless of existing reports)
+
 ## Version 0.32 (2016-03-24)
   - add option to read the API key from a file
     This way the API key will not appear in the process list and/or shell
