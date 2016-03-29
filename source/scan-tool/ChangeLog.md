@@ -1,5 +1,9 @@
 # ChangeLog for scan-tool
 
+## Version 0.34 (2016-03-29)
+  - add scan strategy "no-rescan" which will never perform rescans on files
+    that have old/outdated reports (rest works like default strategy)
+
 ## Version 0.33 (2016-03-28)
   - add second scan strategy
   - current strategies: "default" (usual scan strategy as before), and

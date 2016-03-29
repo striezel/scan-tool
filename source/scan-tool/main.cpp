@@ -33,6 +33,7 @@
 #include "Strategies.hpp"
 #include "ScanStrategyDefault.hpp"
 #include "ScanStrategyDirectScan.hpp"
+#include "ScanStrategyNoRescan.hpp"
 #include "summary.hpp"
 #include "../Configuration.hpp"
 #include "../Curly.hpp"
@@ -85,12 +86,14 @@ void showHelp()
             << "                               file for scan to VirusTotal\n"
             << "                     direct - submits files directly to VirusTotal and gets\n"
             << "                              the scan results after all files have been sub-\n"
-            << "                              mitted.\n";
+            << "                              mitted.\n"
+            << "                     no-rescan - like default, but will never do rescans for\n"
+            << "                                 old reports.\n";
 }
 
 void showVersion()
 {
-  std::cout << "scan-tool, version 0.33, 2016-03-28\n";
+  std::cout << "scan-tool, version 0.34, 2016-03-29\n";
 }
 
 /* Four variables that will be used in main() but also in signal handling
@@ -633,6 +636,9 @@ int main(int argc, char ** argv)
   {
     case scantool::virustotal::Strategy::DirectScan:
          strategy = std::unique_ptr<scantool::virustotal::ScanStrategyDirectScan>(new scantool::virustotal::ScanStrategyDirectScan());
+         break;
+    case scantool::virustotal::Strategy::NoRescan:
+         strategy = std::unique_ptr<scantool::virustotal::ScanStrategyNoRescan>(new scantool::virustotal::ScanStrategyNoRescan());
          break;
     case scantool::virustotal::Strategy::Default:
     case scantool::virustotal::Strategy::None:

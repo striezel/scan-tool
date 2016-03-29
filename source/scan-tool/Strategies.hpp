@@ -30,7 +30,7 @@ namespace virustotal
 {
 
 ///enumeration class for scan strategies
-enum class Strategy { None, Default, DirectScan };
+enum class Strategy { None, Default, DirectScan, NoRescan };
 
 
 /** \brief converts strategy to a simple string
