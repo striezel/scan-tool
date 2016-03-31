@@ -1,5 +1,8 @@
 # ChangeLog for scan-tool-cache
 
+## Version 0.35 (2016-03-31)
+  - show number of old reports in statistics, too
+
 ## Version 0.32 (2016-03-24)
   - add option to read the API key from a file
     This way the API key will not appear in the process list and/or shell

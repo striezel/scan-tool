@@ -75,7 +75,7 @@ void showHelp()
 
 void showVersion()
 {
-  std::cout << "scan-tool-cache, version 0.32, 2016-03-24\n";
+  std::cout << "scan-tool-cache, version 0.35, 2016-03-29\n";
 }
 
 int main(int argc, char ** argv)
@@ -368,9 +368,19 @@ int main(int argc, char ** argv)
   //statistics
   if (op == scantool::virustotal::CacheOperation::Statistics)
   {
+    //set maximum report age, if it was not set
+    if (maxAgeInDays <= 0)
+    {
+      maxAgeInDays = cDefaultMaxAge;
+      if (!silent)
+        std::cout << "Information: Maximum report age was set to " << maxAgeInDays
+                  << " days." << std::endl;
+    } //if
+    const auto ageLimit = std::chrono::system_clock::now() - std::chrono::hours(24*maxAgeInDays);
+
     scantool::virustotal::CacheManagerV2 cacheMgr(requestCacheDirVT);
     scantool::virustotal::CacheIteration ci;
-    scantool::virustotal::IterationOperationStatistics opStats;
+    scantool::virustotal::IterationOperationStatistics opStats(ageLimit);
     std::cout << "Collecting information, this may take a while ..." << std::endl;
     if (!ci.iterate(cacheMgr.getCacheDirectory(), opStats))
     {
@@ -381,6 +391,7 @@ int main(int argc, char ** argv)
               << "Total number of files: " << opStats.total() << std::endl
               << "Files that failed to parse: " << opStats.unparsable() << std::endl
               << "Files not found by VirusTotal: " << opStats.unknown() << std::endl
+              << "Old reports (>" << maxAgeInDays << " days): " << opStats.oldReports() << std::endl
               << "Oldest cached scan's date: ";
     if (opStats.oldest() != static_cast<std::time_t>(-1))
     {

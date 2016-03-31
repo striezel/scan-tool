@@ -28,25 +28,27 @@ namespace scantool
 namespace virustotal
 {
 
-IterationOperationStatistics::IterationOperationStatistics()
-: m_Total(0),
-  m_Unparsable(0),
-  m_Unknown(0),
-  m_Oldest(static_cast<std::time_t>(-1)),
-  m_Newest(static_cast<std::time_t>(-1))
+IterationOperationStatistics::IterationOperationStatistics(const std::chrono::system_clock::time_point& ageLimit)
+: m_total(0),
+  m_unparsable(0),
+  m_unknown(0),
+  m_oldest(static_cast<std::time_t>(-1)),
+  m_newest(static_cast<std::time_t>(-1)),
+  m_ageLimit(ageLimit),
+  m_oldReports(0)
 {
 }
 
 void IterationOperationStatistics::process(const std::string& fileName)
 {
   //increase number of total cached files
-  ++m_Total;
+  ++m_total;
   //check, if file is way too large for a proper cache file
   const auto fileSize = libthoro::filesystem::file::getSize64(fileName);
   if (fileSize >= 1024*1024*2)
   {
     //Several kilobytes are alright, but not megabytes.
-    ++m_Unparsable;
+    ++m_unparsable;
   }
   else
   {
@@ -58,7 +60,7 @@ void IterationOperationStatistics::process(const std::string& fileName)
       const bool success = jsonReader.parse(content, root, false);
       if (!success)
       {
-        ++m_Unparsable;
+        ++m_unparsable;
       } //if parsing failed
       else
       {
@@ -68,60 +70,69 @@ void IterationOperationStatistics::process(const std::string& fileName)
           //response code zero means: file not known to VirusTotal
           if (report.response_code == 0)
           {
-            ++m_Unknown;
+            ++m_unknown;
           } //if report indicates "unknown" file
           else
           {
             if (report.hasTime_t())
             {
-              if (m_Oldest == static_cast<std::time_t>(-1))
-                m_Oldest = report.scan_date_t;
-              else if (report.scan_date_t < m_Oldest)
-                m_Oldest = report.scan_date_t;
-
-              if (m_Newest == static_cast<std::time_t>(-1))
-                m_Newest = report.scan_date_t;
-              else if (report.scan_date_t > m_Newest)
-                m_Newest = report.scan_date_t;
+              //update oldest report date
+              if (m_oldest == static_cast<std::time_t>(-1))
+                m_oldest = report.scan_date_t;
+              else if (report.scan_date_t < m_oldest)
+                m_oldest = report.scan_date_t;
+              //update newest report date
+              if (m_newest == static_cast<std::time_t>(-1))
+                m_newest = report.scan_date_t;
+              else if (report.scan_date_t > m_newest)
+                m_newest = report.scan_date_t;
+              //update count of old reports
+              if (std::chrono::system_clock::from_time_t(report.scan_date_t) < m_ageLimit)
+                ++m_oldReports;
             } //if time_t value is set
           } //else (report contains some info)
         } //if report could be filled from JSON
         else
         {
           //JSON data is probably not a report
-          ++m_Unparsable;
+          ++m_unparsable;
         }
       } //else (JSON parsing was successful)
     } //if file could be read
     else
     {
-      ++m_Unparsable;
+      ++m_unparsable;
     }
   } //else
 }
 
 uint_least32_t IterationOperationStatistics::total() const
 {
-  return m_Total;
+  return m_total;
 }
 
 uint_least32_t IterationOperationStatistics::unparsable() const
 {
-  return m_Unparsable;
+  return m_unparsable;
 }
 
 uint_least32_t IterationOperationStatistics::unknown() const
 {
-  return m_Unknown;
+  return m_unknown;
 }
 std::time_t IterationOperationStatistics::oldest() const
 {
-  return m_Oldest;
+  return m_oldest;
 }
 
 std::time_t IterationOperationStatistics::newest() const
 {
-  return m_Newest;
+  return m_newest;
+}
+
+uint_least32_t IterationOperationStatistics::oldReports() const
+{
+  return m_oldReports;
 }
 
 } //namespace

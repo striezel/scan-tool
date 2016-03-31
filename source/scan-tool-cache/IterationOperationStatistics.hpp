@@ -22,6 +22,7 @@
 #define SCANTOOL_VT_CACHE_ITERATIONOPERATIONSTATISTICS_HPP
 
 #include "IterationOperation.hpp"
+#include <chrono>
 #include <cstdint>
 #include <ctime>
 
@@ -34,8 +35,11 @@ namespace virustotal
 class IterationOperationStatistics: public IterationOperation
 {
   public:
-    ///constructor
-    IterationOperationStatistics();
+    /** \brief constructor
+     *
+     * \param ageLimit the maximum age of reports (older reports will added to the old report count)
+     */
+    IterationOperationStatistics(const std::chrono::system_clock::time_point& ageLimit);
 
 
     /** \brief performs the operation for a single cached element
@@ -51,12 +55,15 @@ class IterationOperationStatistics: public IterationOperation
     uint_least32_t unknown() const;
     std::time_t oldest() const;
     std::time_t newest() const;
+    uint_least32_t oldReports() const;
   private:
-    uint_least32_t m_Total; /**< holds total number of cache files */
-    uint_least32_t m_Unparsable; /**< number of corrupt / unparsable files */
-    uint_least32_t m_Unknown; /**< number of files with no information */
-    std::time_t m_Oldest; /**< oldest scan date */
-    std::time_t m_Newest; /**< newest scan date */
+    uint_least32_t m_total; /**< holds total number of cache files */
+    uint_least32_t m_unparsable; /**< number of corrupt / unparsable files */
+    uint_least32_t m_unknown; /**< number of files with no information */
+    std::time_t m_oldest; /**< oldest scan date */
+    std::time_t m_newest; /**< newest scan date */
+    std::chrono::system_clock::time_point m_ageLimit; /**< age limit for "old" reports */
+    uint_least32_t m_oldReports; /**< number of old reports */
 }; //class
 
 } //namespace
