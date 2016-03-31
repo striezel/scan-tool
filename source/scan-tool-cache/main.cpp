@@ -75,7 +75,7 @@ void showHelp()
 
 void showVersion()
 {
-  std::cout << "scan-tool-cache, version 0.35, 2016-03-29\n";
+  std::cout << "scan-tool-cache, version 0.35b, 2016-03-31\n";
 }
 
 int main(int argc, char ** argv)
@@ -449,17 +449,35 @@ int main(int argc, char ** argv)
     //check pending rescans
     if (!opUpdate.pendingRescans().empty())
     {
+      if (!silent)
+        std::cout << "Info: Checking " << opUpdate.pendingRescans().size()
+                  << " pending rescan(s)..." << std::endl;
       scantool::virustotal::ScannerV2& scanVT = opUpdate.scanner();
       for(const auto & resID : opUpdate.pendingRescans())
       {
+        //get current report
         scantool::virustotal::ReportV2 dummy;
         if (!scanVT.getReport(resID, dummy, false, cacheMgr.getCacheDirectory()))
         {
           std::cout << "Info: Not all pending rescans were finished!" << std::endl;
           break;
         }
+        //info about rescan success
+        if (!silent)
+        {
+          if (dummy.hasTime_t())
+          {
+            if (std::chrono::system_clock::from_time_t(dummy.scan_date_t) > ageLimit)
+              std::cout << "Cached file for resource " << resID
+                        << " was updated after rescan." << std::endl;
+            else
+              std::cout << "Cached file for resource " << resID
+                        << " could not be updated yet, because rescan is still pending."
+                        << std::endl;
+          } //if has time_t
+        } //if not silent
       } //for (range-based)
-    }
+    } //if pending rescans exist
 
     //done
     if (!silent)

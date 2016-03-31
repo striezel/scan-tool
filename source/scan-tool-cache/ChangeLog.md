@@ -1,5 +1,9 @@
 # ChangeLog for scan-tool-cache
 
+## Version 0.35b (2016-03-31)
+  - show more output for pending rescans during cache update operation
+    (but only in non-silent mode)
+
 ## Version 0.35 (2016-03-31)
   - show number of old reports in statistics, too
 
