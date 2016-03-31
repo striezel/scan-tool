@@ -1,5 +1,9 @@
 # ChangeLog for mso-api-request
 
+## Version 0.0.9 (2016-03-31)
+  - fix Report::successfulRetrieval() and Report::notFound() so that report
+    status is now correct in some rarer cases
+
 ## Version 0.0.8 (2016-03-22)
   - raise file size limit for scans to 140 MB
   - use new *.metadefender.com URLs instead of old *.metascan-online.com URLs

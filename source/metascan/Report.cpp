@@ -288,13 +288,13 @@ bool Report::fromJSONRoot(const Json::Value& root)
 bool Report::successfulRetrieval() const
 {
   return (!scan_details.empty() && !scan_all_result_a.empty()
-          && !file_id.empty());
+          && !data_id.empty());
 }
 
 bool Report::notFound() const
 {
   //simple way to check for "not found"
-  return (file_id.empty() || scan_details.empty());
+  return (data_id.empty() || scan_details.empty());
 }
 
 } //namespace

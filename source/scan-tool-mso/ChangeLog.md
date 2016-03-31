@@ -1,12 +1,16 @@
 # ChangeLog for scan-tool-mso
 
+## Version 0.05 (2016-03-31)
+  - fix Report::successfulRetrieval() and Report::notFound() so that report
+    status is now correct in some rarer cases
+
 ## Version 0.04 (2016-03-22)
   - raise file size limit for scans to 140 MB
   - use new *.metadefender.com URLs instead of old *.metascan-online.com URLs
     for scanner requests
 
 ## Version 0.03 (2016-02-24)
-  - add "burst mode" which does not honour time limits /rate limits
+  - add "burst mode" which does not honour time limits / rate limits
 
 ## Version 0.02 (2016-02-20)
   - add option to set custom certificate file for peer verification, similar
