@@ -35,6 +35,7 @@
 #include "ScanStrategyDirectScan.hpp"
 #include "ScanStrategyNoRescan.hpp"
 #include "summary.hpp"
+#include "ZipHandler.hpp"
 #include "../Configuration.hpp"
 #include "../Curly.hpp"
 #include "../virustotal/CacheManagerV2.hpp"
@@ -88,12 +89,14 @@ void showHelp()
             << "                              the scan results after all files have been sub-\n"
             << "                              mitted.\n"
             << "                     no-rescan - like default, but will never do rescans for\n"
-            << "                                 old reports.\n";
+            << "                                 old reports.\n"
+            << "  --zip            - add ZIP file handler which extracts ZIP files and scans\n"
+            << "                     each contained file, too.\n";
 }
 
 void showVersion()
 {
-  std::cout << "scan-tool, version 0.34, 2016-03-29\n";
+  std::cout << "scan-tool, version 0.36, 2016-04-01\n";
 }
 
 /* Four variables that will be used in main() but also in signal handling
@@ -208,6 +211,8 @@ int main(int argc, char ** argv)
   std::set<std::string> files_scan = std::set<std::string>();
   //scan strategy
   scantool::virustotal::Strategy selectedStrategy = scantool::virustotal::Strategy::None;
+  //flag for ZIP handler
+  bool handleZIP = false;
 
   if ((argc > 1) and (argv != nullptr))
   {
@@ -498,6 +503,17 @@ int main(int argc, char ** argv)
             return scantool::rcInvalidParameter;
           }
         } //request cache directory
+        else if (param=="--zip")
+        {
+          //Has the ZIP option already been set?
+          if (handleZIP)
+          {
+            std::cout << "Error: Parameter " << param << " must not occur more than once!"
+                      << std::endl;
+            return scantool::rcInvalidParameter;
+          }
+          handleZIP = true;
+        } //handle ZIP files
         else if ((param == "--integrity") or (param == "-i"))
         {
           //add note about new executable for cache stuff
@@ -651,6 +667,17 @@ int main(int argc, char ** argv)
   //iterate over all files for scan requests
   for(const std::string& i : files_scan)
   {
+    //check ZIP handler
+    if (handleZIP)
+    {
+      scantool::virustotal::ZipHandler zh;
+      const int rc = zh.handle(strategy, scanVT, i, cacheMgr, requestCacheDirVT,
+        useRequestCache, silent, maybeLimit, maxAgeInDays, ageLimit,
+        mapHashToReport, mapFileToHash, queued_scans, lastQueuedScanTime,
+        largeFiles);
+      if (rc != 0)
+        return rc;
+    } //if ZIP handler is active
     //apply strategy to current file
     const int exitCode = strategy->scan(scanVT, i, cacheMgr, requestCacheDirVT,
         useRequestCache, silent, maybeLimit, maxAgeInDays, ageLimit,

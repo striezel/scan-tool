@@ -1,5 +1,10 @@
 # ChangeLog for scan-tool
 
+## Version 0.36 (2016-04-01)
+  - add ZIP handler: if told via command line option --zip, scan-tool will
+    extract ZIP archives and scan each file individually before scanning the
+    ZIP archive itself
+
 ## Version 0.34 (2016-03-29)
   - add scan strategy "no-rescan" which will never perform rescans on files
     that have old/outdated reports (rest works like default strategy)

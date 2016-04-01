@@ -13,6 +13,8 @@ set(scan-tool_sources
     ../../libthoro/hash/sha256/FileSourceUtility.cpp
     ../../libthoro/hash/sha256/MessageSource.cpp
     ../../libthoro/hash/sha256/sha256.cpp
+    ../../libthoro/zip/archive.cpp
+    ../../libthoro/zip/entry.cpp
     ../virustotal/CacheManagerV2.cpp
     ../virustotal/EngineV2.cpp
     ../virustotal/ReportV2.cpp
@@ -29,6 +31,7 @@ set(scan-tool_sources
     ScanStrategyNoRescan.cpp
     Strategies.cpp
     summary.cpp
+    ZipHandler.cpp
     main.cpp)
 
 if (CMAKE_COMPILER_IS_GNUCC)
@@ -58,3 +61,13 @@ if (LIBJSONCPP_FOUND)
 else ()
   message ( FATAL_ERROR "libjsoncpp was not found!" )
 endif (LIBJSONCPP_FOUND)
+
+# find libzip
+set(libzip_DIR "../../cmake/" )
+find_package (libzip)
+if (LIBZIP_FOUND)
+  include_directories(${LIBZIP_INCLUDE_DIRS})
+  target_link_libraries (scan-tool ${LIBZIP_LIBRARIES})
+else ()
+  message ( FATAL_ERROR "libzip was not found!" )
+endif (LIBZIP_FOUND)

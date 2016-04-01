@@ -20,5 +20,6 @@ addons:
     - g++-4.8
     - libcurl4-gnutls-dev
     - libjsoncpp-dev
+    - libzip-dev
 notifications:
   email: false

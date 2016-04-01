@@ -38,6 +38,7 @@
 		<Linker>
 			<Add library="curl" />
 			<Add library="jsoncpp" />
+			<Add library="zip" />
 		</Linker>
 		<Unit filename="../../libthoro/common/StringUtils.cpp" />
 		<Unit filename="../../libthoro/common/StringUtils.hpp" />
@@ -53,6 +54,10 @@
 		<Unit filename="../../libthoro/hash/sha256/MessageSource.hpp" />
 		<Unit filename="../../libthoro/hash/sha256/sha256.cpp" />
 		<Unit filename="../../libthoro/hash/sha256/sha256.hpp" />
+		<Unit filename="../../libthoro/zip/archive.cpp" />
+		<Unit filename="../../libthoro/zip/archive.hpp" />
+		<Unit filename="../../libthoro/zip/entry.cpp" />
+		<Unit filename="../../libthoro/zip/entry.hpp" />
 		<Unit filename="../Configuration.cpp" />
 		<Unit filename="../Configuration.hpp" />
 		<Unit filename="../Curly.cpp" />
@@ -85,6 +90,8 @@
 		<Unit filename="ScanStrategyNoRescan.hpp" />
 		<Unit filename="Strategies.cpp" />
 		<Unit filename="Strategies.hpp" />
+		<Unit filename="ZipHandler.cpp" />
+		<Unit filename="ZipHandler.hpp" />
 		<Unit filename="main.cpp" />
 		<Unit filename="summary.cpp" />
 		<Unit filename="summary.hpp" />
