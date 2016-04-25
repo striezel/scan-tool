@@ -96,7 +96,7 @@ void showHelp()
 
 void showVersion()
 {
-  std::cout << "scan-tool, version 0.36, 2016-04-01\n";
+  std::cout << "scan-tool, version 0.36b, 2016-04-25\n";
 }
 
 /* Four variables that will be used in main() but also in signal handling
@@ -664,20 +664,15 @@ int main(int argc, char ** argv)
          break;
   } //switch
 
+  //check, if user wants ZIP handler
+  if (handleZIP)
+  {
+    strategy->addHandler(std::unique_ptr<scantool::virustotal::ZipHandler>(new scantool::virustotal::ZipHandler));
+  }
+
   //iterate over all files for scan requests
   for(const std::string& i : files_scan)
   {
-    //check ZIP handler
-    if (handleZIP)
-    {
-      scantool::virustotal::ZipHandler zh;
-      const int rc = zh.handle(*strategy, scanVT, i, cacheMgr, requestCacheDirVT,
-        useRequestCache, silent, maybeLimit, maxAgeInDays, ageLimit,
-        mapHashToReport, mapFileToHash, queued_scans, lastQueuedScanTime,
-        largeFiles);
-      if (rc != 0)
-        return rc;
-    } //if ZIP handler is active
     //apply strategy to current file
     const int exitCode = strategy->scan(scanVT, i, cacheMgr, requestCacheDirVT,
         useRequestCache, silent, maybeLimit, maxAgeInDays, ageLimit,

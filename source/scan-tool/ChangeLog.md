@@ -1,5 +1,11 @@
 # ChangeLog for scan-tool
 
+## Version 0.36b (2016-04-25)
+  - refactoring for handlers classes:
+    Handlers are now part of the scan strategy class and get invoked by the
+    scan strategies directly. This allows us to apply handlers recursively,
+    e.g. allows the ZipHandler to scan files in a zip file within a zip file.
+
 ## Version 0.36 (2016-04-01)
   - add ZIP handler: if told via command line option --zip, scan-tool will
     extract ZIP archives and scan each file individually before scanning the

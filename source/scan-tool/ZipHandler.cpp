@@ -23,6 +23,7 @@
 #include "../../libthoro/filesystem/directory.hpp"
 #include "../../libthoro/filesystem/file.hpp"
 #include "../ReturnCodes.hpp"
+#include "ScanStrategy.hpp"
 
 namespace scantool
 {

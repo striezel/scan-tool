@@ -26,6 +26,7 @@ set(scan-tool_sources
     ../Report.cpp
     ../Scanner.cpp
     ../StringToTimeT.cpp
+    ScanStrategy.cpp
     ScanStrategyDefault.cpp
     ScanStrategyDirectScan.cpp
     ScanStrategyNoRescan.cpp

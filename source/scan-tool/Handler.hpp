@@ -18,13 +18,12 @@
  -------------------------------------------------------------------------------
 */
 
-#ifndef SCANTOOL_VT_ZIPHANDLER_HPP
-#define SCANTOOL_VT_ZIPHANDLER_HPP
+#ifndef SCANTOOL_VT_HANDLER_HPP
+#define SCANTOOL_VT_HANDLER_HPP
 
 #include <unordered_map>
 #include "../virustotal/CacheManagerV2.hpp"
 #include "../virustotal/ScannerV2.hpp"
-#include "Handler.hpp"
 
 namespace scantool
 {
@@ -32,9 +31,16 @@ namespace scantool
 namespace virustotal
 {
 
-class ZipHandler: public Handler
+/* forward declaration of ScanStrategy to avoid circular dependency between
+   Handler and ScanStrategy */
+class ScanStrategy;
+
+class Handler
 {
   public:
+    ///virtual destructor (empty)
+    virtual ~Handler() { }
+
     /** \brief scan a given file using the implemented handling mechanism
      *
      * \param strategy  reference to the current scan strategy
@@ -64,11 +70,11 @@ class ZipHandler: public Handler
               std::map<std::string, std::string>& mapFileToHash,
               std::unordered_map<std::string, std::string>& queued_scans,
               std::chrono::time_point<std::chrono::steady_clock>& lastQueuedScanTime,
-              std::vector<std::pair<std::string, int64_t> >& largeFiles) override;
+              std::vector<std::pair<std::string, int64_t> >& largeFiles) = 0;
 }; //class
 
 } //namespace
 
 } //namespace
 
-#endif // SCANTOOL_VT_ZIPHANDLER_HPP
+#endif // SCANTOOL_VT_HANDLER_HPP

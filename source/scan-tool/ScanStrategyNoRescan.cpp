@@ -47,6 +47,13 @@ int ScanStrategyNoRescan::scan(ScannerV2& scanVT, const std::string& fileName,
               std::chrono::time_point<std::chrono::steady_clock>& lastQueuedScanTime,
               std::vector<std::pair<std::string, int64_t> >& largeFiles)
 {
+  //apply any handlers
+  const int handlerCode = applyHandlers(scanVT, fileName, cacheMgr, requestCacheDirVT,
+      useRequestCache, silent, maybeLimit, maxAgeInDays, ageLimit, mapHashToReport,
+      mapFileToHash, queued_scans, lastQueuedScanTime, largeFiles);
+  if (handlerCode != 0)
+    return handlerCode;
+  //go on with no-rescan strategy
   const SHA256::MessageDigest fileHash = SHA256::computeFromFile(fileName);
   if (fileHash.isNull())
   {

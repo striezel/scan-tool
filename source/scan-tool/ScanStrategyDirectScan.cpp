@@ -47,6 +47,13 @@ int ScanStrategyDirectScan::scan(ScannerV2& scanVT, const std::string& fileName,
               std::chrono::time_point<std::chrono::steady_clock>& lastQueuedScanTime,
               std::vector<std::pair<std::string, int64_t> >& largeFiles)
 {
+  //apply any handlers
+  const int handlerCode = applyHandlers(scanVT, fileName, cacheMgr, requestCacheDirVT,
+      useRequestCache, silent, maybeLimit, maxAgeInDays, ageLimit, mapHashToReport,
+      mapFileToHash, queued_scans, lastQueuedScanTime, largeFiles);
+  if (handlerCode != 0)
+    return handlerCode;
+  //go on with normal strategy
   /* Note:
      This function only performs the scan, it does not get the scan report.
      Scan reports will be retrieved afterwards by the main program, because the
