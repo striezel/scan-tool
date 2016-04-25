@@ -30,7 +30,7 @@ namespace scantool
 namespace virustotal
 {
 
-int ZipHandler::handle(std::unique_ptr<scantool::virustotal::ScanStrategy>& strategy,
+int ZipHandler::handle(scantool::virustotal::ScanStrategy& strategy,
               ScannerV2& scanVT, const std::string& fileName,
               CacheManagerV2& cacheMgr, const std::string& requestCacheDirVT, const bool useRequestCache,
               const bool silent, const int maybeLimit, const int maxAgeInDays,
@@ -76,7 +76,7 @@ int ZipHandler::handle(std::unique_ptr<scantool::virustotal::ScanStrategy>& stra
           return scantool::rcFileError;
         } //if extraction failed
         //scan file
-        const int rcStrategy = strategy->scan(scanVT, destFile, cacheMgr, requestCacheDirVT,
+        const int rcStrategy = strategy.scan(scanVT, destFile, cacheMgr, requestCacheDirVT,
         useRequestCache, silent, maybeLimit, maxAgeInDays, ageLimit,
         mapHashToReport, mapFileToHash, queued_scans, lastQueuedScanTime,
         largeFiles);

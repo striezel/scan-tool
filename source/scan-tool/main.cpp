@@ -671,7 +671,7 @@ int main(int argc, char ** argv)
     if (handleZIP)
     {
       scantool::virustotal::ZipHandler zh;
-      const int rc = zh.handle(strategy, scanVT, i, cacheMgr, requestCacheDirVT,
+      const int rc = zh.handle(*strategy, scanVT, i, cacheMgr, requestCacheDirVT,
         useRequestCache, silent, maybeLimit, maxAgeInDays, ageLimit,
         mapHashToReport, mapFileToHash, queued_scans, lastQueuedScanTime,
         largeFiles);

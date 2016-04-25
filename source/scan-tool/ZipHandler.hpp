@@ -55,7 +55,7 @@ class ZipHandler
      * \return Returns zero, if the file could be processed properly.
      * Returns a non-zero exit code, if an error occurred.
      */
-    int handle(std::unique_ptr<scantool::virustotal::ScanStrategy>& strategy,
+    int handle(scantool::virustotal::ScanStrategy& strategy,
               ScannerV2& scanVT, const std::string& fileName,
               CacheManagerV2& cacheMgr, const std::string& requestCacheDirVT, const bool useRequestCache,
               const bool silent, const int maybeLimit, const int maxAgeInDays,
