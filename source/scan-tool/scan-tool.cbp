@@ -40,6 +40,12 @@
 			<Add library="jsoncpp" />
 			<Add library="zip" />
 		</Linker>
+		<Unit filename="../../libthoro/archive/entry.cpp" />
+		<Unit filename="../../libthoro/archive/entry.hpp" />
+		<Unit filename="../../libthoro/archive/zip/archive.cpp" />
+		<Unit filename="../../libthoro/archive/zip/archive.hpp" />
+		<Unit filename="../../libthoro/archive/zip/entry.cpp" />
+		<Unit filename="../../libthoro/archive/zip/entry.hpp" />
 		<Unit filename="../../libthoro/common/StringUtils.cpp" />
 		<Unit filename="../../libthoro/common/StringUtils.hpp" />
 		<Unit filename="../../libthoro/filesystem/directory.cpp" />
@@ -54,10 +60,6 @@
 		<Unit filename="../../libthoro/hash/sha256/MessageSource.hpp" />
 		<Unit filename="../../libthoro/hash/sha256/sha256.cpp" />
 		<Unit filename="../../libthoro/hash/sha256/sha256.hpp" />
-		<Unit filename="../../libthoro/zip/archive.cpp" />
-		<Unit filename="../../libthoro/zip/archive.hpp" />
-		<Unit filename="../../libthoro/zip/entry.cpp" />
-		<Unit filename="../../libthoro/zip/entry.hpp" />
 		<Unit filename="../Configuration.cpp" />
 		<Unit filename="../Configuration.hpp" />
 		<Unit filename="../Curly.cpp" />

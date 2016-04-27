@@ -19,7 +19,7 @@
 */
 
 #include "ZipHandler.hpp"
-#include "../../libthoro/zip/archive.hpp"
+#include "../../libthoro/archive/zip/archive.hpp"
 #include "../../libthoro/filesystem/directory.hpp"
 #include "../../libthoro/filesystem/file.hpp"
 #include "../ReturnCodes.hpp"

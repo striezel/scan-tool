@@ -6,6 +6,9 @@ project(scan-tool)
 #add_definitions(-DDEFINE_CONSTANT_HERE -DANOTHER_ONE_THERE -DTHIS_IS_THE_THIRD)
 
 set(scan-tool_sources
+    ../../libthoro/archive/entry.cpp
+    ../../libthoro/archive/zip/archive.cpp
+    ../../libthoro/archive/zip/entry.cpp
     ../../libthoro/common/StringUtils.cpp
     ../../libthoro/filesystem/directory.cpp
     ../../libthoro/filesystem/file.cpp
@@ -13,8 +16,6 @@ set(scan-tool_sources
     ../../libthoro/hash/sha256/FileSourceUtility.cpp
     ../../libthoro/hash/sha256/MessageSource.cpp
     ../../libthoro/hash/sha256/sha256.cpp
-    ../../libthoro/zip/archive.cpp
-    ../../libthoro/zip/entry.cpp
     ../virustotal/CacheManagerV2.cpp
     ../virustotal/EngineV2.cpp
     ../virustotal/ReportV2.cpp
