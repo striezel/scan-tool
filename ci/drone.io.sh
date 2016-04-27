@@ -8,7 +8,7 @@
 git submodule update --init --recursive
 sudo apt-add-repository -y "ppa:ubuntu-toolchain-r/test"
 sudo apt-get update
-sudo apt-get install -y iputils-ping libcurl3-gnutls libcurl4-gnutls-dev libjsoncpp-dev libzip-dev g++-4.8 gcc-4.8
+sudo apt-get install -y iputils-ping libarchive-dev libcurl3-gnutls libcurl4-gnutls-dev libjsoncpp-dev libzip-dev g++-4.8 gcc-4.8
 export CXX="g++-4.8"
 export CC="gcc-4.8"
 mkdir ./build

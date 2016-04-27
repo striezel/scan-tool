@@ -6,7 +6,11 @@ project(scan-tool)
 #add_definitions(-DDEFINE_CONSTANT_HERE -DANOTHER_ONE_THERE -DTHIS_IS_THE_THIRD)
 
 set(scan-tool_sources
+    ../../libthoro/archive/archiveLibarchive.cpp
     ../../libthoro/archive/entry.cpp
+    ../../libthoro/archive/entryLibarchive.cpp
+    ../../libthoro/archive/gzip/archive.cpp
+    ../../libthoro/archive/tar/archive.cpp
     ../../libthoro/archive/zip/archive.cpp
     ../../libthoro/archive/zip/entry.cpp
     ../../libthoro/common/StringUtils.cpp
@@ -27,6 +31,8 @@ set(scan-tool_sources
     ../Report.cpp
     ../Scanner.cpp
     ../StringToTimeT.cpp
+    HandlerGzip.cpp
+    HandlerTar.cpp
     ScanStrategy.cpp
     ScanStrategyDefault.cpp
     ScanStrategyDirectScan.cpp
@@ -73,3 +79,13 @@ if (LIBZIP_FOUND)
 else ()
   message ( FATAL_ERROR "libzip was not found!" )
 endif (LIBZIP_FOUND)
+
+# find libarchive
+set(libarchive_DIR "../../libthoro/cmake/" )
+find_package (libarchive)
+if (LIBARCHIVE_FOUND)
+  include_directories(${LIBARCHIVE_INCLUDE_DIRS})
+  target_link_libraries (scan-tool ${LIBARCHIVE_LIBRARIES})
+else ()
+  message ( FATAL_ERROR "libarchive was not found!" )
+endif (LIBARCHIVE_FOUND)

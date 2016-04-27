@@ -1,5 +1,10 @@
 # ChangeLog for scan-tool
 
+## Version 0.37 (2016-04-28)
+  - add tar and gzip handlers: if told via command line options --tar and/or
+    --gzip, scan-tool will extract tar and/or gzipfile  and scan each contained
+    file individually before scanning the tar/gz file itself
+
 ## Version 0.36b (2016-04-25)
   - refactoring for handlers classes:
     Handlers are now part of the scan strategy class and get invoked by the

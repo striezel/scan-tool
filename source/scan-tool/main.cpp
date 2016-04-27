@@ -30,6 +30,8 @@
 #elif defined(_WIN32)
 #include <Windows.h>
 #endif
+#include "HandlerGzip.hpp"
+#include "HandlerTar.hpp"
 #include "Strategies.hpp"
 #include "ScanStrategyDefault.hpp"
 #include "ScanStrategyDirectScan.hpp"
@@ -91,12 +93,16 @@ void showHelp()
             << "                     no-rescan - like default, but will never do rescans for\n"
             << "                                 old reports.\n"
             << "  --zip            - add ZIP file handler which extracts ZIP files and scans\n"
+            << "                     each contained file, too.\n"
+            << "  --tar            - add tape archive (*.tar) file handler which extracts tape\n"
+            << "                     archives and scans each contained file, too.\n"
+            << "  --gzip | --gz    - add gzip file handler which extracts gzip files and scans\n"
             << "                     each contained file, too.\n";
 }
 
 void showVersion()
 {
-  std::cout << "scan-tool, version 0.36b, 2016-04-25\n";
+  std::cout << "scan-tool, version 0.37, 2016-04-28\n";
 }
 
 /* Four variables that will be used in main() but also in signal handling
@@ -211,8 +217,10 @@ int main(int argc, char ** argv)
   std::set<std::string> files_scan = std::set<std::string>();
   //scan strategy
   scantool::virustotal::Strategy selectedStrategy = scantool::virustotal::Strategy::None;
-  //flag for ZIP handler
+  //flags for file handlers
   bool handleZIP = false;
+  bool handleTar = false;
+  bool handleGzip = false;
 
   if ((argc > 1) and (argv != nullptr))
   {
@@ -514,6 +522,28 @@ int main(int argc, char ** argv)
           }
           handleZIP = true;
         } //handle ZIP files
+        else if (param=="--tar")
+        {
+          //Has the tar option already been set?
+          if (handleTar)
+          {
+            std::cout << "Error: Parameter " << param << " must not occur more than once!"
+                      << std::endl;
+            return scantool::rcInvalidParameter;
+          }
+          handleTar = true;
+        } //handle tape archive files
+        else if ((param=="--gzip") || (param=="--gz"))
+        {
+          //Has the gzip option already been set?
+          if (handleGzip)
+          {
+            std::cout << "Error: Parameter " << param << " must not occur more than once!"
+                      << std::endl;
+            return scantool::rcInvalidParameter;
+          }
+          handleGzip = true;
+        } //handle .gz files
         else if ((param == "--integrity") or (param == "-i"))
         {
           //add note about new executable for cache stuff
@@ -668,6 +698,16 @@ int main(int argc, char ** argv)
   if (handleZIP)
   {
     strategy->addHandler(std::unique_ptr<scantool::virustotal::ZipHandler>(new scantool::virustotal::ZipHandler));
+  }
+  //check if user wants tar handler
+  if (handleTar)
+  {
+    strategy->addHandler(std::unique_ptr<scantool::virustotal::HandlerTar>(new scantool::virustotal::HandlerTar));
+  }
+  //check if user wants gz handler
+  if (handleGzip)
+  {
+    strategy->addHandler(std::unique_ptr<scantool::virustotal::HandlerGzip>(new scantool::virustotal::HandlerGzip));
   }
 
   //iterate over all files for scan requests
