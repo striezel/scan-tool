@@ -41,6 +41,8 @@
 			<Add library="zip" />
 			<Add library="archive" />
 		</Linker>
+		<Unit filename="../../libthoro/archive/ar/archive.cpp" />
+		<Unit filename="../../libthoro/archive/ar/archive.hpp" />
 		<Unit filename="../../libthoro/archive/archiveLibarchive.cpp" />
 		<Unit filename="../../libthoro/archive/archiveLibarchive.hpp" />
 		<Unit filename="../../libthoro/archive/entry.cpp" />
@@ -50,8 +52,12 @@
 		<Unit filename="../../libthoro/archive/gzip/archive.cpp" />
 		<Unit filename="../../libthoro/archive/gzip/archive.hpp" />
 		<Unit filename="../../libthoro/archive/gzip/entry.hpp" />
+		<Unit filename="../../libthoro/archive/iso9660/archive.cpp" />
+		<Unit filename="../../libthoro/archive/iso9660/archive.hpp" />
 		<Unit filename="../../libthoro/archive/tar/archive.cpp" />
 		<Unit filename="../../libthoro/archive/tar/archive.hpp" />
+		<Unit filename="../../libthoro/archive/xz/archive.cpp" />
+		<Unit filename="../../libthoro/archive/xz/archive.hpp" />
 		<Unit filename="../../libthoro/archive/zip/archive.cpp" />
 		<Unit filename="../../libthoro/archive/zip/archive.hpp" />
 		<Unit filename="../../libthoro/archive/zip/entry.cpp" />
@@ -94,10 +100,14 @@
 		<Unit filename="../virustotal/ScannerV2.cpp" />
 		<Unit filename="../virustotal/ScannerV2.hpp" />
 		<Unit filename="Handler.hpp" />
+		<Unit filename="HandlerAr.hpp" />
+		<Unit filename="HandlerGeneric.hpp" />
 		<Unit filename="HandlerGzip.cpp" />
 		<Unit filename="HandlerGzip.hpp" />
+		<Unit filename="HandlerISO9660.hpp" />
 		<Unit filename="HandlerTar.cpp" />
 		<Unit filename="HandlerTar.hpp" />
+		<Unit filename="HandlerXz.hpp" />
 		<Unit filename="ScanStrategy.cpp" />
 		<Unit filename="ScanStrategy.hpp" />
 		<Unit filename="ScanStrategyDefault.cpp" />

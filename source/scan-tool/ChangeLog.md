@@ -1,5 +1,11 @@
 # ChangeLog for scan-tool
 
+## Version 0.38 (2016-05-01)
+  - add Ar, ISO 9660 and XZ handlers: If told via command line options --ar,
+    --iso / --iso9660, --xz scan-tool will extract Ar archives, ISO 9660 disk
+    images, XZ compressed streams and scan each contained file individually
+    before scanning the file itself.
+
 ## Version 0.37 (2016-04-28)
   - add tar and gzip handlers: if told via command line options --tar and/or
     --gzip, scan-tool will extract tar and/or gzipfile  and scan each contained

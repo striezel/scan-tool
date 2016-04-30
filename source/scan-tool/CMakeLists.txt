@@ -6,11 +6,14 @@ project(scan-tool)
 #add_definitions(-DDEFINE_CONSTANT_HERE -DANOTHER_ONE_THERE -DTHIS_IS_THE_THIRD)
 
 set(scan-tool_sources
+    ../../libthoro/archive/ar/archive.cpp
     ../../libthoro/archive/archiveLibarchive.cpp
     ../../libthoro/archive/entry.cpp
     ../../libthoro/archive/entryLibarchive.cpp
     ../../libthoro/archive/gzip/archive.cpp
+    ../../libthoro/archive/iso9660/archive.cpp
     ../../libthoro/archive/tar/archive.cpp
+    ../../libthoro/archive/xz/archive.cpp
     ../../libthoro/archive/zip/archive.cpp
     ../../libthoro/archive/zip/entry.cpp
     ../../libthoro/common/StringUtils.cpp
@@ -31,6 +34,7 @@ set(scan-tool_sources
     ../Report.cpp
     ../Scanner.cpp
     ../StringToTimeT.cpp
+    HandlerGeneric.hpp
     HandlerGzip.cpp
     HandlerTar.cpp
     ScanStrategy.cpp

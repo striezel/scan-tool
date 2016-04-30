@@ -30,8 +30,11 @@
 #elif defined(_WIN32)
 #include <Windows.h>
 #endif
+#include "HandlerAr.hpp"
 #include "HandlerGzip.hpp"
+#include "HandlerISO9660.hpp"
 #include "HandlerTar.hpp"
+#include "HandlerXz.hpp"
 #include "Strategies.hpp"
 #include "ScanStrategyDefault.hpp"
 #include "ScanStrategyDirectScan.hpp"
@@ -97,12 +100,18 @@ void showHelp()
             << "  --tar            - add tape archive (*.tar) file handler which extracts tape\n"
             << "                     archives and scans each contained file, too.\n"
             << "  --gzip | --gz    - add gzip file handler which extracts gzip files and scans\n"
-            << "                     each contained file, too.\n";
+            << "                     each contained file, too.\n"
+            << "  --ar             - add Ar archive file handler which extracts these archives\n"
+            << "                     and scans each contained file, too.\n"
+            << "  --xz             - add XZ file handler which decompressed XZ files and scans\n"
+            << "                     the decompressed file, too.\n"
+            << "  --iso9660        - add ISO 9660 (*.iso) file handler which extracts ISO 9660\n"
+            << "                     disk images and scans each contained file, too.\n";
 }
 
 void showVersion()
 {
-  std::cout << "scan-tool, version 0.37, 2016-04-28\n";
+  std::cout << "scan-tool, version 0.38, 2016-05-01\n";
 }
 
 /* Four variables that will be used in main() but also in signal handling
@@ -221,6 +230,9 @@ int main(int argc, char ** argv)
   bool handleZIP = false;
   bool handleTar = false;
   bool handleGzip = false;
+  bool handleISO9660 = false;
+  bool handleAr = false;
+  bool handleXz = false;
 
   if ((argc > 1) and (argv != nullptr))
   {
@@ -544,6 +556,39 @@ int main(int argc, char ** argv)
           }
           handleGzip = true;
         } //handle .gz files
+        else if (param=="--xz")
+        {
+          //Has the XZ option already been set?
+          if (handleXz)
+          {
+            std::cout << "Error: Parameter " << param << " must not occur more than once!"
+                      << std::endl;
+            return scantool::rcInvalidParameter;
+          }
+          handleXz = true;
+        } //handle XZ compressed files
+        else if (param=="--ar")
+        {
+          //Has the Ar option already been set?
+          if (handleAr)
+          {
+            std::cout << "Error: Parameter " << param << " must not occur more than once!"
+                      << std::endl;
+            return scantool::rcInvalidParameter;
+          }
+          handleAr = true;
+        } //handle Ar archive files
+        else if ((param=="--iso") || (param=="--iso9660"))
+        {
+          //Has the ISO9660 option already been set?
+          if (handleISO9660)
+          {
+            std::cout << "Error: Parameter " << param << " must not occur more than once!"
+                      << std::endl;
+            return scantool::rcInvalidParameter;
+          }
+          handleISO9660 = true;
+        } //handle .iso files
         else if ((param == "--integrity") or (param == "-i"))
         {
           //add note about new executable for cache stuff
@@ -708,6 +753,21 @@ int main(int argc, char ** argv)
   if (handleGzip)
   {
     strategy->addHandler(std::unique_ptr<scantool::virustotal::HandlerGzip>(new scantool::virustotal::HandlerGzip));
+  }
+  //check if user wants Ar handler
+  if (handleAr)
+  {
+    strategy->addHandler(std::unique_ptr<scantool::virustotal::HandlerAr>(new scantool::virustotal::HandlerAr));
+  }
+  //check XZ handler
+  if (handleXz)
+  {
+    strategy->addHandler(std::unique_ptr<scantool::virustotal::HandlerXz>(new scantool::virustotal::HandlerXz));
+  }
+  //check if user wants iso9660 handler
+  if (handleISO9660)
+  {
+    strategy->addHandler(std::unique_ptr<scantool::virustotal::HandlerISO9660>(new scantool::virustotal::HandlerISO9660));
   }
 
   //iterate over all files for scan requests
