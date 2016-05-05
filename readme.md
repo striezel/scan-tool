@@ -17,17 +17,20 @@ TODO
 ### Prerequisites
 
 To build the scan-tool from source you need a C++ compiler, CMake 2.8 or later,
-the cURL library and the JsonCpp library.
+the cURL library (>=7.17), the JsonCpp library, as well as the libarchive,
+libzip and zlib libraries.
 It also helps to have Git, a distributed version control system, on your build
 system to get the latest source code directly from the Git repository.
 
 All of that can usually be installed be typing
 
-    apt-get install cmake g++ git libcurl4-gnutls-dev libjsoncpp-dev
+    apt-get install cmake g++ git libarchive libcurl4-gnutls-dev \
+    libjsoncpp-dev libzip-dev zlib1g-dev
 
 or
 
-    yum install cmake gcc-c++ git libcurl-devel jsoncpp-devel
+    yum install cmake gcc-c++ git libarchive-devel libcurl-devel libzip-devel \
+    jsoncpp-devel zlib-devel
 
 into a root terminal.
 
