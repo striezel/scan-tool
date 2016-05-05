@@ -93,3 +93,12 @@ if (LIBARCHIVE_FOUND)
 else ()
   message ( FATAL_ERROR "libarchive was not found!" )
 endif (LIBARCHIVE_FOUND)
+
+# find libz
+find_package (ZLIB)
+if (ZLIB_FOUND)
+  include_directories(${ZLIB_INCLUDE_DIRS})
+  target_link_libraries (scan-tool ${ZLIB_LIBRARIES})
+else ()
+  message ( FATAL_ERROR "zlib was not found!" )
+endif (ZLIB_FOUND)
