@@ -410,7 +410,6 @@ bool Scanner::scan(const std::string& filename, ScanData& scan_data)
 int64_t Scanner::maxScanSize() const
 {
   //Assume 140 MB like on the web interface.
-  #warning TODO: Find out where the real limit is.
   return 140*1024*1024;
 }
 
