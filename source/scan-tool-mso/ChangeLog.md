@@ -1,5 +1,16 @@
 # ChangeLog for scan-tool-mso
 
+## Version 0.06 (2016-05-15)
+  - adjust scan limits for Metadefender public API according to
+    https://www.opswat.com/blog/preventing-illegitimate-use-of-metadefender
+  - This might be the last update of scan-tool-mso.
+    If someone finds a severe bug in scan-tool-mso in the future, then this
+    will still get fixed, but do not expect any new features.
+    The "original" [scan-tool](../scan-tool/) is a program with similar
+    features, but it uses the VirusTotal public API instead of Metadefender.
+    Take a look at this program, if you need a tool that still gets updates
+    once in a while.
+
 ## Version 0.05 (2016-03-31)
   - fix Report::successfulRetrieval() and Report::notFound() so that report
     status is now correct in some rarer cases

@@ -4,7 +4,7 @@
   - adjust scan limits for Metadefender public API according to
     https://www.opswat.com/blog/preventing-illegitimate-use-of-metadefender
   - This will probably be the last update of mso-api-request.
-    If someone finds a severe bug  in mso-api-request in the future, then this
+    If someone finds a severe bug in mso-api-request in the future, then this
     might still get fixed, but do not expect any new features.
 
 ## Version 0.0.9 (2016-03-31)
