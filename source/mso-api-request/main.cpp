@@ -57,7 +57,7 @@ void showHelp()
 
 void showVersion()
 {
-  std::cout << "mso-api-request, version 0.0.9, 2016-03-31\n";
+  std::cout << "mso-api-request, version 1.0.0, 2016-06-15\n";
 }
 
 int main(int argc, char ** argv)

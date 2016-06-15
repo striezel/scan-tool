@@ -1,5 +1,12 @@
 # ChangeLog for mso-api-request
 
+## Version 1.0.0 (2016-06-15)
+  - adjust scan limits for Metadefender public API according to
+    https://www.opswat.com/blog/preventing-illegitimate-use-of-metadefender
+  - This will probably be the last update of mso-api-request.
+    If someone finds a severe bug  in mso-api-request in the future, then this
+    might still get fixed, but do not expect any new features.
+
 ## Version 0.0.9 (2016-03-31)
   - fix Report::successfulRetrieval() and Report::notFound() so that report
     status is now correct in some rarer cases
