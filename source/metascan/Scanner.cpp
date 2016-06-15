@@ -61,16 +61,16 @@ void Scanner::setApiKey(const std::string& apikey)
 
 std::chrono::milliseconds Scanner::timeBetweenConsecutiveScanRequests() const
 {
-  /* Metadefender Cloud allows 25 file scans per hour,
-     i.e. one scan every 144 seconds. */
-  return std::chrono::milliseconds(144000);
+  /* Metadefender Cloud allows only five file scans per hour,
+     i.e. one scan every 12 minutes or 720 seconds. */
+  return std::chrono::milliseconds(720000);
 }
 
 std::chrono::milliseconds Scanner::timeBetweenConsecutiveHashLookups() const
 {
-  /* Metadefender Cloud allows 1500 hash lookups per hour,
-     i.e. one request every 2.4 seconds. */
-  return std::chrono::milliseconds(2400);
+  /* Metadefender Cloud allows 100 hash lookups per hour,
+     i.e. one request every 36 seconds. */
+  return std::chrono::milliseconds(36000);
 }
 
 bool Scanner::getReport(const std::string& resource, Report& report)
