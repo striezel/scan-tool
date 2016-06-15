@@ -641,7 +641,7 @@ Curly::VersionData Curly::curlVersion()
 size_t Curly::headerCallback(char* buffer, size_t size, size_t nitems, void* userdata)
 {
   const size_t actualSize = size * nitems;
-  if (userdata == nullptr)
+  if (buffer == nullptr)
   {
     std::cerr << "Error: header callback received null pointer as buffer!" << std::endl;
     return 0;
