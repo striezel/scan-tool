@@ -45,6 +45,8 @@
 		<Unit filename="../../libthoro/archive/ar/archive.hpp" />
 		<Unit filename="../../libthoro/archive/archiveLibarchive.cpp" />
 		<Unit filename="../../libthoro/archive/archiveLibarchive.hpp" />
+		<Unit filename="../../libthoro/archive/cab/archive.cpp" />
+		<Unit filename="../../libthoro/archive/cab/archive.hpp" />
 		<Unit filename="../../libthoro/archive/entry.cpp" />
 		<Unit filename="../../libthoro/archive/entry.hpp" />
 		<Unit filename="../../libthoro/archive/entryLibarchive.cpp" />
@@ -101,6 +103,7 @@
 		<Unit filename="../virustotal/ScannerV2.hpp" />
 		<Unit filename="Handler.hpp" />
 		<Unit filename="HandlerAr.hpp" />
+		<Unit filename="HandlerCab.hpp" />
 		<Unit filename="HandlerGeneric.hpp" />
 		<Unit filename="HandlerGzip.cpp" />
 		<Unit filename="HandlerGzip.hpp" />

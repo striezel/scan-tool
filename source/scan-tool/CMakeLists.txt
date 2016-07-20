@@ -8,6 +8,7 @@ project(scan-tool)
 set(scan-tool_sources
     ../../libthoro/archive/ar/archive.cpp
     ../../libthoro/archive/archiveLibarchive.cpp
+    ../../libthoro/archive/cab/archive.cpp
     ../../libthoro/archive/entry.cpp
     ../../libthoro/archive/entryLibarchive.cpp
     ../../libthoro/archive/gzip/archive.cpp

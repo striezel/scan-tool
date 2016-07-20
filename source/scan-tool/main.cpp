@@ -31,6 +31,7 @@
 #include <Windows.h>
 #endif
 #include "HandlerAr.hpp"
+#include "HandlerCab.hpp"
 #include "HandlerGzip.hpp"
 #include "HandlerISO9660.hpp"
 #include "HandlerTar.hpp"
@@ -106,12 +107,14 @@ void showHelp()
             << "  --xz             - add XZ file handler which decompressed XZ files and scans\n"
             << "                     the decompressed file, too.\n"
             << "  --iso9660        - add ISO 9660 (*.iso) file handler which extracts ISO 9660\n"
-            << "                     disk images and scans each contained file, too.\n";
+            << "                     disk images and scans each contained file, too.\n"
+            << "  --cab            - add Cabinet archive (*.cab) file handler which extracts\n"
+            << "                     these archives and scans each contained file, too.\n";
 }
 
 void showVersion()
 {
-  std::cout << "scan-tool, version 0.38, 2016-05-01\n";
+  std::cout << "scan-tool, version 0.39, 2016-07-20\n";
 }
 
 /* Four variables that will be used in main() but also in signal handling
@@ -233,6 +236,7 @@ int main(int argc, char ** argv)
   bool handleISO9660 = false;
   bool handleAr = false;
   bool handleXz = false;
+  bool handleCab = false;
 
   if ((argc > 1) and (argv != nullptr))
   {
@@ -589,6 +593,17 @@ int main(int argc, char ** argv)
           }
           handleISO9660 = true;
         } //handle .iso files
+        else if ((param=="--cab") || (param=="--cabinet"))
+        {
+          //Has the CAB option already been set?
+          if (handleCab)
+          {
+            std::cout << "Error: Parameter " << param << " must not occur more than once!"
+                      << std::endl;
+            return scantool::rcInvalidParameter;
+          }
+          handleCab = true;
+        } //handle .cab files
         else if ((param == "--integrity") or (param == "-i"))
         {
           //add note about new executable for cache stuff
@@ -768,6 +783,11 @@ int main(int argc, char ** argv)
   if (handleISO9660)
   {
     strategy->addHandler(std::unique_ptr<scantool::virustotal::HandlerISO9660>(new scantool::virustotal::HandlerISO9660));
+  }
+  //check if user wants cabinet handler
+  if (handleCab)
+  {
+    strategy->addHandler(std::unique_ptr<scantool::virustotal::HandlerCab>(new scantool::virustotal::HandlerCab));
   }
 
   //iterate over all files for scan requests

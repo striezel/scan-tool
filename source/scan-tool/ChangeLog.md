@@ -1,5 +1,10 @@
 # ChangeLog for scan-tool
 
+## Version 0.39 (2016-07-20)
+  - add Cabinet handlers: If told via the command line option --cab, scan-tool
+    will extract Microsoft Cabinet archives and scan each contained file
+    individually before scanning the file itself.
+
 ## Version 0.38 (2016-05-01)
   - add Ar, ISO 9660 and XZ handlers: If told via command line options --ar,
     --iso / --iso9660, --xz scan-tool will extract Ar archives, ISO 9660 disk
