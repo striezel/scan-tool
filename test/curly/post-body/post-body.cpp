@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of the scan-tool test suite.
-    Copyright (C) 2016  Thoronador
+    Copyright (C) 2016  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

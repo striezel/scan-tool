@@ -7,8 +7,8 @@ TODO
 
 ## Build status
 
-[![Build Status](https://travis-ci.org/Thoronador/scan-tool.svg?branch=master)]
-(https://travis-ci.org/Thoronador/scan-tool)
+[![Build Status](https://travis-ci.org/striezel/scan-tool.svg?branch=master)]
+(https://travis-ci.org/striezel/scan-tool)
 [![Build Status](https://drone.io/github.com/Thoronador/scan-tool/status.png)]
 (https://drone.io/github.com/Thoronador/scan-tool/latest)
 
@@ -39,7 +39,7 @@ into a root terminal.
 Get the source directly from Git by cloning the Git repository and change to
 the directory after the repository is completely cloned:
 
-    git clone https://github.com/Thoronador/scan-tool.git ./scan-tool
+    git clone https://github.com/striezel/scan-tool.git ./scan-tool
     cd scan-tool
     git submodule update --init
 
@@ -77,7 +77,7 @@ it was intended by the developer.
 
 ## Copyright and Licensing
 
-Copyright 2015, 2016 Thoronador
+Copyright 2015, 2016 Dirk Stolle
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
