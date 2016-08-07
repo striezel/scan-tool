@@ -10,7 +10,7 @@ cmake_minimum_required (VERSION 2.8)
 project(test_curly_status_code)
 
 set(test_curly_status_code_sources
-    ../../../libthoro/common/StringUtils.cpp
+    ../../../libstriezel/common/StringUtils.cpp
     ../../../source/Curly.cpp
     status-code.cpp)
 

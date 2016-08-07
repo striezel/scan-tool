@@ -24,8 +24,8 @@
 #include <jsoncpp/json/reader.h>
 #include "CacheManagerV2.hpp"
 #include "../Curly.hpp"
-#include "../../libthoro/filesystem/directory.hpp"
-#include "../../libthoro/filesystem/file.hpp"
+#include "../../libstriezel/filesystem/directory.hpp"
+#include "../../libstriezel/filesystem/file.hpp"
 
 namespace scantool
 {
@@ -85,7 +85,7 @@ bool ScannerV2::getReport(const std::string& resource, Report& report, const boo
   std::string response = "";
   const std::string cachedFilePath = CacheManagerV2::getPathForCachedElement(resource, cacheDir);
   if (useCache && !cacheDir.empty() && !cachedFilePath.empty()
-      && libthoro::filesystem::file::exists(cachedFilePath))
+      && libstriezel::filesystem::file::exists(cachedFilePath))
   {
     //try to read JSON data from cached file
     std::ifstream cachedJSON(cachedFilePath, std::ios_base::in | std::ios_base::binary);
@@ -156,7 +156,7 @@ bool ScannerV2::getReport(const std::string& resource, Report& report, const boo
     /* write JSON data to request cache, if request cache directory is given,
        independent of cache use during previous request
     */
-    if (!cacheDir.empty() && libthoro::filesystem::directory::exists(cacheDir)
+    if (!cacheDir.empty() && libstriezel::filesystem::directory::exists(cacheDir)
         && !cachedFilePath.empty())
     {
       std::ofstream cachedJSON(cachedFilePath, std::ios_base::out | std::ios_base::binary | std::ios_base::trunc);
@@ -185,7 +185,7 @@ bool ScannerV2::getReport(const std::string& resource, Report& report, const boo
        is most likely corrupted, e.g. disk corruption or content manipulation.
     */
     if (useCache && !cacheDir.empty() && !cachedFilePath.empty()
-      && libthoro::filesystem::file::exists(cachedFilePath))
+      && libstriezel::filesystem::file::exists(cachedFilePath))
     {
       CacheManagerV2::deleteCachedElement(resource, cacheDir);
     } //if

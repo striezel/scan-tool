@@ -22,7 +22,7 @@
 #include <iostream>
 #include <vector>
 #include <jsoncpp/json/reader.h>
-#include "../../../libthoro/filesystem/file.hpp"
+#include "../../../libstriezel/filesystem/file.hpp"
 #include "../../../source/Curly.hpp"
 
 int main()
@@ -57,7 +57,7 @@ int main()
 
   //get temporary file
   std::string tmpFileName = "";
-  if (!libthoro::filesystem::file::createTemp(tmpFileName))
+  if (!libstriezel::filesystem::file::createTemp(tmpFileName))
   {
     std::cout << "Error: could not create temporary file!" << std::endl;
     return 1;
@@ -67,7 +67,7 @@ int main()
   if (!output.good())
   {
     std::cerr << "Error: Temporary file could not be opened." << std::endl;
-    libthoro::filesystem::file::remove(tmpFileName);
+    libstriezel::filesystem::file::remove(tmpFileName);
     return false;
   }
   const std::string content = "This is some random data.\nHave fun with that.";
@@ -80,7 +80,7 @@ int main()
   if (!post.addFile(tmpFileName, "tempfile"))
   {
     std::cout << "Error: could not add file to request data!" << std::endl;
-    libthoro::filesystem::file::remove(tmpFileName);
+    libstriezel::filesystem::file::remove(tmpFileName);
     return 1;
   }
 
@@ -89,12 +89,12 @@ int main()
   if (!post.perform(response))
   {
     std::cout << "Error: Could not perform post request!" << std::endl;
-    libthoro::filesystem::file::remove(tmpFileName);
+    libstriezel::filesystem::file::remove(tmpFileName);
     return 1;
   }
 
   //remove temporary file
-  libthoro::filesystem::file::remove(tmpFileName);
+  libstriezel::filesystem::file::remove(tmpFileName);
 
   //check HTTP status code
   if (post.getResponseCode() != 200)

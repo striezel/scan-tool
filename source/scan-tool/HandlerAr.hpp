@@ -22,13 +22,13 @@
 #define SCANTOOL_VT_HANDLERAR_HPP
 
 #include "HandlerGeneric.hpp"
-#include "../../libthoro/archive/ar/archive.hpp"
+#include "../../libstriezel/archive/ar/archive.hpp"
 
 struct ArDetection
 {
   static bool isArcT(const std::string& fn)
   {
-    return libthoro::ar::archive::isAr(fn);
+    return libstriezel::ar::archive::isAr(fn);
   }
 }; //struct
 
@@ -38,7 +38,7 @@ namespace scantool
 namespace virustotal
 {
 
-typedef HandlerGeneric<libthoro::ar::archive, ArDetection> HandlerAr;
+typedef HandlerGeneric<libstriezel::ar::archive, ArDetection> HandlerAr;
 
 } //namespace
 

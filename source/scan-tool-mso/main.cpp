@@ -34,10 +34,10 @@
 #include "../Curly.hpp"
 #include "../metascan/Definitions.hpp"
 #include "../metascan/Scanner.hpp"
-#include "../../libthoro/common/StringUtils.hpp"
-#include "../../libthoro/filesystem/file.hpp"
-#include "../../libthoro/hash/sha256/FileSourceUtility.hpp"
-#include "../../libthoro/hash/sha256/sha256.hpp"
+#include "../../libstriezel/common/StringUtils.hpp"
+#include "../../libstriezel/filesystem/file.hpp"
+#include "../../libstriezel/hash/sha256/FileSourceUtility.hpp"
+#include "../../libstriezel/hash/sha256/sha256.hpp"
 //return codes
 #include "../ReturnCodes.hpp"
 
@@ -240,7 +240,7 @@ int main(int argc, char ** argv)
           {
             const std::string listFile = std::string(argv[i+1]);
             ++i; //Skip next parameter, because it's used as list file already.
-            if (!libthoro::filesystem::file::exists(listFile))
+            if (!libstriezel::filesystem::file::exists(listFile))
             {
               std::cout << "Error: File " << listFile << " does not exist!"
                         << std::endl;
@@ -261,7 +261,7 @@ int main(int argc, char ** argv)
               std::getline(inFile, nextFile, '\n');
               if (!nextFile.empty())
               {
-                if (libthoro::filesystem::file::exists(nextFile))
+                if (libstriezel::filesystem::file::exists(nextFile))
                 {
                   #ifdef SCAN_TOOL_DEBUG
                   std::cout << "Info: Adding " << nextFile << " to list of files for scan." << std::endl;
@@ -298,7 +298,7 @@ int main(int argc, char ** argv)
           {
             const std::string customCertFile = std::string(argv[i+1]);
             ++i; //Skip next parameter, because it's used as certificate file already.
-            if (!libthoro::filesystem::file::exists(customCertFile))
+            if (!libstriezel::filesystem::file::exists(customCertFile))
             {
               std::cout << "Error: File " << customCertFile << " does not exist!"
                         << std::endl;
@@ -318,7 +318,7 @@ int main(int argc, char ** argv)
           } //else
         } //certificate file
         //file for scan
-        else if (libthoro::filesystem::file::exists(param))
+        else if (libstriezel::filesystem::file::exists(param))
         {
           files_scan.insert(param);
         } //file
@@ -443,7 +443,7 @@ int main(int argc, char ** argv)
       else if (report.notFound())
       {
         //no data present for file
-        const int64_t fileSize = libthoro::filesystem::file::getSize64(i);
+        const int64_t fileSize = libstriezel::filesystem::file::getSize64(i);
         if ((fileSize <= scanMSO.maxScanSize()) && (fileSize >= 0))
         {
           scantool::metascan::Scanner::ScanData scan_data;
@@ -466,7 +466,7 @@ int main(int argc, char ** argv)
           //File is too large.
           if (!silent)
             std::cout << "Warning: File " << i << " is "
-                      << libthoro::filesystem::getSizeString(fileSize)
+                      << libstriezel::filesystem::getSizeString(fileSize)
                       << " and exceeds maximum file size for scan! "
                       << "File will be skipped." << std::endl;
           //save file name + size for later

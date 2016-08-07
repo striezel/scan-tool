@@ -19,7 +19,7 @@
 */
 
 #include "IterationOperationUpdate.hpp"
-#include "../../libthoro/filesystem/file.hpp"
+#include "../../libstriezel/filesystem/file.hpp"
 
 namespace scantool
 {
@@ -40,11 +40,11 @@ IterationOperationUpdate::IterationOperationUpdate(const std::string& apikey, co
 void IterationOperationUpdate::process(const std::string& fileName)
 {
   //check, if file is reasonable for a proper cache file
-  const auto fileSize = libthoro::filesystem::file::getSize64(fileName);
+  const auto fileSize = libstriezel::filesystem::file::getSize64(fileName);
   if ((fileSize < 1024*1024*2) && (fileSize > 0))
   {
     std::string content = "";
-    if (libthoro::filesystem::file::readIntoString(fileName, content))
+    if (libstriezel::filesystem::file::readIntoString(fileName, content))
     {
       Json::Value root; // will contain the root value after parsing.
       Json::Reader jsonReader;

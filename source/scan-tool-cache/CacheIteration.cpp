@@ -20,8 +20,8 @@
 
 #include "CacheIteration.hpp"
 #include <iostream>
-#include "../../libthoro/filesystem/directory.hpp"
-#include "../../libthoro/filesystem/file.hpp"
+#include "../../libstriezel/filesystem/directory.hpp"
+#include "../../libstriezel/filesystem/file.hpp"
 #include "../virustotal/CacheManagerV2.hpp"
 
 namespace scantool
@@ -41,7 +41,7 @@ bool CacheIteration::iterate(const std::string& cacheDir, IterationOperation& op
     return false;
 
   //No cache directory? Nothing to do.
-  if (!libthoro::filesystem::directory::exists(cacheDir))
+  if (!libstriezel::filesystem::directory::exists(cacheDir))
     return true;
 
   /* Note:
@@ -56,11 +56,11 @@ bool CacheIteration::iterate(const std::string& cacheDir, IterationOperation& op
   {
     for (const auto secondChar : subChars)
     {
-      const std::string currentSubDirectory = libthoro::filesystem::slashify(cacheDir)
+      const std::string currentSubDirectory = libstriezel::filesystem::slashify(cacheDir)
                       + std::string(1, firstChar) + std::string(1, secondChar);
-      if (libthoro::filesystem::directory::exists(currentSubDirectory))
+      if (libstriezel::filesystem::directory::exists(currentSubDirectory))
       {
-        const auto files = libthoro::filesystem::getDirectoryFileList(currentSubDirectory);
+        const auto files = libstriezel::filesystem::getDirectoryFileList(currentSubDirectory);
         #ifdef SCAN_TOOL_DEBUG
         std::clog << "Debug: Found " << files.size() << " files in "
                   << currentSubDirectory << "." << std::endl;
@@ -70,7 +70,7 @@ bool CacheIteration::iterate(const std::string& cacheDir, IterationOperation& op
           if (!file.isDirectory && CacheManagerV2::isCachedElementName(file.fileName))
           {
             //process file
-            op.process(currentSubDirectory + libthoro::filesystem::pathDelimiter + file.fileName);
+            op.process(currentSubDirectory + libstriezel::filesystem::pathDelimiter + file.fileName);
           } //if file is a cached report
         } //for
       } //if subdirectory exists

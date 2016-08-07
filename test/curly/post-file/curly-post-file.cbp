@@ -28,10 +28,10 @@
 			<Add library="curl" />
 			<Add library="jsoncpp" />
 		</Linker>
-		<Unit filename="../../../libthoro/common/StringUtils.cpp" />
-		<Unit filename="../../../libthoro/common/StringUtils.hpp" />
-		<Unit filename="../../../libthoro/filesystem/file.cpp" />
-		<Unit filename="../../../libthoro/filesystem/file.hpp" />
+		<Unit filename="../../../libstriezel/common/StringUtils.cpp" />
+		<Unit filename="../../../libstriezel/common/StringUtils.hpp" />
+		<Unit filename="../../../libstriezel/filesystem/file.cpp" />
+		<Unit filename="../../../libstriezel/filesystem/file.hpp" />
 		<Unit filename="../../../source/Curly.cpp" />
 		<Unit filename="../../../source/Curly.hpp" />
 		<Unit filename="post-file.cpp" />

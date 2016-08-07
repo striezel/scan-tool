@@ -19,7 +19,7 @@
 */
 
 #include "IterationOperationStatistics.hpp"
-#include "../../libthoro/filesystem/file.hpp"
+#include "../../libstriezel/filesystem/file.hpp"
 #include "../virustotal/ReportV2.hpp"
 
 namespace scantool
@@ -44,7 +44,7 @@ void IterationOperationStatistics::process(const std::string& fileName)
   //increase number of total cached files
   ++m_total;
   //check, if file is way too large for a proper cache file
-  const auto fileSize = libthoro::filesystem::file::getSize64(fileName);
+  const auto fileSize = libstriezel::filesystem::file::getSize64(fileName);
   if (fileSize >= 1024*1024*2)
   {
     //Several kilobytes are alright, but not megabytes.
@@ -53,7 +53,7 @@ void IterationOperationStatistics::process(const std::string& fileName)
   else
   {
     std::string content = "";
-    if (libthoro::filesystem::file::readIntoString(fileName, content))
+    if (libstriezel::filesystem::file::readIntoString(fileName, content))
     {
       Json::Value root; // will contain the root value after parsing.
       Json::Reader jsonReader;

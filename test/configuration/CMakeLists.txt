@@ -6,8 +6,8 @@ project(load-configuration-test)
 #add_definitions(-DDEFINE_CONSTANT_HERE -DANOTHER_ONE_THERE -DTHIS_IS_THE_THIRD)
 
 set(load-configuration-test_sources
-    ../../libthoro/common/StringUtils.cpp
-    ../../libthoro/filesystem/file.cpp
+    ../../libstriezel/common/StringUtils.cpp
+    ../../libstriezel/filesystem/file.cpp
     ../../source/Configuration.cpp
     main.cpp)
 

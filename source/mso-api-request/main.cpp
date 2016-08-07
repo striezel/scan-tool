@@ -22,7 +22,7 @@
 #include <iostream>
 #include <string>
 #include <unordered_set>
-#include "../../libthoro/filesystem/file.hpp"
+#include "../../libstriezel/filesystem/file.hpp"
 #include "../metascan/Report.hpp"
 #include "../metascan/Scanner.hpp"
 #include "../ReturnCodes.hpp"
@@ -186,7 +186,7 @@ int main(int argc, char ** argv)
           {
             const std::string customCertFile = std::string(argv[i+1]);
             ++i; //Skip next parameter, because it's used as certificate file already.
-            if (!libthoro::filesystem::file::exists(customCertFile))
+            if (!libstriezel::filesystem::file::exists(customCertFile))
             {
               std::cout << "Error: File " << customCertFile << " does not exist!"
                         << std::endl;

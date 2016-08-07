@@ -27,8 +27,8 @@
 		<Linker>
 			<Add library="curl" />
 		</Linker>
-		<Unit filename="../../../libthoro/common/StringUtils.cpp" />
-		<Unit filename="../../../libthoro/common/StringUtils.hpp" />
+		<Unit filename="../../../libstriezel/common/StringUtils.cpp" />
+		<Unit filename="../../../libstriezel/common/StringUtils.hpp" />
 		<Unit filename="../../../source/Curly.cpp" />
 		<Unit filename="../../../source/Curly.hpp" />
 		<Unit filename="status-code.cpp" />

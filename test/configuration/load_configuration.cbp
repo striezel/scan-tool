@@ -24,10 +24,10 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
-		<Unit filename="../../libthoro/common/StringUtils.cpp" />
-		<Unit filename="../../libthoro/common/StringUtils.hpp" />
-		<Unit filename="../../libthoro/filesystem/file.cpp" />
-		<Unit filename="../../libthoro/filesystem/file.hpp" />
+		<Unit filename="../../libstriezel/common/StringUtils.cpp" />
+		<Unit filename="../../libstriezel/common/StringUtils.hpp" />
+		<Unit filename="../../libstriezel/filesystem/file.cpp" />
+		<Unit filename="../../libstriezel/filesystem/file.hpp" />
 		<Unit filename="../../source/Configuration.cpp" />
 		<Unit filename="../../source/Configuration.hpp" />
 		<Unit filename="main.cpp" />

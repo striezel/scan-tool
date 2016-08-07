@@ -22,13 +22,13 @@
 #define SCANTOOL_VT_HANDLERCAB_HPP
 
 #include "HandlerGeneric.hpp"
-#include "../../libthoro/archive/cab/archive.hpp"
+#include "../../libstriezel/archive/cab/archive.hpp"
 
 struct CabDetection
 {
   static bool isArcT(const std::string& fn)
   {
-    return libthoro::cab::archive::isCab(fn);
+    return libstriezel::cab::archive::isCab(fn);
   }
 }; //struct
 
@@ -38,7 +38,7 @@ namespace scantool
 namespace virustotal
 {
 
-typedef HandlerGeneric<libthoro::cab::archive, CabDetection> HandlerCab;
+typedef HandlerGeneric<libstriezel::cab::archive, CabDetection> HandlerCab;
 
 } //namespace
 

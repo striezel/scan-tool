@@ -26,8 +26,8 @@
 #include "../virustotal/CacheManagerV2.hpp"
 #include "../virustotal/ScannerV2.hpp"
 #include "../ReturnCodes.hpp"
-#include "../../libthoro/filesystem/directory.hpp"
-#include "../../libthoro/filesystem/file.hpp"
+#include "../../libstriezel/filesystem/directory.hpp"
+#include "../../libstriezel/filesystem/file.hpp"
 #include "Handler.hpp"
 #include "ScanStrategy.hpp"
 
@@ -91,7 +91,7 @@ int HandlerGeneric<ArcT, isArc>::handle(scantool::virustotal::ScanStrategy& stra
 
   std::string tempDirectory = "";
   //create temp. directory for extraction
-  if (!libthoro::filesystem::directory::createTemp(tempDirectory))
+  if (!libstriezel::filesystem::directory::createTemp(tempDirectory))
   {
     std::cerr << "Error: Could not create temporary directory for extraction "
               << "of archive!" << std::endl;
@@ -108,14 +108,14 @@ int HandlerGeneric<ArcT, isArc>::handle(scantool::virustotal::ScanStrategy& stra
       if (!ent.isDirectory())
       {
         const std::string bn = ent.basename();
-        const std::string destFile = libthoro::filesystem::slashify(tempDirectory)
+        const std::string destFile = libstriezel::filesystem::slashify(tempDirectory)
                                    + (bn.empty() ? "file.dat" : bn);
         //extract file
         if (!arc.extractTo(destFile, ent.name()))
         {
           std::cerr << "Error: Could not extract file " << ent.name()
                     << " from " << fileName << "!" << std::endl;
-          libthoro::filesystem::directory::remove(tempDirectory);
+          libstriezel::filesystem::directory::remove(tempDirectory);
           return scantool::rcFileError;
         } //if extraction failed
         //scan file
@@ -124,25 +124,25 @@ int HandlerGeneric<ArcT, isArc>::handle(scantool::virustotal::ScanStrategy& stra
         mapHashToReport, mapFileToHash, queued_scans, lastQueuedScanTime,
         largeFiles);
         //remove file
-        libthoro::filesystem::file::remove(destFile);
+        libstriezel::filesystem::file::remove(destFile);
         //check return code
         if (rcStrategy != 0)
         {
           //delete temporary directory
-          libthoro::filesystem::directory::remove(tempDirectory);
+          libstriezel::filesystem::directory::remove(tempDirectory);
           //... and return
           return rcStrategy;
         } //if scan failed
       } //if not directory
     } //for (range-based)
     //delete temporary directory
-    libthoro::filesystem::directory::remove(tempDirectory);
+    libstriezel::filesystem::directory::remove(tempDirectory);
   } //try
   catch (std::exception& ex)
   {
     std::cerr << "An exception occurred while handling the archive "
               << fileName << ": " << ex.what() << std::endl;
-    libthoro::filesystem::directory::remove(tempDirectory);
+    libstriezel::filesystem::directory::remove(tempDirectory);
     return scantool::rcFileError;
   } //try-catch
   //If we get to this point, all is fine.

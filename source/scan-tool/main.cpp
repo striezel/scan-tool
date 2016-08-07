@@ -46,11 +46,11 @@
 #include "../Curly.hpp"
 #include "../virustotal/CacheManagerV2.hpp"
 #include "../virustotal/ScannerV2.hpp"
-#include "../../libthoro/common/StringUtils.hpp"
-#include "../../libthoro/filesystem/file.hpp"
-#include "../../libthoro/filesystem/directory.hpp"
-#include "../../libthoro/hash/sha256/FileSourceUtility.hpp"
-#include "../../libthoro/hash/sha256/sha256.hpp"
+#include "../../libstriezel/common/StringUtils.hpp"
+#include "../../libstriezel/filesystem/file.hpp"
+#include "../../libstriezel/filesystem/directory.hpp"
+#include "../../libstriezel/hash/sha256/FileSourceUtility.hpp"
+#include "../../libstriezel/hash/sha256/sha256.hpp"
 #include "../Constants.hpp"
 //return codes
 #include "../ReturnCodes.hpp"
@@ -295,7 +295,7 @@ int main(int argc, char ** argv)
           if ((i+1 < argc) and (argv[i+1] != nullptr))
           {
             const std::string keyfile = std::string(argv[i+1]);
-            if (!libthoro::filesystem::file::exists(keyfile))
+            if (!libstriezel::filesystem::file::exists(keyfile))
             {
               std::cout << "Error: The specified key file " << keyfile
                         << " does not exist!" << std::endl;
@@ -378,7 +378,7 @@ int main(int argc, char ** argv)
           {
             const std::string listFile = std::string(argv[i+1]);
             ++i; //Skip next parameter, because it's used as list file already.
-            if (!libthoro::filesystem::file::exists(listFile))
+            if (!libstriezel::filesystem::file::exists(listFile))
             {
               std::cout << "Error: File " << listFile << " does not exist!"
                         << std::endl;
@@ -399,7 +399,7 @@ int main(int argc, char ** argv)
               std::getline(inFile, nextFile, '\n');
               if (!nextFile.empty())
               {
-                if (libthoro::filesystem::file::exists(nextFile))
+                if (libstriezel::filesystem::file::exists(nextFile))
                 {
                   #ifdef SCAN_TOOL_DEBUG
                   std::cout << "Info: Adding " << nextFile << " to list of files for scan." << std::endl;
@@ -517,7 +517,7 @@ int main(int argc, char ** argv)
           //enough parameters?
           if ((i+1 < argc) and (argv[i+1] != nullptr))
           {
-            requestCacheDirVT = libthoro::filesystem::unslashify(std::string(argv[i+1]));
+            requestCacheDirVT = libstriezel::filesystem::unslashify(std::string(argv[i+1]));
             ++i; //Skip next parameter, because it's already used as directory.
           }
           else
@@ -620,7 +620,7 @@ int main(int argc, char ** argv)
           return scantool::rcInvalidParameter;
         } //cache transition to current directory structure
         //file for scan
-        else if (libthoro::filesystem::file::exists(param))
+        else if (libstriezel::filesystem::file::exists(param))
         {
           files_scan.insert(param);
         } //file

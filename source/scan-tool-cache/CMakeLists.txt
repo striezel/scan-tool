@@ -6,11 +6,11 @@ project(scan-tool-cache)
 #add_definitions(-DDEFINE_CONSTANT_HERE -DANOTHER_ONE_THERE -DTHIS_IS_THE_THIRD)
 
 set(scan-tool-cache_sources
-    ../../libthoro/common/StringUtils.cpp
-    ../../libthoro/filesystem/directory.cpp
-    ../../libthoro/filesystem/file.cpp
-    ../../libthoro/hash/sha256/MessageSource.cpp
-    ../../libthoro/hash/sha256/sha256.cpp
+    ../../libstriezel/common/StringUtils.cpp
+    ../../libstriezel/filesystem/directory.cpp
+    ../../libstriezel/filesystem/file.cpp
+    ../../libstriezel/hash/sha256/MessageSource.cpp
+    ../../libstriezel/hash/sha256/sha256.cpp
     ../virustotal/CacheManagerV2.cpp
     ../virustotal/EngineV2.cpp
     ../virustotal/ReportV2.cpp

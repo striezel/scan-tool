@@ -6,24 +6,24 @@ project(scan-tool)
 #add_definitions(-DDEFINE_CONSTANT_HERE -DANOTHER_ONE_THERE -DTHIS_IS_THE_THIRD)
 
 set(scan-tool_sources
-    ../../libthoro/archive/ar/archive.cpp
-    ../../libthoro/archive/archiveLibarchive.cpp
-    ../../libthoro/archive/cab/archive.cpp
-    ../../libthoro/archive/entry.cpp
-    ../../libthoro/archive/entryLibarchive.cpp
-    ../../libthoro/archive/gzip/archive.cpp
-    ../../libthoro/archive/iso9660/archive.cpp
-    ../../libthoro/archive/tar/archive.cpp
-    ../../libthoro/archive/xz/archive.cpp
-    ../../libthoro/archive/zip/archive.cpp
-    ../../libthoro/archive/zip/entry.cpp
-    ../../libthoro/common/StringUtils.cpp
-    ../../libthoro/filesystem/directory.cpp
-    ../../libthoro/filesystem/file.cpp
-    ../../libthoro/hash/sha256/FileSource.cpp
-    ../../libthoro/hash/sha256/FileSourceUtility.cpp
-    ../../libthoro/hash/sha256/MessageSource.cpp
-    ../../libthoro/hash/sha256/sha256.cpp
+    ../../libstriezel/archive/ar/archive.cpp
+    ../../libstriezel/archive/archiveLibarchive.cpp
+    ../../libstriezel/archive/cab/archive.cpp
+    ../../libstriezel/archive/entry.cpp
+    ../../libstriezel/archive/entryLibarchive.cpp
+    ../../libstriezel/archive/gzip/archive.cpp
+    ../../libstriezel/archive/iso9660/archive.cpp
+    ../../libstriezel/archive/tar/archive.cpp
+    ../../libstriezel/archive/xz/archive.cpp
+    ../../libstriezel/archive/zip/archive.cpp
+    ../../libstriezel/archive/zip/entry.cpp
+    ../../libstriezel/common/StringUtils.cpp
+    ../../libstriezel/filesystem/directory.cpp
+    ../../libstriezel/filesystem/file.cpp
+    ../../libstriezel/hash/sha256/FileSource.cpp
+    ../../libstriezel/hash/sha256/FileSourceUtility.cpp
+    ../../libstriezel/hash/sha256/MessageSource.cpp
+    ../../libstriezel/hash/sha256/sha256.cpp
     ../virustotal/CacheManagerV2.cpp
     ../virustotal/EngineV2.cpp
     ../virustotal/ReportV2.cpp
@@ -86,7 +86,7 @@ else ()
 endif (LIBZIP_FOUND)
 
 # find libarchive
-set(libarchive_DIR "../../libthoro/cmake/" )
+set(libarchive_DIR "../../libstriezel/cmake/" )
 find_package (libarchive)
 if (LIBARCHIVE_FOUND)
   include_directories(${LIBARCHIVE_INCLUDE_DIRS})

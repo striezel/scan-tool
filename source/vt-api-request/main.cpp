@@ -22,7 +22,7 @@
 #include <string>
 #include <thread>
 #include <unordered_set>
-#include "../../libthoro/filesystem/file.hpp"
+#include "../../libstriezel/filesystem/file.hpp"
 #include "../Configuration.hpp"
 #include "../Curly.hpp"
 #include "../ReturnCodes.hpp"
@@ -135,7 +135,7 @@ int main(int argc, char ** argv)
           if ((i+1 < argc) and (argv[i+1] != nullptr))
           {
             const std::string keyfile = std::string(argv[i+1]);
-            if (!libthoro::filesystem::file::exists(keyfile))
+            if (!libstriezel::filesystem::file::exists(keyfile))
             {
               std::cout << "Error: The specified key file " << keyfile
                         << " does not exist!" << std::endl;

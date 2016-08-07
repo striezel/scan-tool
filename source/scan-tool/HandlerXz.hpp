@@ -22,13 +22,13 @@
 #define SCANTOOL_VT_HANDLERXZ_HPP
 
 #include "HandlerGeneric.hpp"
-#include "../../libthoro/archive/xz/archive.hpp"
+#include "../../libstriezel/archive/xz/archive.hpp"
 
 struct XzDetection
 {
   static bool isArcT(const std::string& fn)
   {
-    return libthoro::xz::archive::isXz(fn);
+    return libstriezel::xz::archive::isXz(fn);
   }
 }; //struct
 
@@ -38,7 +38,7 @@ namespace scantool
 namespace virustotal
 {
 
-typedef HandlerGeneric<libthoro::xz::archive, XzDetection> HandlerXz;
+typedef HandlerGeneric<libstriezel::xz::archive, XzDetection> HandlerXz;
 
 } //namespace
 

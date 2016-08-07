@@ -20,7 +20,7 @@
 
 #include "StringToTimeT.hpp"
 #include <ctime>
-#include "../libthoro/common/StringUtils.hpp"
+#include "../libstriezel/common/StringUtils.hpp"
 
 bool stringToTimeT(const std::string& dateStr, std::time_t& tp)
 {

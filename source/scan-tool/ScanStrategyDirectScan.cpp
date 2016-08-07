@@ -20,9 +20,9 @@
 
 #include "ScanStrategyDirectScan.hpp"
 #include <iostream>
-#include "../../libthoro/filesystem/file.hpp"
-#include "../../libthoro/hash/sha256/FileSourceUtility.hpp"
-#include "../../libthoro/hash/sha256/sha256.hpp"
+#include "../../libstriezel/filesystem/file.hpp"
+#include "../../libstriezel/hash/sha256/FileSourceUtility.hpp"
+#include "../../libstriezel/hash/sha256/sha256.hpp"
 #include "../ReturnCodes.hpp"
 
 namespace scantool
@@ -59,7 +59,7 @@ int ScanStrategyDirectScan::scan(ScannerV2& scanVT, const std::string& fileName,
      Scan reports will be retrieved afterwards by the main program, because the
      scans have been added to the list of queued scans.
    */
-  const int64_t fileSize = libthoro::filesystem::file::getSize64(fileName);
+  const int64_t fileSize = libstriezel::filesystem::file::getSize64(fileName);
   if ((fileSize <= scanVT.maxScanSize()) && (fileSize >= 0))
   {
     std::string scan_id = "";
@@ -82,7 +82,7 @@ int ScanStrategyDirectScan::scan(ScannerV2& scanVT, const std::string& fileName,
     //File is too large.
     if (!silent)
       std::cout << "Warning: File " << fileName << " is "
-                << libthoro::filesystem::getSizeString(fileSize)
+                << libstriezel::filesystem::getSizeString(fileSize)
                 << " and exceeds maximum file size for scan! "
                 << "File will be skipped." << std::endl;
     //save file name + size for later

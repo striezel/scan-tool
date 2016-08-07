@@ -21,9 +21,9 @@
 #include "Scanner.hpp"
 #include <iostream>
 #include "../Curly.hpp"
-#include "../../libthoro/hash/sha256/sha256.hpp"
-#include "../../libthoro/filesystem/directory.hpp"
-#include "../../libthoro/filesystem/file.hpp"
+#include "../../libstriezel/hash/sha256/sha256.hpp"
+#include "../../libstriezel/filesystem/directory.hpp"
+#include "../../libstriezel/filesystem/file.hpp"
 
 namespace scantool
 {
@@ -279,7 +279,7 @@ bool Scanner::scan(const std::string& filename, ScanData& scan_data)
      careful which files we use here.
   */
   std::string content = "";
-  if (!libthoro::filesystem::file::readIntoString(filename, content))
+  if (!libstriezel::filesystem::file::readIntoString(filename, content))
     return false;
 
   //wait
@@ -293,7 +293,7 @@ bool Scanner::scan(const std::string& filename, ScanData& scan_data)
   {
     //add "basename" of file for better file info after scan
     std::string dummy, fName, ext;
-    libthoro::filesystem::splitPathFileExtension(filename, libthoro::filesystem::pathDelimiter, dummy, fName, ext);
+    libstriezel::filesystem::splitPathFileExtension(filename, libstriezel::filesystem::pathDelimiter, dummy, fName, ext);
     if (!fName.empty())
     {
       if (!ext.empty())

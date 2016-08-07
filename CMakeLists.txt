@@ -14,4 +14,4 @@ enable_testing()
 add_subdirectory (test)
 
 # Recurse into subdirectory for SHA-256 tests.
-add_subdirectory (libthoro/tests/hash/sha256)
+add_subdirectory (libstriezel/tests/hash/sha256)

@@ -6,13 +6,13 @@ project(scan-tool-mso)
 #add_definitions(-DDEFINE_CONSTANT_HERE -DANOTHER_ONE_THERE -DTHIS_IS_THE_THIRD)
 
 set(scan-tool-mso_sources
-    ../../libthoro/common/StringUtils.cpp
-    ../../libthoro/filesystem/directory.cpp
-    ../../libthoro/filesystem/file.cpp
-    ../../libthoro/hash/sha256/FileSource.cpp
-    ../../libthoro/hash/sha256/FileSourceUtility.cpp
-    ../../libthoro/hash/sha256/MessageSource.cpp
-    ../../libthoro/hash/sha256/sha256.cpp
+    ../../libstriezel/common/StringUtils.cpp
+    ../../libstriezel/filesystem/directory.cpp
+    ../../libstriezel/filesystem/file.cpp
+    ../../libstriezel/hash/sha256/FileSource.cpp
+    ../../libstriezel/hash/sha256/FileSourceUtility.cpp
+    ../../libstriezel/hash/sha256/MessageSource.cpp
+    ../../libstriezel/hash/sha256/sha256.cpp
     ../Curly.cpp
     ../Engine.cpp
     ../metascan/Definitions.cpp

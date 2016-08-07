@@ -19,7 +19,7 @@
 */
 
 #include <iostream>
-#include "../../libthoro/filesystem/file.hpp"
+#include "../../libstriezel/filesystem/file.hpp"
 #include "../../source/Configuration.hpp"
 
 int main(int argc, char** argv)
@@ -32,7 +32,7 @@ int main(int argc, char** argv)
     return 1;
   }
   const std::string keyfile = std::string(argv[1]);
-  if (!libthoro::filesystem::file::exists(keyfile))
+  if (!libstriezel::filesystem::file::exists(keyfile))
   {
     std::cout << "Error: The specified key file " << keyfile
               << " does not exist!" << std::endl;

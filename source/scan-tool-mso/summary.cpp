@@ -21,7 +21,7 @@
 #include "summary.hpp"
 #include <algorithm>
 #include <iostream>
-#include "../../libthoro/filesystem/file.hpp"
+#include "../../libstriezel/filesystem/file.hpp"
 
 namespace scantool
 {
@@ -72,7 +72,7 @@ void showSummary(const std::map<std::string, std::string>& mapFileToHash,
     for(const auto& largeElem : largeFiles)
     {
       std::cout << "  " << largeElem.first << " has a size of "
-                      << libthoro::filesystem::getSizeString(largeElem.second)
+                      << libstriezel::filesystem::getSizeString(largeElem.second)
                       << " and exceeds maximum file size for scan! "
                       << "File was skipped." << std::endl;
     } //for (range-based)

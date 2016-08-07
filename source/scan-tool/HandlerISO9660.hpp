@@ -22,13 +22,13 @@
 #define SCANTOOL_VT_HANDLERISO9660_HPP
 
 #include "HandlerGeneric.hpp"
-#include "../../libthoro/archive/iso9660/archive.hpp"
+#include "../../libstriezel/archive/iso9660/archive.hpp"
 
 struct IsoDetection
 {
   static bool isArcT(const std::string& fn)
   {
-    return libthoro::archive::iso9660::archive::isISO9660(fn);
+    return libstriezel::archive::iso9660::archive::isISO9660(fn);
   }
 }; //struct
 
@@ -38,7 +38,7 @@ namespace scantool
 namespace virustotal
 {
 
-typedef HandlerGeneric<libthoro::archive::iso9660::archive, IsoDetection> HandlerISO9660;
+typedef HandlerGeneric<libstriezel::archive::iso9660::archive, IsoDetection> HandlerISO9660;
 
 } //namespace
 

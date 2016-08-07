@@ -18,10 +18,10 @@
  -------------------------------------------------------------------------------
 */
 
-#include "../../libthoro/common/StringUtils.hpp"
-#include "../../libthoro/filesystem/directory.hpp"
-#include "../../libthoro/filesystem/file.hpp"
-#include "../../libthoro/hash/sha256/sha256.hpp"
+#include "../../libstriezel/common/StringUtils.hpp"
+#include "../../libstriezel/filesystem/directory.hpp"
+#include "../../libstriezel/filesystem/file.hpp"
+#include "../../libstriezel/hash/sha256/sha256.hpp"
 #include "../ReturnCodes.hpp"
 #include "CacheManagerV2.hpp"
 #include "ReportV2.hpp"
@@ -36,7 +36,7 @@ CacheManagerV2::CacheManagerV2(const std::string& cacheRoot)
 : m_CacheRoot(cacheRoot)
 {
   /* Nobody likes accidental directory traversals via malformed input. */
-  if (m_CacheRoot.find(std::string("..") + libthoro::filesystem::pathDelimiter)
+  if (m_CacheRoot.find(std::string("..") + libstriezel::filesystem::pathDelimiter)
       != std::string::npos)
     m_CacheRoot.clear();
   // Use default path instead of empty string.
@@ -47,7 +47,7 @@ CacheManagerV2::CacheManagerV2(const std::string& cacheRoot)
 std::string CacheManagerV2::getDefaultCacheDirectory()
 {
   std::string homeDirectory;
-  if (!libthoro::filesystem::directory::getHome(homeDirectory))
+  if (!libstriezel::filesystem::directory::getHome(homeDirectory))
   {
     #if defined(__linux__) || defined(linux)
     //use /tmp as replacement for home directory
@@ -60,8 +60,8 @@ std::string CacheManagerV2::getDefaultCacheDirectory()
     #endif
   }
   // cache directory is ~/.scan-tool/vt-cache/
-  return (libthoro::filesystem::slashify(homeDirectory) + ".scan-tool"
-          + libthoro::filesystem::pathDelimiter + "vt-cache");
+  return (libstriezel::filesystem::slashify(homeDirectory) + ".scan-tool"
+          + libstriezel::filesystem::pathDelimiter + "vt-cache");
 }
 
 const std::string& CacheManagerV2::getCacheDirectory() const
@@ -71,10 +71,10 @@ const std::string& CacheManagerV2::getCacheDirectory() const
 
 bool CacheManagerV2::createCacheDirectory()
 {
-  if (!libthoro::filesystem::directory::exists(m_CacheRoot))
+  if (!libstriezel::filesystem::directory::exists(m_CacheRoot))
   {
     //try to create the directory (and its parent directories, if missing)
-    if (!libthoro::filesystem::directory::createRecursive(m_CacheRoot))
+    if (!libstriezel::filesystem::directory::createRecursive(m_CacheRoot))
       return false;
   } //if cache directory does not exist
   const std::vector<char> subChars = { '0', '1', '2', '3', '4', '5', '6', '7',
@@ -84,12 +84,12 @@ bool CacheManagerV2::createCacheDirectory()
   {
     for (const auto & charTwo : subChars)
     {
-      const auto subDirectory = m_CacheRoot + libthoro::filesystem::pathDelimiter
+      const auto subDirectory = m_CacheRoot + libstriezel::filesystem::pathDelimiter
                               + std::string(1, charOne) + std::string(1, charTwo);
-      if (!libthoro::filesystem::directory::exists(subDirectory))
+      if (!libstriezel::filesystem::directory::exists(subDirectory))
       {
         //try to create the directory
-        if (!libthoro::filesystem::directory::create(subDirectory))
+        if (!libstriezel::filesystem::directory::create(subDirectory))
           return false;
       } //if cache sub directory does not exist
     } //for (inner)
@@ -113,7 +113,7 @@ std::string CacheManagerV2::getPathForCachedElement(const std::string& resourceI
   if (!SHA256::isValidHash(resourceID))
     return std::string("");
   /* Nobody likes accidental directory traversals via malformed input. */
-  if (cacheRoot.find(std::string("..") + libthoro::filesystem::pathDelimiter)
+  if (cacheRoot.find(std::string("..") + libstriezel::filesystem::pathDelimiter)
       != std::string::npos)
     return std::string("");
 
@@ -122,8 +122,8 @@ std::string CacheManagerV2::getPathForCachedElement(const std::string& resourceI
      e.g. ~/.scan-tool/vt-cache/ab/ab16da937795be615ce4bef4e4d5337e782a7e982ff13cea1ece3e89d914678f.json
      for the resource "ab16da937795be615ce4bef4e4d5337e782a7e982ff13cea1ece3e89d914678f".
   */
-  return libthoro::filesystem::slashify(cacheRoot) + resourceID.substr(0, 2)
-       + libthoro::filesystem::pathDelimiter + resourceID + ".json";
+  return libstriezel::filesystem::slashify(cacheRoot) + resourceID.substr(0, 2)
+       + libstriezel::filesystem::pathDelimiter + resourceID + ".json";
 }
 
 bool CacheManagerV2::deleteCachedElement(const std::string& resourceID)
@@ -138,10 +138,10 @@ bool CacheManagerV2::deleteCachedElement(const std::string& resourceID, const st
   if (cachedFile.empty())
     return false;
 
-  if (!libthoro::filesystem::file::exists(cachedFile))
+  if (!libstriezel::filesystem::file::exists(cachedFile))
     return true;
   //File exists, delete it.
-  return libthoro::filesystem::file::remove(cachedFile);
+  return libstriezel::filesystem::file::remove(cachedFile);
 }
 
 bool CacheManagerV2::isCachedElementName(const std::string& basename)
@@ -158,7 +158,7 @@ bool CacheManagerV2::isCachedElementName(const std::string& basename)
 uint_least32_t CacheManagerV2::checkIntegrity(const bool deleteCorrupted, const bool deleteUnknown) const
 {
   // Does the cache exist? If not, exit.
-  if (!libthoro::filesystem::directory::exists(m_CacheRoot))
+  if (!libstriezel::filesystem::directory::exists(m_CacheRoot))
     return 0;
 
   uint_least32_t corrupted = 0;
@@ -169,11 +169,11 @@ uint_least32_t CacheManagerV2::checkIntegrity(const bool deleteCorrupted, const 
   {
     for (const auto secondChar : subChars)
     {
-      const std::string currentSubDirectory = libthoro::filesystem::slashify(m_CacheRoot)
+      const std::string currentSubDirectory = libstriezel::filesystem::slashify(m_CacheRoot)
                       + std::string(1, firstChar) + std::string(1, secondChar);
-      if (libthoro::filesystem::directory::exists(currentSubDirectory))
+      if (libstriezel::filesystem::directory::exists(currentSubDirectory))
       {
-        const auto files = libthoro::filesystem::getDirectoryFileList(currentSubDirectory);
+        const auto files = libstriezel::filesystem::getDirectoryFileList(currentSubDirectory);
         #ifdef SCAN_TOOL_DEBUG
         std::clog << "Found " << files.size() << " files in "
                   << currentSubDirectory << "." << std::endl;
@@ -184,8 +184,8 @@ uint_least32_t CacheManagerV2::checkIntegrity(const bool deleteCorrupted, const 
           if (!file.isDirectory && isCachedElementName(file.fileName))
           {
             const auto fileName = currentSubDirectory
-                  + libthoro::filesystem::pathDelimiter + file.fileName;
-            const auto fileSize = libthoro::filesystem::file::getSize64(fileName);
+                  + libstriezel::filesystem::pathDelimiter + file.fileName;
+            const auto fileSize = libstriezel::filesystem::file::getSize64(fileName);
             //check, if file is way too large for a proper cache file
             if (fileSize >= 1024*1024*2)
             {
@@ -194,12 +194,12 @@ uint_least32_t CacheManagerV2::checkIntegrity(const bool deleteCorrupted, const 
               std::clog << "Info: JSON file " << fileName
                         << " is too large for a cached response!" << std::endl;
               if (deleteCorrupted)
-                libthoro::filesystem::file::remove(fileName);
+                libstriezel::filesystem::file::remove(fileName);
             } //if file is too large
             else
             {
               std::string content = "";
-              if (libthoro::filesystem::file::readIntoString(fileName, content))
+              if (libstriezel::filesystem::file::readIntoString(fileName, content))
               {
                 Json::Value root; // will contain the root value after parsing.
                 Json::Reader jsonReader;
@@ -209,7 +209,7 @@ uint_least32_t CacheManagerV2::checkIntegrity(const bool deleteCorrupted, const 
                   std::clog << "Info: JSON data from " << fileName << " could not be parsed!" << std::endl;
                   ++corrupted;
                   if (deleteCorrupted)
-                    libthoro::filesystem::file::remove(fileName);
+                    libstriezel::filesystem::file::remove(fileName);
                 } //if parsing failed
                 else
                 {
@@ -220,7 +220,7 @@ uint_least32_t CacheManagerV2::checkIntegrity(const bool deleteCorrupted, const 
                     if (deleteUnknown && (report.response_code == 0))
                     {
                       std::cout << "Info: " << fileName << " contains no relevant data." << std::endl;
-                      libthoro::filesystem::file::remove(fileName);
+                      libstriezel::filesystem::file::remove(fileName);
                     } //if report can be deleted
                     //check SHA256 hash
                     else if ((report.sha256 != file.fileName.substr(0, 64))
@@ -232,7 +232,7 @@ uint_least32_t CacheManagerV2::checkIntegrity(const bool deleteCorrupted, const 
                                 << " match file name." << std::endl;
                       ++corrupted;
                       if (deleteCorrupted)
-                        libthoro::filesystem::file::remove(fileName);
+                        libstriezel::filesystem::file::remove(fileName);
                     } //else if SHA256 does not match
                   } //if report could be filled from JSON
                   else
@@ -240,7 +240,7 @@ uint_least32_t CacheManagerV2::checkIntegrity(const bool deleteCorrupted, const 
                     //JSON data is probably not a report
                     ++corrupted;
                     if (deleteCorrupted)
-                      libthoro::filesystem::file::remove(fileName);
+                      libstriezel::filesystem::file::remove(fileName);
                   }
                 } //else (JSON parsing was successful)
               } //if file was read
@@ -267,7 +267,7 @@ uint_least32_t CacheManagerV2::checkIntegrity(const bool deleteCorrupted, const 
 
 int CacheManagerV2::performTransition()
 {
-  if (!libthoro::filesystem::directory::exists(getCacheDirectory()))
+  if (!libstriezel::filesystem::directory::exists(getCacheDirectory()))
   {
     std::cout << "Warning: The cache directory " << getCacheDirectory()
               << " does not exist. Nothing to do here." << std::endl;
@@ -298,37 +298,37 @@ int CacheManagerV2::performTransition()
 uint_least32_t CacheManagerV2::transitionOneTo256()
 {
   // Does the cache exist? If not, exit.
-  if (!libthoro::filesystem::directory::exists(m_CacheRoot))
+  if (!libstriezel::filesystem::directory::exists(m_CacheRoot))
     return 0;
 
   uint_least32_t moved_files = 0;
 
-  const auto files = libthoro::filesystem::getDirectoryFileList(
-                           libthoro::filesystem::unslashify(m_CacheRoot));
+  const auto files = libstriezel::filesystem::getDirectoryFileList(
+                           libstriezel::filesystem::unslashify(m_CacheRoot));
   #ifdef SCAN_TOOL_DEBUG
   std::clog << "Found " << files.size() << " files in "
-            << libthoro::filesystem::unslashify(m_CacheRoot) << "." << std::endl;
+            << libstriezel::filesystem::unslashify(m_CacheRoot) << "." << std::endl;
   #endif // SCAN_TOOL_DEBUG
   for (auto const & file : files)
   {
     //entry must not be a directory and have a valid file name
     if (!file.isDirectory && isCachedElementName(file.fileName))
     {
-      const auto fileName = libthoro::filesystem::slashify(m_CacheRoot)
+      const auto fileName = libstriezel::filesystem::slashify(m_CacheRoot)
                           + file.fileName;
-      const auto fileSize = libthoro::filesystem::file::getSize64(fileName);
+      const auto fileSize = libstriezel::filesystem::file::getSize64(fileName);
       //check, if file is way too large for a proper cache file
       if (fileSize >= 1024*1024*2)
       {
         //Several kilobytes are alright, but not megabytes.
         std::clog << "Info: JSON file " << fileName
                   << " is too large for a cached response!" << std::endl;
-        libthoro::filesystem::file::remove(fileName);
+        libstriezel::filesystem::file::remove(fileName);
       } //if file is too large
       else
       {
         std::string content = "";
-        if (libthoro::filesystem::file::readIntoString(fileName, content))
+        if (libstriezel::filesystem::file::readIntoString(fileName, content))
         {
           Json::Value root; // will contain the root value after parsing.
           Json::Reader jsonReader;
@@ -336,7 +336,7 @@ uint_least32_t CacheManagerV2::transitionOneTo256()
           if (!success)
           {
             std::clog << "Info: JSON data from " << fileName << " could not be parsed!" << std::endl;
-            libthoro::filesystem::file::remove(fileName);
+            libstriezel::filesystem::file::remove(fileName);
           } //if parsing failed
           else
           {
@@ -347,12 +347,12 @@ uint_least32_t CacheManagerV2::transitionOneTo256()
               if (report.response_code == 0)
               {
                 std::cout << "Info: " << fileName << " contains no relevant data." << std::endl;
-                libthoro::filesystem::file::remove(fileName);
+                libstriezel::filesystem::file::remove(fileName);
               } //if report can be deleted
               else
               {
                 const std::string newPath = getPathForCachedElement(file.fileName.substr(0, 64));
-                if (libthoro::filesystem::file::rename(fileName, newPath))
+                if (libstriezel::filesystem::file::rename(fileName, newPath))
                   ++moved_files;
                 else
                 {
@@ -364,7 +364,7 @@ uint_least32_t CacheManagerV2::transitionOneTo256()
             else
             {
               //JSON data is probably not a report
-              libthoro::filesystem::file::remove(fileName);
+              libstriezel::filesystem::file::remove(fileName);
             }
           } //else (JSON parsing was successful)
         } //if file was read
@@ -388,7 +388,7 @@ uint_least32_t CacheManagerV2::transitionOneTo256()
 uint_least32_t CacheManagerV2::transition16To256()
 {
   // Does the cache exist? If not, exit.
-  if (!libthoro::filesystem::directory::exists(m_CacheRoot))
+  if (!libstriezel::filesystem::directory::exists(m_CacheRoot))
     return 0;
 
   uint_least32_t moved_files = 0;
@@ -398,10 +398,10 @@ uint_least32_t CacheManagerV2::transition16To256()
   for (const auto & d : sub)
   {
     const std::string currentSubDirectory =
-        libthoro::filesystem::slashify(m_CacheRoot) + d;
-    if (libthoro::filesystem::directory::exists(currentSubDirectory))
+        libstriezel::filesystem::slashify(m_CacheRoot) + d;
+    if (libstriezel::filesystem::directory::exists(currentSubDirectory))
     {
-      const auto files = libthoro::filesystem::getDirectoryFileList(currentSubDirectory);
+      const auto files = libstriezel::filesystem::getDirectoryFileList(currentSubDirectory);
       #ifdef SCAN_TOOL_DEBUG
       std::clog << "Found " << files.size() << " files in "
                 << currentSubDirectory << "." << std::endl;
@@ -413,20 +413,20 @@ uint_least32_t CacheManagerV2::transition16To256()
         if (!file.isDirectory && isCachedElementName(file.fileName))
         {
           const auto fileName = currentSubDirectory
-                + libthoro::filesystem::pathDelimiter + file.fileName;
-          const auto fileSize = libthoro::filesystem::file::getSize64(fileName);
+                + libstriezel::filesystem::pathDelimiter + file.fileName;
+          const auto fileSize = libstriezel::filesystem::file::getSize64(fileName);
           //check, if file is way too large for a proper cache file
           if (fileSize >= 1024*1024*2)
           {
             //Several kilobytes are alright, but not megabytes.
             std::clog << "Info: JSON file " << fileName
                       << " is too large for a cached response!" << std::endl;
-            libthoro::filesystem::file::remove(fileName);
+            libstriezel::filesystem::file::remove(fileName);
           } //if file is too large
           else
           {
             std::string content = "";
-            if (libthoro::filesystem::file::readIntoString(fileName, content))
+            if (libstriezel::filesystem::file::readIntoString(fileName, content))
             {
               Json::Value root; // will contain the root value after parsing.
               Json::Reader jsonReader;
@@ -434,7 +434,7 @@ uint_least32_t CacheManagerV2::transition16To256()
               if (!success)
               {
                 std::clog << "Info: JSON data from " << fileName << " could not be parsed!" << std::endl;
-                libthoro::filesystem::file::remove(fileName);
+                libstriezel::filesystem::file::remove(fileName);
               } //if parsing failed
               else
               {
@@ -445,12 +445,12 @@ uint_least32_t CacheManagerV2::transition16To256()
                   if (report.response_code == 0)
                   {
                     std::cout << "Info: " << fileName << " contains no relevant data." << std::endl;
-                    libthoro::filesystem::file::remove(fileName);
+                    libstriezel::filesystem::file::remove(fileName);
                   } //if report can be deleted
                   else
                   {
                     const std::string newPath = getPathForCachedElement(file.fileName.substr(0, 64));
-                    if (libthoro::filesystem::file::rename(fileName, newPath))
+                    if (libstriezel::filesystem::file::rename(fileName, newPath))
                       ++moved_files;
                     else
                     {
@@ -462,7 +462,7 @@ uint_least32_t CacheManagerV2::transition16To256()
                 else
                 {
                   //JSON data is probably not a report
-                  libthoro::filesystem::file::remove(fileName);
+                  libstriezel::filesystem::file::remove(fileName);
                 }
               } //else (JSON parsing was successful)
             } //if file was read
@@ -481,7 +481,7 @@ uint_least32_t CacheManagerV2::transition16To256()
         } //else
       } //for (inner)
       //try to remove the directory, because it should be empty / unused by now
-      if (!libthoro::filesystem::directory::remove(currentSubDirectory))
+      if (!libstriezel::filesystem::directory::remove(currentSubDirectory))
       {
         std::cout << "Warning: Could not remove directory " << currentSubDirectory
                   << ". Maybe this directory is not empty yet or you do not "

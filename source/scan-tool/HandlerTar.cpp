@@ -19,9 +19,9 @@
 */
 
 #include "HandlerTar.hpp"
-#include "../../libthoro/archive/tar/archive.hpp"
-#include "../../libthoro/filesystem/directory.hpp"
-#include "../../libthoro/filesystem/file.hpp"
+#include "../../libstriezel/archive/tar/archive.hpp"
+#include "../../libstriezel/filesystem/directory.hpp"
+#include "../../libstriezel/filesystem/file.hpp"
 #include "../ReturnCodes.hpp"
 #include "ScanStrategy.hpp"
 
@@ -43,12 +43,12 @@ int HandlerTar::handle(scantool::virustotal::ScanStrategy& strategy,
               std::vector<std::pair<std::string, int64_t> >& largeFiles)
 {
   //If it is not a tape archive, then there's nothing to do here.
-  if (!libthoro::tar::archive::isTar(fileName))
+  if (!libstriezel::tar::archive::isTar(fileName))
     return 0;
 
   std::string tempDirectory = "";
   //create temp. directory for extraction
-  if (!libthoro::filesystem::directory::createTemp(tempDirectory))
+  if (!libstriezel::filesystem::directory::createTemp(tempDirectory))
   {
     std::cerr << "Error: Could not create temporary directory for extraction "
               << "of tape archive!" << std::endl;
@@ -56,7 +56,7 @@ int HandlerTar::handle(scantool::virustotal::ScanStrategy& strategy,
   }
   try
   {
-    libthoro::tar::archive tarball(fileName);
+    libstriezel::tar::archive tarball(fileName);
     const auto entries = tarball.entries();
 
     //iterate over entries
@@ -65,14 +65,14 @@ int HandlerTar::handle(scantool::virustotal::ScanStrategy& strategy,
       if (!ent.isDirectory())
       {
         const std::string bn = ent.basename();
-        const std::string destFile = libthoro::filesystem::slashify(tempDirectory)
+        const std::string destFile = libstriezel::filesystem::slashify(tempDirectory)
                                    + (bn.empty() ? "file.dat" : bn);
         //extract file
         if (!tarball.extractTo(destFile, ent.name()))
         {
           std::cerr << "Error: Could not extract file " << ent.name()
                     << " from " << fileName << "!" << std::endl;
-          libthoro::filesystem::directory::remove(tempDirectory);
+          libstriezel::filesystem::directory::remove(tempDirectory);
           return scantool::rcFileError;
         } //if extraction failed
         //scan file
@@ -81,25 +81,25 @@ int HandlerTar::handle(scantool::virustotal::ScanStrategy& strategy,
         mapHashToReport, mapFileToHash, queued_scans, lastQueuedScanTime,
         largeFiles);
         //remove file
-        libthoro::filesystem::file::remove(destFile);
+        libstriezel::filesystem::file::remove(destFile);
         //check return code
         if (rcStrategy != 0)
         {
           //delete temporary directory
-          libthoro::filesystem::directory::remove(tempDirectory);
+          libstriezel::filesystem::directory::remove(tempDirectory);
           //... and return
           return rcStrategy;
         } //if scan failed
       } //if not directory
     } //for (range-based)
     //delete temporary directory
-    libthoro::filesystem::directory::remove(tempDirectory);
+    libstriezel::filesystem::directory::remove(tempDirectory);
   } //try
   catch (std::exception& ex)
   {
     std::cerr << "An exception occurred while handling the tarball "
               << fileName << ": " << ex.what() << std::endl;
-    libthoro::filesystem::directory::remove(tempDirectory);
+    libstriezel::filesystem::directory::remove(tempDirectory);
     return scantool::rcFileError;
   } //try-catch
   //If we get to this point, all is fine.

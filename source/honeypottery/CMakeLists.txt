@@ -6,8 +6,8 @@ project(honeypottery)
 #add_definitions(-DDEFINE_CONSTANT_HERE -DANOTHER_ONE_THERE -DTHIS_IS_THE_THIRD)
 
 set(honeypottery_sources
-    ../../libthoro/common/StringUtils.cpp
-    ../../libthoro/filesystem/file.cpp
+    ../../libstriezel/common/StringUtils.cpp
+    ../../libstriezel/filesystem/file.cpp
     ../Configuration.cpp
     ../Curly.cpp
     ../Engine.cpp

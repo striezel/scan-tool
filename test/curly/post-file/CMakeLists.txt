@@ -5,8 +5,8 @@ cmake_minimum_required (VERSION 2.8)
 project(test_curly_post_file)
 
 set(test_curly_post_file_sources
-    ../../../libthoro/common/StringUtils.cpp
-    ../../../libthoro/filesystem/file.cpp
+    ../../../libstriezel/common/StringUtils.cpp
+    ../../../libstriezel/filesystem/file.cpp
     ../../../source/Curly.cpp
     post-file.cpp)
 

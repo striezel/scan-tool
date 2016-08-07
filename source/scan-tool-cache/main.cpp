@@ -21,9 +21,9 @@
 #include <chrono>
 #include <iostream>
 #include <string>
-#include "../../libthoro/common/StringUtils.hpp"
-#include "../../libthoro/filesystem/directory.hpp"
-#include "../../libthoro/filesystem/file.hpp"
+#include "../../libstriezel/common/StringUtils.hpp"
+#include "../../libstriezel/filesystem/directory.hpp"
+#include "../../libstriezel/filesystem/file.hpp"
 #include "../virustotal/CacheManagerV2.hpp"
 #include "../Configuration.hpp"
 #include "../Constants.hpp"
@@ -209,7 +209,7 @@ int main(int argc, char ** argv)
           if ((i+1 < argc) and (argv[i+1] != nullptr))
           {
             const std::string keyfile = std::string(argv[i+1]);
-            if (!libthoro::filesystem::file::exists(keyfile))
+            if (!libstriezel::filesystem::file::exists(keyfile))
             {
               std::cout << "Error: The specified key file " << keyfile
                         << " does not exist!" << std::endl;
@@ -299,7 +299,7 @@ int main(int argc, char ** argv)
           //enough parameters?
           if ((i+1 < argc) and (argv[i+1] != nullptr))
           {
-            requestCacheDirVT = libthoro::filesystem::unslashify(std::string(argv[i+1]));
+            requestCacheDirVT = libstriezel::filesystem::unslashify(std::string(argv[i+1]));
             ++i; //Skip next parameter, because it's already used as directory.
           }
           else
@@ -339,7 +339,7 @@ int main(int argc, char ** argv)
   {
     scantool::virustotal::CacheManagerV2 cacheMgr(requestCacheDirVT);
     const std::string cacheDirectory = cacheMgr.getCacheDirectory();
-    if (libthoro::filesystem::directory::exists(cacheDirectory))
+    if (libstriezel::filesystem::directory::exists(cacheDirectory))
     {
       std::cout << "Info: The cache directory exists." << std::endl;
       return 0;
