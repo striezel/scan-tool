@@ -31,6 +31,12 @@ namespace scantool
 namespace virustotal
 {
 
+ZipHandler::ZipHandler(const bool ignoreErrors)
+: Handler(),
+  m_IgnoreExtractionErrors(ignoreErrors)
+{
+}
+
 int ZipHandler::handle(scantool::virustotal::ScanStrategy& strategy,
               ScannerV2& scanVT, const std::string& fileName,
               CacheManagerV2& cacheMgr, const std::string& requestCacheDirVT, const bool useRequestCache,
@@ -98,13 +104,28 @@ int ZipHandler::handle(scantool::virustotal::ScanStrategy& strategy,
   } //try
   catch (std::exception& ex)
   {
-    std::cerr << "An exception occurred while handling the ZIP file "
-              << fileName << ": " << ex.what() << std::endl;
     libstriezel::filesystem::directory::remove(tempDirectory);
-    return scantool::rcFileError;
+    if (!ignoreExtractionErrors())
+    {
+      std::cerr << "An exception occurred while handling the ZIP file "
+              << fileName << ": " << ex.what() << std::endl;
+      return scantool::rcFileError;
+    }
+    //ignore error and return zero (which indicates that all is fine)
+    return 0;
   } //try-catch
   //If we get to this point, all is fine.
   return 0;
+}
+
+bool ZipHandler::ignoreExtractionErrors() const
+{
+  return m_IgnoreExtractionErrors;
+}
+
+void ZipHandler::ignoreExtractionErrors(const bool ignore)
+{
+  m_IgnoreExtractionErrors = ignore;
 }
 
 } //namespace

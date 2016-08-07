@@ -42,7 +42,7 @@ class HandlerGeneric: public Handler
 {
   public:
     /** constructor */
-    HandlerGeneric();
+    HandlerGeneric(const bool ignoreErrors = false);
 
     /** \brief scan a given file using the implemented handling mechanism
      *
@@ -93,8 +93,9 @@ class HandlerGeneric: public Handler
 }; //class
 
 template<class ArcT, typename isArc>
-HandlerGeneric<ArcT, isArc>::HandlerGeneric()
-: m_IgnoreExtractionErrors(false)
+HandlerGeneric<ArcT, isArc>::HandlerGeneric(const bool ignoreErrors)
+: Handler(),
+  m_IgnoreExtractionErrors(ignoreErrors)
 {
 }
 
@@ -172,7 +173,7 @@ int HandlerGeneric<ArcT, isArc>::handle(scantool::virustotal::ScanStrategy& stra
               << fileName << ": " << ex.what() << std::endl;
       return scantool::rcFileError;
     }
-    //ignore error and return zero (which indicates all is OK)
+    //ignore error and return zero (which indicates that all is fine)
     return 0;
   } //try-catch
   //If we get to this point, all is fine.

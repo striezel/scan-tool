@@ -31,6 +31,12 @@ namespace scantool
 namespace virustotal
 {
 
+HandlerGzip::HandlerGzip(const bool ignoreErrors)
+: Handler(),
+  m_IgnoreExtractionErrors(ignoreErrors)
+{
+}
+
 int HandlerGzip::handle(scantool::virustotal::ScanStrategy& strategy,
               ScannerV2& scanVT, const std::string& fileName,
               CacheManagerV2& cacheMgr, const std::string& requestCacheDirVT, const bool useRequestCache,
@@ -97,13 +103,28 @@ int HandlerGzip::handle(scantool::virustotal::ScanStrategy& strategy,
   } //try
   catch (std::exception& ex)
   {
-    std::cerr << "An exception occurred while handling the tarball "
-              << fileName << ": " << ex.what() << std::endl;
     libstriezel::filesystem::directory::remove(tempDirectory);
-    return scantool::rcFileError;
+    if (!ignoreExtractionErrors())
+    {
+      std::cerr << "An exception occurred while handling the gzipped file "
+              << fileName << ": " << ex.what() << std::endl;
+      return scantool::rcFileError;
+    }
+    //ignore error and return zero (which indicates all is OK)
+    return 0;
   } //try-catch
   //If we get to this point, all is fine.
   return 0;
+}
+
+bool HandlerGzip::ignoreExtractionErrors() const
+{
+  return m_IgnoreExtractionErrors;
+}
+
+void HandlerGzip::ignoreExtractionErrors(const bool ignore)
+{
+  m_IgnoreExtractionErrors = ignore;
 }
 
 } //namespace

@@ -1,5 +1,9 @@
 # ChangeLog for scan-tool
 
+## Version 0.40 (2016-08-07)
+  - add an option to ignore errors that might occur during the extraction of
+    archive files: --ignore-extraction-errors
+
 ## Version 0.39 (2016-07-20)
   - add Cabinet handlers: If told via the command line option --cab, scan-tool
     will extract Microsoft Cabinet archives and scan each contained file

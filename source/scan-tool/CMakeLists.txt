@@ -37,7 +37,6 @@ set(scan-tool_sources
     ../StringToTimeT.cpp
     HandlerGeneric.hpp
     HandlerGzip.cpp
-    HandlerTar.cpp
     ScanStrategy.cpp
     ScanStrategyDefault.cpp
     ScanStrategyDirectScan.cpp

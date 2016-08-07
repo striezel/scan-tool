@@ -21,10 +21,16 @@
 #ifndef SCANTOOL_VT_HANDLERTAR_HPP
 #define SCANTOOL_VT_HANDLERTAR_HPP
 
-#include <unordered_map>
-#include "../virustotal/CacheManagerV2.hpp"
-#include "../virustotal/ScannerV2.hpp"
-#include "Handler.hpp"
+#include "HandlerGeneric.hpp"
+#include "../../libstriezel/archive/tar/archive.hpp"
+
+struct TarDetection
+{
+  static bool isArcT(const std::string& fn)
+  {
+    return libstriezel::tar::archive::isTar(fn);
+  }
+}; //struct
 
 namespace scantool
 {
@@ -32,40 +38,7 @@ namespace scantool
 namespace virustotal
 {
 
-class HandlerTar: public Handler
-{
-  public:
-    /** \brief scan a given file using the implemented handling mechanism
-     *
-     * \param strategy  reference to the current scan strategy
-     * \param scanVT    the scanner that shall be used to scan the file
-     * \param fileName  name of the file that shall be scanned
-     * \param cacheMgr  cache manager
-     * \param requestCacheDirVT  custom directory of the request cache
-     * \param useRequestCache    whether or not the request cache shall be used
-     * \param silent        silence flag
-     * \param maybeLimit    limit for "maybe infected"; higher count means infected
-     * \param maxAgeInDays  maximum age of scan reports in days without requesting rescan
-     * \param ageLimit      time point for rescans (older reports trigger rescans)
-     * \param mapHashToReport  maps SHA256 hashes to corresponding report; key = SHA256 hash, value = scan report
-     * \param mapFileToHash    maps filename to hash; key = file name, value = SHA256 hash
-     * \param queuedScans      list of queued scan requests; key = scan_id, value = file name
-     * \param lastQueuedScanTime time point of the last queued scan - will be updated by this method for every scan
-     * \param largeFiles       list of files that exceed the file size for scans; first = file name, second = file size in octets
-     * \return Returns zero, if the file could be processed properly.
-     * Returns a non-zero exit code, if an error occurred.
-     */
-    virtual int handle(scantool::virustotal::ScanStrategy& strategy,
-              ScannerV2& scanVT, const std::string& fileName,
-              CacheManagerV2& cacheMgr, const std::string& requestCacheDirVT, const bool useRequestCache,
-              const bool silent, const int maybeLimit, const int maxAgeInDays,
-              const std::chrono::time_point<std::chrono::system_clock> ageLimit,
-              std::map<std::string, ScannerV2::Report>& mapHashToReport,
-              std::map<std::string, std::string>& mapFileToHash,
-              std::unordered_map<std::string, std::string>& queued_scans,
-              std::chrono::time_point<std::chrono::steady_clock>& lastQueuedScanTime,
-              std::vector<std::pair<std::string, int64_t> >& largeFiles) override;
-}; //class
+typedef HandlerGeneric<libstriezel::tar::archive, TarDetection> HandlerTar;
 
 } //namespace
 

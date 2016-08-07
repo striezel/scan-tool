@@ -108,7 +108,6 @@
 		<Unit filename="HandlerGzip.cpp" />
 		<Unit filename="HandlerGzip.hpp" />
 		<Unit filename="HandlerISO9660.hpp" />
-		<Unit filename="HandlerTar.cpp" />
 		<Unit filename="HandlerTar.hpp" />
 		<Unit filename="HandlerXz.hpp" />
 		<Unit filename="ScanStrategy.cpp" />

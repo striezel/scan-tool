@@ -109,12 +109,15 @@ void showHelp()
             << "  --iso9660        - add ISO 9660 (*.iso) file handler which extracts ISO 9660\n"
             << "                     disk images and scans each contained file, too.\n"
             << "  --cab            - add Cabinet archive (*.cab) file handler which extracts\n"
-            << "                     these archives and scans each contained file, too.\n";
+            << "                     these archives and scans each contained file, too.\n"
+            << "  --ignore-extraction-errors\n"
+            << "                   - tells the program to ignore errors during archive\n"
+            << "                     extraction and continue as if these errors did not occur.\n";
 }
 
 void showVersion()
 {
-  std::cout << "scan-tool, version 0.39, 2016-07-20\n";
+  std::cout << "scan-tool, version 0.40, 2016-08-07\n";
 }
 
 /* Four variables that will be used in main() but also in signal handling
@@ -229,7 +232,7 @@ int main(int argc, char ** argv)
   std::set<std::string> files_scan = std::set<std::string>();
   //scan strategy
   scantool::virustotal::Strategy selectedStrategy = scantool::virustotal::Strategy::None;
-  //flags for file handlers
+  //flags for archive file handlers
   bool handleZIP = false;
   bool handleTar = false;
   bool handleGzip = false;
@@ -237,6 +240,7 @@ int main(int argc, char ** argv)
   bool handleAr = false;
   bool handleXz = false;
   bool handleCab = false;
+  bool ignoreExtractionErrors = false;
 
   if ((argc > 1) and (argv != nullptr))
   {
@@ -604,6 +608,17 @@ int main(int argc, char ** argv)
           }
           handleCab = true;
         } //handle .cab files
+        else if ((param=="--ignore-extraction-errors") || (param=="--ignore-archive-errors"))
+        {
+          //Has the ignore option already been set?
+          if (ignoreExtractionErrors)
+          {
+            std::cout << "Error: Parameter " << param << " must not occur more than once!"
+                      << std::endl;
+            return scantool::rcInvalidParameter;
+          }
+          ignoreExtractionErrors = true;
+        } //ignore archive extraction errors
         else if ((param == "--integrity") or (param == "-i"))
         {
           //add note about new executable for cache stuff
@@ -757,37 +772,37 @@ int main(int argc, char ** argv)
   //check, if user wants ZIP handler
   if (handleZIP)
   {
-    strategy->addHandler(std::unique_ptr<scantool::virustotal::ZipHandler>(new scantool::virustotal::ZipHandler));
+    strategy->addHandler(std::unique_ptr<scantool::virustotal::ZipHandler>(new scantool::virustotal::ZipHandler(ignoreExtractionErrors)));
   }
   //check if user wants tar handler
   if (handleTar)
   {
-    strategy->addHandler(std::unique_ptr<scantool::virustotal::HandlerTar>(new scantool::virustotal::HandlerTar));
+    strategy->addHandler(std::unique_ptr<scantool::virustotal::HandlerTar>(new scantool::virustotal::HandlerTar(ignoreExtractionErrors)));
   }
   //check if user wants gz handler
   if (handleGzip)
   {
-    strategy->addHandler(std::unique_ptr<scantool::virustotal::HandlerGzip>(new scantool::virustotal::HandlerGzip));
+    strategy->addHandler(std::unique_ptr<scantool::virustotal::HandlerGzip>(new scantool::virustotal::HandlerGzip(ignoreExtractionErrors)));
   }
   //check if user wants Ar handler
   if (handleAr)
   {
-    strategy->addHandler(std::unique_ptr<scantool::virustotal::HandlerAr>(new scantool::virustotal::HandlerAr));
+    strategy->addHandler(std::unique_ptr<scantool::virustotal::HandlerAr>(new scantool::virustotal::HandlerAr(ignoreExtractionErrors)));
   }
   //check XZ handler
   if (handleXz)
   {
-    strategy->addHandler(std::unique_ptr<scantool::virustotal::HandlerXz>(new scantool::virustotal::HandlerXz));
+    strategy->addHandler(std::unique_ptr<scantool::virustotal::HandlerXz>(new scantool::virustotal::HandlerXz(ignoreExtractionErrors)));
   }
   //check if user wants iso9660 handler
   if (handleISO9660)
   {
-    strategy->addHandler(std::unique_ptr<scantool::virustotal::HandlerISO9660>(new scantool::virustotal::HandlerISO9660));
+    strategy->addHandler(std::unique_ptr<scantool::virustotal::HandlerISO9660>(new scantool::virustotal::HandlerISO9660(ignoreExtractionErrors)));
   }
   //check if user wants cabinet handler
   if (handleCab)
   {
-    strategy->addHandler(std::unique_ptr<scantool::virustotal::HandlerCab>(new scantool::virustotal::HandlerCab));
+    strategy->addHandler(std::unique_ptr<scantool::virustotal::HandlerCab>(new scantool::virustotal::HandlerCab(ignoreExtractionErrors)));
   }
 
   //iterate over all files for scan requests
