@@ -41,6 +41,9 @@ template<class ArcT, typename isArc>
 class HandlerGeneric: public Handler
 {
   public:
+    /** constructor */
+    HandlerGeneric();
+
     /** \brief scan a given file using the implemented handling mechanism
      *
      * \param strategy  reference to the current scan strategy
@@ -71,7 +74,29 @@ class HandlerGeneric: public Handler
               std::unordered_map<std::string, std::string>& queued_scans,
               std::chrono::time_point<std::chrono::steady_clock>& lastQueuedScanTime,
               std::vector<std::pair<std::string, int64_t> >& largeFiles) override;
+
+    /** \brief checks whether or not this handler ignores extraction failures
+     *
+     * \return Returns true, if extraction failure does not produce an error or
+     * an exception. Returns false, if extraction failure causes errors.
+     */
+    bool ignoreExtractionErrors() const;
+
+
+    /** \brief sets whether or not extraction errors will be ignore
+     *
+     * \param ignore  whether or not to ignore extraction failure
+     */
+    void ignoreExtractionErrors(const bool ignore);
+  private:
+    bool m_IgnoreExtractionErrors; /**< whether to continue, if extraction fails */
 }; //class
+
+template<class ArcT, typename isArc>
+HandlerGeneric<ArcT, isArc>::HandlerGeneric()
+: m_IgnoreExtractionErrors(false)
+{
+}
 
 template<class ArcT, typename isArc>
 int HandlerGeneric<ArcT, isArc>::handle(scantool::virustotal::ScanStrategy& strategy,
@@ -140,13 +165,30 @@ int HandlerGeneric<ArcT, isArc>::handle(scantool::virustotal::ScanStrategy& stra
   } //try
   catch (std::exception& ex)
   {
-    std::cerr << "An exception occurred while handling the archive "
-              << fileName << ": " << ex.what() << std::endl;
     libstriezel::filesystem::directory::remove(tempDirectory);
-    return scantool::rcFileError;
+    if (!ignoreExtractionErrors())
+    {
+      std::cerr << "An exception occurred while handling the archive "
+              << fileName << ": " << ex.what() << std::endl;
+      return scantool::rcFileError;
+    }
+    //ignore error and return zero (which indicates all is OK)
+    return 0;
   } //try-catch
   //If we get to this point, all is fine.
   return 0;
+}
+
+template<class ArcT, typename isArc>
+bool HandlerGeneric<ArcT, isArc>::ignoreExtractionErrors() const
+{
+  return m_IgnoreExtractionErrors;
+}
+
+template<class ArcT, typename isArc>
+void HandlerGeneric<ArcT, isArc>::ignoreExtractionErrors(const bool ignore)
+{
+  m_IgnoreExtractionErrors = ignore;
 }
 
 } //namespace
