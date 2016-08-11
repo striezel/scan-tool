@@ -68,35 +68,36 @@ int HandlerGzip::handle(scantool::virustotal::ScanStrategy& strategy,
     //iterate over entries
     for(const auto & ent : entries)
     {
-      if (!ent.isDirectory())
+      /* There should never be any directory entries in a GZIP file, because
+         a GZIP is just a single, compressed file. Therefore the check with
+         ent.isDirectory() can be ommitted in this handler's case.
+      */
+      const std::string bn = ent.basename();
+      const std::string destFile = libstriezel::filesystem::slashify(tempDirectory)
+                                 + (bn.empty() ? "file.dat" : bn);
+      //extract file
+      if (!gzippedFile.extractTo(destFile))
       {
-        const std::string bn = ent.basename();
-        const std::string destFile = libstriezel::filesystem::slashify(tempDirectory)
-                                   + (bn.empty() ? "file.dat" : bn);
-        //extract file
-        if (!gzippedFile.extractTo(destFile))
-        {
-          std::cerr << "Error: Could not extract file " << ent.name()
-                    << " from " << fileName << "!" << std::endl;
-          libstriezel::filesystem::directory::remove(tempDirectory);
-          return scantool::rcFileError;
-        } //if extraction failed
-        //scan file
-        const int rcStrategy = strategy.scan(scanVT, destFile, cacheMgr, requestCacheDirVT,
-        useRequestCache, silent, maybeLimit, maxAgeInDays, ageLimit,
-        mapHashToReport, mapFileToHash, queued_scans, lastQueuedScanTime,
-        largeFiles);
-        //remove file
-        libstriezel::filesystem::file::remove(destFile);
-        //check return code
-        if (rcStrategy != 0)
-        {
-          //delete temporary directory
-          libstriezel::filesystem::directory::remove(tempDirectory);
-          //... and return
-          return rcStrategy;
-        } //if scan failed
-      } //if not directory
+        std::cerr << "Error: Could not extract file " << ent.name()
+                  << " from " << fileName << "!" << std::endl;
+        libstriezel::filesystem::directory::remove(tempDirectory);
+        return scantool::rcFileError;
+      } //if extraction failed
+      //scan file
+      const int rcStrategy = strategy.scan(scanVT, destFile, cacheMgr, requestCacheDirVT,
+      useRequestCache, silent, maybeLimit, maxAgeInDays, ageLimit,
+      mapHashToReport, mapFileToHash, queued_scans, lastQueuedScanTime,
+      largeFiles);
+      //remove file
+      libstriezel::filesystem::file::remove(destFile);
+      //check return code
+      if (rcStrategy != 0)
+      {
+        //delete temporary directory
+        libstriezel::filesystem::directory::remove(tempDirectory);
+        //... and return
+        return rcStrategy;
+      } //if scan failed
     } //for (range-based)
     //delete temporary directory
     libstriezel::filesystem::directory::remove(tempDirectory);

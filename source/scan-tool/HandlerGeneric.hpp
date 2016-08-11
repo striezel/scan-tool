@@ -131,7 +131,8 @@ int HandlerGeneric<ArcT, isArc>::handle(scantool::virustotal::ScanStrategy& stra
     //iterate over entries
     for(const auto & ent : entries)
     {
-      if (!ent.isDirectory())
+      //We do not want directory and symbolic link entries.
+      if (!ent.isDirectory() && !ent.isSymLink())
       {
         const std::string bn = ent.basename();
         const std::string destFile = libstriezel::filesystem::slashify(tempDirectory)

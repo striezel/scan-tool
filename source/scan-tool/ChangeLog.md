@@ -1,5 +1,8 @@
 # ChangeLog for scan-tool
 
+## Version 0.41 (2016-08-11)
+  - skip symbolic links in archives
+
 ## Version 0.40 (2016-08-07)
   - add an option to ignore errors that might occur during the extraction of
     archive files: --ignore-extraction-errors

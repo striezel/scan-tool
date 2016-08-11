@@ -68,7 +68,13 @@ int ZipHandler::handle(scantool::virustotal::ScanStrategy& strategy,
     //iterate over entries
     for(const auto & ent : entries)
     {
-      if (!ent.isDirectory())
+      //We do not want directory and symbolic link entries.
+      /* The current implementation of libzip (and thus libstriezel::zip::entry)
+         does not provide any means to detect symlinks, but that might change
+         in the future. Therefore, I will leave the symlink check in here,
+         although it will currently never return true.
+      */
+      if (!ent.isDirectory() && !ent.isSymLink())
       {
         const std::string bn = ent.basename();
         const std::string destFile = libstriezel::filesystem::slashify(tempDirectory)
