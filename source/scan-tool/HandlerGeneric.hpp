@@ -61,6 +61,8 @@ class HandlerGeneric: public Handler
      * \param queuedScans      list of queued scan requests; key = scan_id, value = file name
      * \param lastQueuedScanTime time point of the last queued scan - will be updated by this method for every scan
      * \param largeFiles       list of files that exceed the file size for scans; first = file name, second = file size in octets
+     * \param processedFiles   number of files that have been processed so far
+     * \param totalFiles       total number of files that have to be processed
      * \return Returns zero, if the file could be processed properly.
      * Returns a non-zero exit code, if an error occurred.
      */
@@ -73,7 +75,9 @@ class HandlerGeneric: public Handler
               std::map<std::string, std::string>& mapFileToHash,
               std::unordered_map<std::string, std::string>& queued_scans,
               std::chrono::time_point<std::chrono::steady_clock>& lastQueuedScanTime,
-              std::vector<std::pair<std::string, int64_t> >& largeFiles) override;
+              std::vector<std::pair<std::string, int64_t> >& largeFiles,
+              std::set<std::string>::size_type& processedFiles,
+              std::set<std::string>::size_type& totalFiles) override;
 
     /** \brief checks whether or not this handler ignores extraction failures
      *
@@ -109,7 +113,9 @@ int HandlerGeneric<ArcT, isArc>::handle(scantool::virustotal::ScanStrategy& stra
               std::map<std::string, std::string>& mapFileToHash,
               std::unordered_map<std::string, std::string>& queued_scans,
               std::chrono::time_point<std::chrono::steady_clock>& lastQueuedScanTime,
-              std::vector<std::pair<std::string, int64_t> >& largeFiles)
+              std::vector<std::pair<std::string, int64_t> >& largeFiles,
+              std::set<std::string>::size_type& processedFiles,
+              std::set<std::string>::size_type& totalFiles)
 {
   //If it is not a matching archive type, then there's nothing to do here.
   if (!isArc::isArcT(fileName))
@@ -127,6 +133,7 @@ int HandlerGeneric<ArcT, isArc>::handle(scantool::virustotal::ScanStrategy& stra
   {
     ArcT arc(fileName);
     const auto entries = arc.entries();
+    totalFiles += entries.size();
 
     //iterate over entries
     for(const auto & ent : entries)
@@ -149,7 +156,7 @@ int HandlerGeneric<ArcT, isArc>::handle(scantool::virustotal::ScanStrategy& stra
         const int rcStrategy = strategy.scan(scanVT, destFile, cacheMgr, requestCacheDirVT,
         useRequestCache, silent, maybeLimit, maxAgeInDays, ageLimit,
         mapHashToReport, mapFileToHash, queued_scans, lastQueuedScanTime,
-        largeFiles);
+        largeFiles, processedFiles, totalFiles);
         //remove file
         libstriezel::filesystem::file::remove(destFile);
         //check return code
@@ -161,6 +168,7 @@ int HandlerGeneric<ArcT, isArc>::handle(scantool::virustotal::ScanStrategy& stra
           return rcStrategy;
         } //if scan failed
       } //if not directory
+      ++processedFiles;
     } //for (range-based)
     //delete temporary directory
     libstriezel::filesystem::directory::remove(tempDirectory);

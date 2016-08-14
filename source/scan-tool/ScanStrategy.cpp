@@ -44,14 +44,16 @@ int ScanStrategy::applyHandlers(ScannerV2& scanVT, const std::string& fileName,
               std::map<std::string, std::string>& mapFileToHash,
               std::unordered_map<std::string, std::string>& queued_scans,
               std::chrono::time_point<std::chrono::steady_clock>& lastQueuedScanTime,
-              std::vector<std::pair<std::string, int64_t> >& largeFiles)
+              std::vector<std::pair<std::string, int64_t> >& largeFiles,
+              std::set<std::string>::size_type& processedFiles,
+              std::set<std::string>::size_type& totalFiles)
 {
   for (auto & handler : m_Handlers)
   {
     const int rc = handler->handle(*this, scanVT, fileName, cacheMgr, requestCacheDirVT,
         useRequestCache, silent, maybeLimit, maxAgeInDays, ageLimit,
         mapHashToReport, mapFileToHash, queued_scans, lastQueuedScanTime,
-        largeFiles);
+        largeFiles, processedFiles, totalFiles);
     if (rc != 0)
       return rc;
   } //for

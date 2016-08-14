@@ -54,6 +54,8 @@ class ScanStrategyDefault: public ScanStrategy
      * \param queuedScans      list of queued scan requests; key = scan_id, value = file name
      * \param lastQueuedScanTime time point of the last queued scan - will be updated by this method for every scan
      * \param largeFiles       list of files that exceed the file size for scans; first = file name, second = file size in octets
+     * \param processedFiles   number of files that have been processed so far
+     * \param totalFiles       total number of files that have to be processed
      * \return Returns zero, if the file could be processed properly.
      * Returns a non-zero exit code, if an error occurred.
      */
@@ -65,7 +67,9 @@ class ScanStrategyDefault: public ScanStrategy
               std::map<std::string, std::string>& mapFileToHash,
               std::unordered_map<std::string, std::string>& queued_scans,
               std::chrono::time_point<std::chrono::steady_clock>& lastQueuedScanTime,
-              std::vector<std::pair<std::string, int64_t> >& largeFiles) override;
+              std::vector<std::pair<std::string, int64_t> >& largeFiles,
+              std::set<std::string>::size_type& processedFiles,
+              std::set<std::string>::size_type& totalFiles) override;
 }; //class
 
 } //namespace

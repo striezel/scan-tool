@@ -117,7 +117,7 @@ void showHelp()
 
 void showVersion()
 {
-  std::cout << "scan-tool, version 0.41, 2016-08-11\n";
+  std::cout << "scan-tool, version 0.42, 2016-08-14\n";
 }
 
 /* Four variables that will be used in main() but also in signal handling
@@ -812,7 +812,7 @@ int main(int argc, char ** argv)
     const int exitCode = strategy->scan(scanVT, i, cacheMgr, requestCacheDirVT,
         useRequestCache, silent, maybeLimit, maxAgeInDays, ageLimit,
         mapHashToReport, mapFileToHash, queued_scans, lastQueuedScanTime,
-        largeFiles);
+        largeFiles, processedFiles, totalFiles);
     //exit early, if an error occurred
     if (exitCode != 0)
       return exitCode;

@@ -1,5 +1,9 @@
 # ChangeLog for scan-tool
 
+## Version 0.42 (2016-08-14)
+  - consider number of files in archives for count of total and processed
+    files, too
+
 ## Version 0.41 (2016-08-11)
   - skip symbolic links in archives
 

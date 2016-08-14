@@ -46,7 +46,9 @@ int HandlerGzip::handle(scantool::virustotal::ScanStrategy& strategy,
               std::map<std::string, std::string>& mapFileToHash,
               std::unordered_map<std::string, std::string>& queued_scans,
               std::chrono::time_point<std::chrono::steady_clock>& lastQueuedScanTime,
-              std::vector<std::pair<std::string, int64_t> >& largeFiles)
+              std::vector<std::pair<std::string, int64_t> >& largeFiles,
+              std::set<std::string>::size_type& processedFiles,
+              std::set<std::string>::size_type& totalFiles)
 {
   //If it is not a gzipped file, then there's nothing to do here.
   if (!libstriezel::gzip::archive::isGzip(fileName))
@@ -64,13 +66,14 @@ int HandlerGzip::handle(scantool::virustotal::ScanStrategy& strategy,
   {
     libstriezel::gzip::archive gzippedFile(fileName);
     const auto entries = gzippedFile.entries();
+    totalFiles += entries.size();
 
     //iterate over entries
     for(const auto & ent : entries)
     {
       /* There should never be any directory entries in a GZIP file, because
          a GZIP is just a single, compressed file. Therefore the check with
-         ent.isDirectory() can be ommitted in this handler's case.
+         ent.isDirectory() can be omitted in this handler's case.
       */
       const std::string bn = ent.basename();
       const std::string destFile = libstriezel::filesystem::slashify(tempDirectory)
@@ -87,7 +90,7 @@ int HandlerGzip::handle(scantool::virustotal::ScanStrategy& strategy,
       const int rcStrategy = strategy.scan(scanVT, destFile, cacheMgr, requestCacheDirVT,
       useRequestCache, silent, maybeLimit, maxAgeInDays, ageLimit,
       mapHashToReport, mapFileToHash, queued_scans, lastQueuedScanTime,
-      largeFiles);
+      largeFiles, processedFiles, totalFiles);
       //remove file
       libstriezel::filesystem::file::remove(destFile);
       //check return code
@@ -98,6 +101,7 @@ int HandlerGzip::handle(scantool::virustotal::ScanStrategy& strategy,
         //... and return
         return rcStrategy;
       } //if scan failed
+      ++processedFiles;
     } //for (range-based)
     //delete temporary directory
     libstriezel::filesystem::directory::remove(tempDirectory);

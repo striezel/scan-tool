@@ -45,12 +45,15 @@ int ScanStrategyDefault::scan(ScannerV2& scanVT, const std::string& fileName,
               std::map<std::string, std::string>& mapFileToHash,
               std::unordered_map<std::string, std::string>& queued_scans,
               std::chrono::time_point<std::chrono::steady_clock>& lastQueuedScanTime,
-              std::vector<std::pair<std::string, int64_t> >& largeFiles)
+              std::vector<std::pair<std::string, int64_t> >& largeFiles,
+              std::set<std::string>::size_type& processedFiles,
+              std::set<std::string>::size_type& totalFiles)
 {
   //apply any handlers
   const int handlerCode = applyHandlers(scanVT, fileName, cacheMgr, requestCacheDirVT,
       useRequestCache, silent, maybeLimit, maxAgeInDays, ageLimit, mapHashToReport,
-      mapFileToHash, queued_scans, lastQueuedScanTime, largeFiles);
+      mapFileToHash, queued_scans, lastQueuedScanTime, largeFiles,
+      processedFiles, totalFiles);
   if (handlerCode != 0)
     return handlerCode;
   //go on with normal strategy

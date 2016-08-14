@@ -46,7 +46,9 @@ int ZipHandler::handle(scantool::virustotal::ScanStrategy& strategy,
               std::map<std::string, std::string>& mapFileToHash,
               std::unordered_map<std::string, std::string>& queued_scans,
               std::chrono::time_point<std::chrono::steady_clock>& lastQueuedScanTime,
-              std::vector<std::pair<std::string, int64_t> >& largeFiles)
+              std::vector<std::pair<std::string, int64_t> >& largeFiles,
+              std::set<std::string>::size_type& processedFiles,
+              std::set<std::string>::size_type& totalFiles)
 {
   //If it is not a ZIP, then there's nothing to do here.
   if (!libstriezel::zip::archive::isZip(fileName))
@@ -64,6 +66,7 @@ int ZipHandler::handle(scantool::virustotal::ScanStrategy& strategy,
   {
     libstriezel::zip::archive zipArc(fileName);
     const std::vector<libstriezel::zip::entry> entries = zipArc.entries();
+    totalFiles += entries.size();
 
     //iterate over entries
     for(const auto & ent : entries)
@@ -92,7 +95,7 @@ int ZipHandler::handle(scantool::virustotal::ScanStrategy& strategy,
         const int rcStrategy = strategy.scan(scanVT, destFile, cacheMgr, requestCacheDirVT,
         useRequestCache, silent, maybeLimit, maxAgeInDays, ageLimit,
         mapHashToReport, mapFileToHash, queued_scans, lastQueuedScanTime,
-        largeFiles);
+        largeFiles, processedFiles, totalFiles);
         //remove file
         libstriezel::filesystem::file::remove(destFile);
         //check return code
@@ -104,6 +107,7 @@ int ZipHandler::handle(scantool::virustotal::ScanStrategy& strategy,
           return rcStrategy;
         } //if scan failed
       } //if not directory
+      ++processedFiles;
     } //for (range-based)
     //delete temporary directory
     libstriezel::filesystem::directory::remove(tempDirectory);
