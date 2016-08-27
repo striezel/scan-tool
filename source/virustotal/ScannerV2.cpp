@@ -82,6 +82,12 @@ void ScannerV2::hashLookupWasNow()
 bool ScannerV2::getReport(const std::string& resource, Report& report, const bool useCache,
                    const std::string& cacheDir)
 {
+  #ifdef SCAN_TOOL_DEBUG
+  std::cout << "Entering getReport():" << std::endl
+            << "resource: " << resource << std::endl
+            << "useCache: " << useCache << std::endl
+            << "cacheDir: " << cacheDir << std::endl;
+  #endif // SCAN_TOOL_DEBUG
   std::string response = "";
   const std::string cachedFilePath = CacheManagerV2::getPathForCachedElement(resource, cacheDir);
   if (useCache && !cacheDir.empty() && !cachedFilePath.empty()
@@ -152,6 +158,12 @@ bool ScannerV2::getReport(const std::string& resource, Report& report, const boo
               << "Code: " << cURL.getResponseCode() << std::endl
               << "Content-Type: " << cURL.getContentType() << std::endl
               << "Response text: " << response << std::endl;
+    std::cout << "If:" << std::endl
+              << "cacheDir.empty(): " << cacheDir.empty() << std::endl
+              << "cacheDir exists: " << libstriezel::filesystem::directory::exists(cacheDir) << std::endl
+              << "cachedFilePath.empty(): " << cachedFilePath.empty() << std::endl
+              << "condition: " << (!cacheDir.empty() && libstriezel::filesystem::directory::exists(cacheDir)
+        && !cachedFilePath.empty()) << std::endl;
     #endif
     /* write JSON data to request cache, if request cache directory is given,
        independent of cache use during previous request
@@ -159,6 +171,9 @@ bool ScannerV2::getReport(const std::string& resource, Report& report, const boo
     if (!cacheDir.empty() && libstriezel::filesystem::directory::exists(cacheDir)
         && !cachedFilePath.empty())
     {
+      #ifdef SCAN_TOOL_DEBUG
+      std::cout << "Opening output stream for " << cachedFilePath << "." << std::endl;
+      #endif // SCAN_TOOL_DEBUG
       std::ofstream cachedJSON(cachedFilePath, std::ios_base::out | std::ios_base::binary | std::ios_base::trunc);
       if (!cachedJSON.good())
       {

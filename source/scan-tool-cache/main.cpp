@@ -337,6 +337,9 @@ int main(int argc, char ** argv)
   //existence check
   if (op == scantool::virustotal::CacheOperation::ExistenceCheck)
   {
+    #ifdef SCAN_TOOL_DEBUG
+    std::cout << "Request cache directory: " << requestCacheDirVT << std::endl;
+    #endif // SCAN_TOOL_DEBUG
     scantool::virustotal::CacheManagerV2 cacheMgr(requestCacheDirVT);
     const std::string cacheDirectory = cacheMgr.getCacheDirectory();
     if (libstriezel::filesystem::directory::exists(cacheDirectory))
@@ -419,6 +422,9 @@ int main(int argc, char ** argv)
   //update
   if (op == scantool::virustotal::CacheOperation::Update)
   {
+    #ifdef SCAN_TOOL_DEBUG
+    std::cout << "Request cache directory: " << requestCacheDirVT << std::endl;
+    #endif // SCAN_TOOL_DEBUG
     //check for API key
     if (key.empty())
     {
