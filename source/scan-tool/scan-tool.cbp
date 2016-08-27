@@ -120,6 +120,7 @@
 		<Unit filename="ScanStrategyNoRescan.hpp" />
 		<Unit filename="Strategies.cpp" />
 		<Unit filename="Strategies.hpp" />
+		<Unit filename="Version.hpp" />
 		<Unit filename="ZipHandler.cpp" />
 		<Unit filename="ZipHandler.hpp" />
 		<Unit filename="main.cpp" />

@@ -27,8 +27,8 @@
 #include "../virustotal/CacheManagerV2.hpp"
 #include "../Configuration.hpp"
 #include "../Constants.hpp"
-//return codes
 #include "../ReturnCodes.hpp"
+#include "../scan-tool/Version.hpp"
 #include "CacheIteration.hpp"
 #include "CacheOperation.hpp"
 #include "IterationOperationStatistics.hpp"
@@ -75,7 +75,7 @@ void showHelp()
 
 void showVersion()
 {
-  std::cout << "scan-tool-cache, version 0.35b, 2016-03-31\n";
+  std::cout << "scan-tool-cache, " << scantool::version << std::endl;
 }
 
 int main(int argc, char ** argv)

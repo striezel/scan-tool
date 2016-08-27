@@ -41,6 +41,7 @@
 #include "ScanStrategyDirectScan.hpp"
 #include "ScanStrategyNoRescan.hpp"
 #include "summary.hpp"
+#include "Version.hpp"
 #include "ZipHandler.hpp"
 #include "../Configuration.hpp"
 #include "../Curly.hpp"
@@ -117,7 +118,7 @@ void showHelp()
 
 void showVersion()
 {
-  std::cout << "scan-tool, version 0.42, 2016-08-14\n";
+  std::cout << "scan-tool, " << scantool::version << std::endl;
 }
 
 /* Four variables that will be used in main() but also in signal handling
