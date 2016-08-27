@@ -27,12 +27,12 @@ namespace scantool
 namespace virustotal
 {
 
-IterationOperationUpdate::IterationOperationUpdate(const std::string& apikey, const bool silent, const std::chrono::system_clock::time_point& ageLimit)
+IterationOperationUpdate::IterationOperationUpdate(const std::string& apikey, const bool silent, const std::chrono::system_clock::time_point& ageLimit, const std::string& cacheDir)
 : IterationOperation(),
   scannerVT(ScannerV2(apikey, true, silent)),
   m_silent(silent),
   m_ageLimit(ageLimit),
-  m_cacheMgr(CacheManagerV2()),
+  m_cacheMgr(CacheManagerV2(cacheDir)),
   m_pendingRescans(std::vector<std::string>())
 {
 }

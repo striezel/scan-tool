@@ -1,5 +1,9 @@
 # ChangeLog for scan-tool-cache
 
+## Version 0.43 (2016-08-27)
+  - Bugfix: Cache update operation was not working as expected when a
+    cache directory other than the default ~/.scan-tool/vt-cache was used.
+
 ## Version 0.35b (2016-03-31)
   - show more output for pending rescans during cache update operation
     (but only in non-silent mode)

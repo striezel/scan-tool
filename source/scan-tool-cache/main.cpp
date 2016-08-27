@@ -444,9 +444,9 @@ int main(int argc, char ** argv)
     const auto ageLimit = std::chrono::system_clock::now() - std::chrono::hours(24*maxAgeInDays);
 
     scantool::virustotal::CacheIteration ci;
-    scantool::virustotal::IterationOperationUpdate opUpdate(key, silent, ageLimit);
-    std::cout << "Updating cache information, this may take a while ..." << std::endl;
     scantool::virustotal::CacheManagerV2 cacheMgr(requestCacheDirVT);
+    scantool::virustotal::IterationOperationUpdate opUpdate(key, silent, ageLimit, cacheMgr.getCacheDirectory());
+    std::cout << "Updating cache information, this may take a while ..." << std::endl;
     if (!ci.iterate(cacheMgr.getCacheDirectory(), opUpdate))
     {
       std::cout << "Error: Could not update cached information!" << std::endl;

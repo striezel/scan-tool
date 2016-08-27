@@ -40,8 +40,9 @@ class IterationOperationUpdate: public IterationOperation
      * \param apikey  the VirusTotal API key used for scanning/updating
      * \param silent  whether or not output to the standard output should be reduced
      * \param ageLimit the maximum age of reports (older reports will get an update)
+     * \param cacheDir   root directory of the scan tool cache
      */
-    IterationOperationUpdate(const std::string& apikey, const bool silent, const std::chrono::system_clock::time_point& ageLimit);
+    IterationOperationUpdate(const std::string& apikey, const bool silent, const std::chrono::system_clock::time_point& ageLimit, const std::string& cacheDir);
 
 
     /** \brief performs the operation for a single cached element
