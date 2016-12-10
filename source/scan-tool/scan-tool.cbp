@@ -40,6 +40,7 @@
 			<Add library="jsoncpp" />
 			<Add library="zip" />
 			<Add library="archive" />
+			<Add library="z" />
 		</Linker>
 		<Unit filename="../../libstriezel/archive/ar/archive.cpp" />
 		<Unit filename="../../libstriezel/archive/ar/archive.hpp" />
