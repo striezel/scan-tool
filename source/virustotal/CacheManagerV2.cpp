@@ -18,6 +18,7 @@
  -------------------------------------------------------------------------------
 */
 
+#include <iostream>
 #include "../../libstriezel/common/StringUtils.hpp"
 #include "../../libstriezel/filesystem/directory.hpp"
 #include "../../libstriezel/filesystem/file.hpp"

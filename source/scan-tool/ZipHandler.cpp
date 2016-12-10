@@ -19,6 +19,7 @@
 */
 
 #include "ZipHandler.hpp"
+#include <iostream>
 #include "../../libstriezel/archive/zip/archive.hpp"
 #include "../../libstriezel/filesystem/directory.hpp"
 #include "../../libstriezel/filesystem/file.hpp"
