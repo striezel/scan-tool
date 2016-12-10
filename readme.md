@@ -18,19 +18,20 @@ TODO
 
 To build the scan-tool from source you need a C++ compiler, CMake 2.8 or later,
 the cURL library (>=7.17), the JsonCpp library, as well as the libarchive,
-libzip and zlib libraries.
+libzip and zlib libraries. pkg-config is required to make it easier to find
+compiler options for the installed libraries.
 It also helps to have Git, a distributed version control system, on your build
 system to get the latest source code directly from the Git repository.
 
 All of that can usually be installed be typing
 
-    apt-get install cmake g++ git libarchive libcurl4-gnutls-dev \
-    libjsoncpp-dev libzip-dev zlib1g-dev
+    apt-get install cmake g++ git libarchive-dev libcurl4-gnutls-dev \
+    libjsoncpp-dev libzip-dev zlib1g-dev pkg-config
 
 or
 
     yum install cmake gcc-c++ git libarchive-devel libcurl-devel libzip-devel \
-    jsoncpp-devel zlib-devel
+    jsoncpp-devel zlib-devel pkgconfig
 
 into a root terminal.
 
