@@ -19,6 +19,7 @@
 */
 
 #include "IterationOperationUpdate.hpp"
+#include <iostream>
 #include "../../libstriezel/filesystem/file.hpp"
 
 namespace scantool
