@@ -1,5 +1,12 @@
 # ChangeLog for scan-tool
 
+## Version 0.44 (2017-02-28)
+  - Do not abort if report could not be retrieved because the file to scan is
+    still in scan queue of VirusTotal. Instead, scan-tool will try to get the
+    report again at a later time when the reports of all the other queued files
+    will be retrieved. This only affects the scan strategies "default" and
+    "no-rescan".
+
 ## Version 0.42 (2016-08-14)
   - consider number of files in archives for count of total and processed
     files, too

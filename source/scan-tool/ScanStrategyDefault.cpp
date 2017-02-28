@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2015, 2016  Dirk Stolle
+    Copyright (C) 2015, 2016, 2017  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -153,6 +153,14 @@ int ScanStrategyDefault::scan(ScannerV2& scanVT, const std::string& fileName,
         largeFiles.push_back(std::pair<std::string, int64_t>(fileName, fileSize));
       } //else (file too large)
     } //else if report not found
+    else if (report.stillInQueue())
+    {
+      //file is still in queue, queue it for later scans
+      if (!silent)
+        std::cout << "Info: File " << fileName << " is still in the scan "
+                  << "queue and will be queued for later retrieval." << std::endl;
+      queued_scans[hashString] = fileName;
+    } //if file is still in queue
     else
     {
       //unexpected response code
