@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2015, 2016  Dirk Stolle
+    Copyright (C) 2015, 2016, 2017  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -229,7 +229,7 @@ uint_least32_t CacheManagerV2::checkIntegrity(const bool deleteCorrupted, const 
                              or (secondChar != file.fileName[1]))
                     {
                       std::cout << "Info: SHA256 hash of " << file.fileName
-                                << " is " << report.sha256 << " and does not "
+                                << " is \"" << report.sha256 << "\" and does not"
                                 << " match file name." << std::endl;
                       ++corrupted;
                       if (deleteCorrupted)

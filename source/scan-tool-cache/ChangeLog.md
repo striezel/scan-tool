@@ -1,5 +1,8 @@
 # ChangeLog for scan-tool-cache
 
+## Version 0.45 (2017-03-01)
+  - minor text fix in cache integrity check
+
 ## Version 0.43 (2016-08-27)
   - Bugfix: Cache update operation was not working as expected when a
     cache directory other than the default ~/.scan-tool/vt-cache was used.
