@@ -7,10 +7,7 @@ TODO
 
 ## Build status
 
-[![Build Status](https://travis-ci.org/striezel/scan-tool.svg?branch=master)]
-(https://travis-ci.org/striezel/scan-tool)
-[![Build Status](https://drone.io/github.com/Thoronador/scan-tool/status.png)]
-(https://drone.io/github.com/Thoronador/scan-tool/latest)
+[![Build Status](https://travis-ci.org/striezel/scan-tool.svg?branch=master)](https://travis-ci.org/striezel/scan-tool)
 
 ## Building from source
 
