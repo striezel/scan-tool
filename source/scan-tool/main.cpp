@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2015, 2016  Dirk Stolle
+    Copyright (C) 2015, 2016, 2017  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -40,6 +40,7 @@
 #include "ScanStrategyDefault.hpp"
 #include "ScanStrategyDirectScan.hpp"
 #include "ScanStrategyNoRescan.hpp"
+#include "ScanStrategyScanAndForget.hpp"
 #include "summary.hpp"
 #include "Version.hpp"
 #include "ZipHandler.hpp"
@@ -761,6 +762,9 @@ int main(int argc, char ** argv)
          break;
     case scantool::virustotal::Strategy::NoRescan:
          strategy = std::unique_ptr<scantool::virustotal::ScanStrategyNoRescan>(new scantool::virustotal::ScanStrategyNoRescan());
+         break;
+    case scantool::virustotal::Strategy::ScanAndForget:
+         strategy = std::unique_ptr<scantool::virustotal::ScanStrategyScanAndForget>(new scantool::virustotal::ScanStrategyScanAndForget());
          break;
     case scantool::virustotal::Strategy::Default:
     case scantool::virustotal::Strategy::None:

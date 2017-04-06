@@ -31,8 +31,8 @@
 		</Build>
 		<Compiler>
 			<Add option="-Weffc++" />
-			<Add option="-std=c++0x" />
 			<Add option="-Wall" />
+			<Add option="-std=c++0x" />
 			<Add option="-fexceptions" />
 		</Compiler>
 		<Linker>
@@ -119,6 +119,8 @@
 		<Unit filename="ScanStrategyDirectScan.hpp" />
 		<Unit filename="ScanStrategyNoRescan.cpp" />
 		<Unit filename="ScanStrategyNoRescan.hpp" />
+		<Unit filename="ScanStrategyScanAndForget.cpp" />
+		<Unit filename="ScanStrategyScanAndForget.hpp" />
 		<Unit filename="Strategies.cpp" />
 		<Unit filename="Strategies.hpp" />
 		<Unit filename="Version.hpp" />

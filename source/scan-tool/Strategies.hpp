@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2016  Dirk Stolle
+    Copyright (C) 2016, 2017  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ namespace virustotal
 {
 
 ///enumeration class for scan strategies
-enum class Strategy { None, Default, DirectScan, NoRescan };
+enum class Strategy { None, Default, DirectScan, NoRescan, ScanAndForget };
 
 
 /** \brief converts strategy to a simple string

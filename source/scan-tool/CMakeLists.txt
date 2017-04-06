@@ -41,6 +41,7 @@ set(scan-tool_sources
     ScanStrategyDefault.cpp
     ScanStrategyDirectScan.cpp
     ScanStrategyNoRescan.cpp
+    ScanStrategyScanAndForget.cpp
     Strategies.cpp
     summary.cpp
     ZipHandler.cpp

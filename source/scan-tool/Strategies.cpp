@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2016  Dirk Stolle
+    Copyright (C) 2016, 2017  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -38,6 +38,8 @@ std::string strategyToString(const Strategy s)
          return "direct";
     case Strategy::NoRescan:
          return "no-rescan";
+    case Strategy::ScanAndForget:
+         return "scan-and-forget";
     //fallback for future, unknown values
     default:
          return "none";
@@ -52,6 +54,9 @@ Strategy stringToStrategy(const std::string& str)
     return Strategy::DirectScan;
   if ((str == "no-rescan") || (str == "norescan") || (str == "no_rescan"))
     return Strategy::NoRescan;
+  if ((str == "scan-and-forget") || (str == "scanandforget") || (str == "scan_and_forget")
+    || (str == "fire-and-forget") || (str == "fireandforget") || (str == "fire_and_forget"))
+    return Strategy::ScanAndForget;
   //no matching strategy found
   return Strategy::None;
 }

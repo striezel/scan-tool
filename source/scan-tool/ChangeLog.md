@@ -1,5 +1,9 @@
 # ChangeLog for scan-tool
 
+## Version 0.46 (2017-04-06)
+  - add new scan strategy "scan and forget" that submits every file for
+    scanning but will never get any scan reports for them
+
 ## Version 0.44 (2017-02-28)
   - Do not abort if report could not be retrieved because the file to scan is
     still in scan queue of VirusTotal. Instead, scan-tool will try to get the
