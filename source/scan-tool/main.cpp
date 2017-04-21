@@ -98,6 +98,8 @@ void showHelp()
             << "                              mitted.\n"
             << "                     no-rescan - like default, but will never do rescans for\n"
             << "                                 old reports.\n"
+            << "                     scan-and-forget - only submits files for scanning to\n"
+            << "                                       VirusTotal, but does not get reports.\n"
             << "  --zip            - add ZIP file handler which extracts ZIP files and scans\n"
             << "                     each contained file, too.\n"
             << "  --tar            - add tape archive (*.tar) file handler which extracts tape\n"
@@ -247,24 +249,24 @@ int main(int argc, char ** argv)
   if ((argc > 1) and (argv != nullptr))
   {
     int i=1;
-    while (i<argc)
+    while (i < argc)
     {
       if (argv[i] != nullptr)
       {
         const std::string param = std::string(argv[i]);
         //help parameter
-        if ((param=="--help") or (param=="-?") or (param=="/?"))
+        if ((param == "--help") or (param == "-?") or (param == "/?"))
         {
           showHelp();
           return 0;
         }//help
         //version information requested?
-        else if ((param=="--version") or (param=="-v"))
+        else if ((param == "--version") or (param == "-v"))
         {
           showVersion();
           return 0;
         } //version
-        else if ((param=="--key") or (param=="--apikey"))
+        else if ((param == "--key") or (param == "--apikey"))
         {
           //only one key required
           if (!key.empty())
@@ -289,7 +291,7 @@ int main(int argc, char ** argv)
             return scantool::rcInvalidParameter;
           }
         } //API key
-        else if (param=="--keyfile")
+        else if (param == "--keyfile")
         {
           //only one key required
           if (!key.empty())
@@ -338,7 +340,7 @@ int main(int argc, char ** argv)
             return scantool::rcInvalidParameter;
           }
         } //API key from file
-        else if ((param=="--silent") or (param=="-s"))
+        else if ((param == "--silent") or (param == "-s"))
         {
           //Has the silent parameter already been set?
           if (silent)
@@ -349,7 +351,7 @@ int main(int argc, char ** argv)
           }
           silent = true;
         } //silent
-        else if ((param=="--maybe") or (param=="--limit"))
+        else if ((param == "--maybe") or (param == "--limit"))
         {
           //enough parameters?
           if ((i+1 < argc) and (argv[i+1] != nullptr))
@@ -377,7 +379,7 @@ int main(int argc, char ** argv)
             return scantool::rcInvalidParameter;
           }
         } //"maybe" limit
-        else if ((param=="--files") or (param=="--list"))
+        else if ((param == "--files") or (param == "--list"))
         {
           //enough parameters?
           if ((i+1 < argc) and (argv[i+1] != nullptr))
@@ -429,7 +431,7 @@ int main(int argc, char ** argv)
           } //else
         } //list of files
         //age limit for reports
-        else if ((param=="--max-age") or (param=="--age-limit"))
+        else if ((param == "--max-age") or (param == "--age-limit"))
         {
           if (maxAgeInDays > 0)
           {
@@ -469,7 +471,7 @@ int main(int argc, char ** argv)
             return scantool::rcInvalidParameter;
           }
         } //age limit
-        else if ((param=="--strategy") or (param=="--logic"))
+        else if ((param == "--strategy") or (param == "--logic"))
         {
           //only one strategy is possible
           if (selectedStrategy != scantool::virustotal::Strategy::None)
@@ -502,7 +504,7 @@ int main(int argc, char ** argv)
           }
         } //scan strategy
         //use request cache
-        else if ((param=="--cache") or (param=="--request-cache") or (param=="--cache-requests"))
+        else if ((param == "--cache") or (param == "--request-cache") or (param == "--cache-requests"))
         {
           if (useRequestCache)
           {
@@ -512,7 +514,7 @@ int main(int argc, char ** argv)
           useRequestCache = true;
         } //request cache
         //set custom directory for request cache
-        else if ((param=="--cache-dir") or (param=="--cache-directory") or (param=="--request-cache-directory"))
+        else if ((param == "--cache-dir") or (param == "--cache-directory") or (param == "--request-cache-directory"))
         {
           if (!requestCacheDirVT.empty())
           {
@@ -533,7 +535,7 @@ int main(int argc, char ** argv)
             return scantool::rcInvalidParameter;
           }
         } //request cache directory
-        else if (param=="--zip")
+        else if (param == "--zip")
         {
           //Has the ZIP option already been set?
           if (handleZIP)
@@ -544,7 +546,7 @@ int main(int argc, char ** argv)
           }
           handleZIP = true;
         } //handle ZIP files
-        else if (param=="--tar")
+        else if (param == "--tar")
         {
           //Has the tar option already been set?
           if (handleTar)
@@ -555,7 +557,7 @@ int main(int argc, char ** argv)
           }
           handleTar = true;
         } //handle tape archive files
-        else if ((param=="--gzip") || (param=="--gz"))
+        else if ((param == "--gzip") || (param == "--gz"))
         {
           //Has the gzip option already been set?
           if (handleGzip)
@@ -566,7 +568,7 @@ int main(int argc, char ** argv)
           }
           handleGzip = true;
         } //handle .gz files
-        else if (param=="--xz")
+        else if (param == "--xz")
         {
           //Has the XZ option already been set?
           if (handleXz)
@@ -577,7 +579,7 @@ int main(int argc, char ** argv)
           }
           handleXz = true;
         } //handle XZ compressed files
-        else if (param=="--ar")
+        else if (param == "--ar")
         {
           //Has the Ar option already been set?
           if (handleAr)
@@ -588,7 +590,7 @@ int main(int argc, char ** argv)
           }
           handleAr = true;
         } //handle Ar archive files
-        else if ((param=="--iso") || (param=="--iso9660"))
+        else if ((param == "--iso") || (param == "--iso9660"))
         {
           //Has the ISO9660 option already been set?
           if (handleISO9660)
@@ -599,7 +601,7 @@ int main(int argc, char ** argv)
           }
           handleISO9660 = true;
         } //handle .iso files
-        else if ((param=="--cab") || (param=="--cabinet"))
+        else if ((param == "--cab") || (param == "--cabinet"))
         {
           //Has the CAB option already been set?
           if (handleCab)
@@ -610,7 +612,7 @@ int main(int argc, char ** argv)
           }
           handleCab = true;
         } //handle .cab files
-        else if ((param=="--ignore-extraction-errors") || (param=="--ignore-archive-errors"))
+        else if ((param == "--ignore-extraction-errors") || (param == "--ignore-archive-errors"))
         {
           //Has the ignore option already been set?
           if (ignoreExtractionErrors)

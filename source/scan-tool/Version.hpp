@@ -27,7 +27,7 @@ namespace scantool
 {
     /** \brief version for scan-tool and scan-tool-cache
      */
-  const std::string version ="version 0.46, 2017-04-06";
+  const std::string version ="version 0.46.1, 2017-04-21";
 } //namespace
 
 #endif // SCANTOOL_VERSION_HPP

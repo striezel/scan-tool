@@ -1,5 +1,8 @@
 # ChangeLog for scan-tool
 
+## Version 0.46.1 (2017-04-21)
+  - add info about strategy "scan and forget" to help message
+
 ## Version 0.46 (2017-04-06)
   - add new scan strategy "scan and forget" that submits every file for
     scanning but will never get any scan reports for them
