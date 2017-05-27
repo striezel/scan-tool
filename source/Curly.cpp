@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2015, 2016  Dirk Stolle
+    Copyright (C) 2015, 2016, 2017  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -103,7 +103,8 @@ Curly::Curly()
   m_certFile(""),
   m_LastResponseCode(0),
   m_LastContentType(""),
-  m_ResponseHeaders(std::vector<std::string>())
+  m_ResponseHeaders(std::vector<std::string>()),
+  m_MaxUpstreamSpeed(0)
 {
 }
 
@@ -220,6 +221,12 @@ bool Curly::setCertificateFile(const std::string& certFile)
   return false;
 }
 
+bool Curly::limitUpstreamSpeed(const unsigned int maxBytesPerSecond)
+{
+  m_MaxUpstreamSpeed = maxBytesPerSecond;
+  return true;
+}
+
 bool Curly::perform(std::string& response)
 {
   //"minimum" URL should be something like "http://a.bc"
@@ -300,6 +307,22 @@ bool Curly::perform(std::string& response)
       return false;
     }
   } //if cert file was set
+
+  //set max. upload speed
+  if (m_MaxUpstreamSpeed >= 512)
+  {
+    #ifdef DEBUG_MODE
+    std::clog << "curl_easy_setopt(..., CURLOPT_MAX_SEND_SPEED_LARGE, ...)..." << std::endl;
+    #endif
+    retCode = curl_easy_setopt(handle, CURLOPT_MAX_SEND_SPEED_LARGE, m_MaxUpstreamSpeed);
+    if (retCode != CURLE_OK)
+    {
+      std::cerr << "cURL error: limiting the upload speed failed!" << std::endl;
+      std::cerr << curl_easy_strerror(retCode) << std::endl;
+      curl_easy_cleanup(handle);
+      return false;
+    }
+  } //if upload speed limit is above 511 bytes per second
 
   //add custom headers
   struct curl_slist * header_list = nullptr;

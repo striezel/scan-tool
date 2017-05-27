@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2015, 2016  Dirk Stolle
+    Copyright (C) 2015, 2016, 2017  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -147,6 +147,16 @@ class Curly
     bool setCertificateFile(const std::string& certFile);
 
 
+    /** \brief limits the speed of an upload operation
+     *
+     * \param maxBytesPerSecond  limit in bytes per second
+     * \remarks A value of zero means no limit. (That is the default.)
+     * \return Returns true, if the limit could be set.
+     *         Returns false otherwise.
+     */
+    bool limitUpstreamSpeed(const unsigned int maxBytesPerSecond);
+
+
     /** \brief performs the (POST) request
      *
      * \param response  reference to a string that will be filled with the
@@ -242,6 +252,7 @@ class Curly
     long m_LastResponseCode; /**< response code of the last request */
     std::string m_LastContentType; /**< string that holds the last content type */
     std::vector<std::string> m_ResponseHeaders; /**< response headers returned by the last request */
+    unsigned int m_MaxUpstreamSpeed; /**< limit for upstream / upload in bytes per second */
 }; //class Curly
 
 #endif // SCANTOOL_CURLY_HPP
