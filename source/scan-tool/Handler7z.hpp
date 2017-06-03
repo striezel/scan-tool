@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2016, 2017  Dirk Stolle
+    Copyright (C) 2017  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,16 +18,30 @@
  -------------------------------------------------------------------------------
 */
 
-#ifndef SCANTOOL_VERSION_HPP
-#define SCANTOOL_VERSION_HPP
+#ifndef SCANTOOL_VT_HANDLER7Z_HPP
+#define SCANTOOL_VT_HANDLER7Z_HPP
 
-#include <string>
+#include "HandlerGeneric.hpp"
+#include "../../libstriezel/archive/7z/archive.hpp"
 
 namespace scantool
 {
-    /** \brief version for scan-tool and scan-tool-cache
-     */
-  const std::string version ="version 0.47, 2017-06-03";
+
+namespace virustotal
+{
+
+struct SevenZipDetection
+{
+  static bool isArcT(const std::string& fn)
+  {
+    return libstriezel::sevenZip::archive::is7z(fn);
+  }
+}; //struct
+
+typedef HandlerGeneric<libstriezel::sevenZip::archive, SevenZipDetection> Handler7z;
+
 } //namespace
 
-#endif // SCANTOOL_VERSION_HPP
+} //namespace
+
+#endif // SCANTOOL_VT_HANDLER7Z_HPP

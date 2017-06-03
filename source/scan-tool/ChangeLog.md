@@ -1,5 +1,10 @@
 # ChangeLog for scan-tool
 
+## Version 0.47 (2017-06-03)
+  - add 7-Zip handler: If told via the commend line option --7zip, scan-tool
+    will extract 7-Zip archives and scan each contained file individually
+    before scanning the archive itself
+
 ## Version 0.46.1 (2017-04-21)
   - add info about strategy "scan and forget" to help message
 

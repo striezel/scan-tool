@@ -6,6 +6,7 @@ project(scan-tool)
 #add_definitions(-DDEFINE_CONSTANT_HERE -DANOTHER_ONE_THERE -DTHIS_IS_THE_THIRD)
 
 set(scan-tool_sources
+    ../../libstriezel/archive/7z/archive.cpp
     ../../libstriezel/archive/ar/archive.cpp
     ../../libstriezel/archive/archiveLibarchive.cpp
     ../../libstriezel/archive/cab/archive.cpp
