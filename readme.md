@@ -1,9 +1,8 @@
 # scan-tool
 
-scan-tool is (or better: will be) a tool that scans selected files for
-malicious content.
-
-TODO
+scan-tool is a command line tool that scans selected files for malicious
+content. It uses the public ReST API provided by
+[VirusTotal](https://www.virustotal.com/) to scan files.
 
 ## Build status
 
@@ -66,7 +65,7 @@ created during the build process and then type:
 If all tests succeeded, the output of the above command should end with
 something like:
 
-    100% tests passed, 0 tests failed out of 34
+    100% tests passed, 0 tests failed out of 37
 
     Total Test time (real) =  85.99 sec
 
@@ -75,7 +74,7 @@ it was intended by the developer.
 
 ## Copyright and Licensing
 
-Copyright 2015, 2016 Dirk Stolle
+Copyright 2015, 2016, 2017  Dirk Stolle
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
