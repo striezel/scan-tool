@@ -7,11 +7,14 @@ os:
 before_install:
   - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
 script:
-  - mkdir ./build
-  - cd ./build
-  - cmake ../
-  - make -j2
-  - ctest -V
+  - echo "Coverity stuff should be done by now."
+  - if [ -e /home/travis/build/striezel/scan-tool/cov-int/scm_log.txt ]; then cat /home/travis/build/striezel/scan-tool/cov-int/scm_log.txt; fi
+  - if [ -e /home/travis/build/striezel/scan-tool/cov-int/build-log.txt ]; then cat /home/travis/build/striezel/scan-tool/cov-int/build-log.txt; fi
+env:
+  global:
+   # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
+   #   via the "travis encrypt" command using the project repo's public key
+   - secure: "opxiVTWrng5zTPFl/NQvngZOCKD2oyNne+Jt9c92py01JKx19gpxwtzNGgib5exhWRbQAU3rAEUKKLnOPPw6qC+qQIbPRFm5PfBvxIFC+JWZOIbJippJa2//luUzB9nsySftLNLeZTxbgzB44pNal6lAOf5+S5cPcOOG5cNkZVXkHgzD8pl9NlHXDIhbYZBt/wn6Txy6bHbSNU/3EvLjeFd0rpcCI9aUStHzT9gGk6BV18PKs2FGvr7oInLXxUQiWICdlc8MAfYjWUhH2vrXlJvonpSZ17+OJu4+QOI4Do6I6y57qoUXpqrLsZwar0KWEgoyXeOMtwecEXf8zidQVUcZaSIMuN/u3F+TE5VL0fOe2oh7TBToUkPXDDqrC8xjlvdF4ksTqh0h+Tl7ILRJsJ7ynoCXBV8X8wjoQTEC+DJ04k3uRjRehWYCxDQJhl4lbfsRXMlmka6ZtZ1t6oDcQf7DEhXwNvWCNggHKScuMgFsG668MqjR5wlI7CfkVY5LsouDZF3z5yroTP1PTn5Y0rk7lj3xVkwK86fzDVA5U9a2UrhuL4PT3DMWSVkvKdx6a9RJI0+fLe7Vjeb4pVuH+YFaLy48nAPdD4N8QEABGklFOzcTHJL81hy+YZ657qZdmkuNilNdUldfViPoJ4H0rmEBczEeSSz4l5El5maFKlo="
 addons:
   apt:
     sources:
@@ -22,5 +25,13 @@ addons:
     - libcurl4-gnutls-dev
     - libjsoncpp-dev
     - libzip-dev
+  coverity_scan:
+    project:
+      name: "Thoronador/scan-tool"
+      description: "scan-tool"
+    notification_email: thoronador@users.sourceforge.net
+    build_command_prepend: "cmake ./"
+    build_command:   "make -j2"
+    branch_pattern: coverity
 notifications:
   email: false
