@@ -2,6 +2,7 @@ language: cpp
 compiler:
   - gcc
 sudo: false
+dist: trusty
 os:
   - linux
 before_install:
