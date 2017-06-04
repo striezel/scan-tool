@@ -35,6 +35,7 @@
 #include "HandlerCab.hpp"
 #include "HandlerGzip.hpp"
 #include "HandlerISO9660.hpp"
+#include "HandlerRar.hpp"
 #include "HandlerTar.hpp"
 #include "HandlerXz.hpp"
 #include "Strategies.hpp"
@@ -117,6 +118,10 @@ void showHelp()
             << "                     disk images and scans each contained file, too.\n"
             << "  --cab            - add Cabinet archive (*.cab) file handler which extracts\n"
             << "                     these archives and scans each contained file, too.\n"
+            << "  --rar            - add Rar file handler which extracts Roschal archives and\n"
+            << "                     scans each contained file, too. Note that due to the\n"
+            << "                     proprietary nature of this file format it is possible\n"
+            << "                     that not all file of the archive can be extracted.\n"
             << "  --ignore-extraction-errors\n"
             << "                   - tells the program to ignore errors during archive\n"
             << "                     extraction and continue as if these errors did not occur.\n";
@@ -248,6 +253,7 @@ int main(int argc, char ** argv)
   bool handleAr = false;
   bool handleXz = false;
   bool handleCab = false;
+  bool handleRar = false;
   bool ignoreExtractionErrors = false;
 
   if ((argc > 1) and (argv != nullptr))
@@ -627,6 +633,17 @@ int main(int argc, char ** argv)
           }
           handleCab = true;
         } //handle .cab files
+        else if (param == "--rar")
+        {
+          //Has the Rar option already been set?
+          if (handleRar)
+          {
+            std::cout << "Error: Parameter " << param << " must not occur more than once!"
+                      << std::endl;
+            return scantool::rcInvalidParameter;
+          }
+          handleRar = true;
+        } //handle .rar files
         else if ((param == "--ignore-extraction-errors") || (param == "--ignore-archive-errors"))
         {
           //Has the ignore option already been set?
@@ -830,6 +847,16 @@ int main(int argc, char ** argv)
   if (handleCab)
   {
     strategy->addHandler(std::unique_ptr<scantool::virustotal::HandlerCab>(new scantool::virustotal::HandlerCab(ignoreExtractionErrors)));
+  }
+  //check Rar handler
+  if (handleRar)
+  {
+    /* Rar handler will always ignore extraction errors, because doe to the
+       proprietary nature of this archive format it is very possible that not
+       all files in the archive can be extracted (ca. 50 % chance?).
+       So naturally some files will get extraction errors, even if the file
+       itself is OK. */
+    strategy->addHandler(std::unique_ptr<scantool::virustotal::HandlerRar>(new scantool::virustotal::HandlerRar(true)));
   }
 
   //iterate over all files for scan requests

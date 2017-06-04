@@ -59,6 +59,8 @@
 		<Unit filename="../../libstriezel/archive/gzip/entry.hpp" />
 		<Unit filename="../../libstriezel/archive/iso9660/archive.cpp" />
 		<Unit filename="../../libstriezel/archive/iso9660/archive.hpp" />
+		<Unit filename="../../libstriezel/archive/rar/archive.cpp" />
+		<Unit filename="../../libstriezel/archive/rar/archive.hpp" />
 		<Unit filename="../../libstriezel/archive/tar/archive.cpp" />
 		<Unit filename="../../libstriezel/archive/tar/archive.hpp" />
 		<Unit filename="../../libstriezel/archive/xz/archive.cpp" />
@@ -112,6 +114,7 @@
 		<Unit filename="HandlerGzip.cpp" />
 		<Unit filename="HandlerGzip.hpp" />
 		<Unit filename="HandlerISO9660.hpp" />
+		<Unit filename="HandlerRar.hpp" />
 		<Unit filename="HandlerTar.hpp" />
 		<Unit filename="HandlerXz.hpp" />
 		<Unit filename="ScanStrategy.cpp" />

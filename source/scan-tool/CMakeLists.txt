@@ -14,6 +14,7 @@ set(scan-tool_sources
     ../../libstriezel/archive/entryLibarchive.cpp
     ../../libstriezel/archive/gzip/archive.cpp
     ../../libstriezel/archive/iso9660/archive.cpp
+    ../../libstriezel/archive/rar/archive.cpp
     ../../libstriezel/archive/tar/archive.cpp
     ../../libstriezel/archive/xz/archive.cpp
     ../../libstriezel/archive/zip/archive.cpp
