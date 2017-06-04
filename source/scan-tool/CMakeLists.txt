@@ -13,6 +13,7 @@ set(scan-tool_sources
     ../../libstriezel/archive/entry.cpp
     ../../libstriezel/archive/entryLibarchive.cpp
     ../../libstriezel/archive/gzip/archive.cpp
+    ../../libstriezel/archive/installshield/archive.cpp
     ../../libstriezel/archive/iso9660/archive.cpp
     ../../libstriezel/archive/rar/archive.cpp
     ../../libstriezel/archive/tar/archive.cpp
@@ -105,3 +106,13 @@ if (ZLIB_FOUND)
 else ()
   message ( FATAL_ERROR "zlib was not found!" )
 endif (ZLIB_FOUND)
+
+# find libunshield
+set(libunshield_DIR "../../libstriezel/cmake/" )
+find_package (libunshield)
+if (LIBUNSHIELD_FOUND)
+  include_directories(${LIBUNSHIELD_INCLUDE_DIRS})
+  target_link_libraries (scan-tool ${LIBUNSHIELD_LIBRARIES})
+else ()
+  message ( FATAL_ERROR "libunshield was not found!" )
+endif (LIBUNSHIELD_FOUND)

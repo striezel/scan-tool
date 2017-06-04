@@ -34,6 +34,7 @@
 #include "HandlerAr.hpp"
 #include "HandlerCab.hpp"
 #include "HandlerGzip.hpp"
+#include "HandlerInstallShield.hpp"
 #include "HandlerISO9660.hpp"
 #include "HandlerRar.hpp"
 #include "HandlerTar.hpp"
@@ -122,6 +123,9 @@ void showHelp()
             << "                     scans each contained file, too. Note that due to the\n"
             << "                     proprietary nature of this file format it is possible\n"
             << "                     that not all file of the archive can be extracted.\n"
+            << "  --installshield  - add InstallShield CAB file handler which extracts\n"
+            << "                     InstallShield Cabinet archives and scans each contained\n"
+            << "                     file, too.\n"
             << "  --ignore-extraction-errors\n"
             << "                   - tells the program to ignore errors during archive\n"
             << "                     extraction and continue as if these errors did not occur.\n";
@@ -254,6 +258,7 @@ int main(int argc, char ** argv)
   bool handleXz = false;
   bool handleCab = false;
   bool handleRar = false;
+  bool handleInstallShield = false;
   bool ignoreExtractionErrors = false;
 
   if ((argc > 1) and (argv != nullptr))
@@ -644,6 +649,17 @@ int main(int argc, char ** argv)
           }
           handleRar = true;
         } //handle .rar files
+        else if ((param == "--installshield") || (param == "--unshield"))
+        {
+          //Has the InstallShield option already been set?
+          if (handleInstallShield)
+          {
+            std::cout << "Error: Parameter " << param << " must not occur more than once!"
+                      << std::endl;
+            return scantool::rcInvalidParameter;
+          }
+          handleInstallShield = true;
+        } //handle InstallShield CAB files
         else if ((param == "--ignore-extraction-errors") || (param == "--ignore-archive-errors"))
         {
           //Has the ignore option already been set?
@@ -847,6 +863,11 @@ int main(int argc, char ** argv)
   if (handleCab)
   {
     strategy->addHandler(std::unique_ptr<scantool::virustotal::HandlerCab>(new scantool::virustotal::HandlerCab(ignoreExtractionErrors)));
+  }
+  //check if user wants InstallShield cabinet handler
+  if (handleInstallShield)
+  {
+    strategy->addHandler(std::unique_ptr<scantool::virustotal::HandlerInstallShield>(new scantool::virustotal::HandlerInstallShield(ignoreExtractionErrors)));
   }
   //check Rar handler
   if (handleRar)

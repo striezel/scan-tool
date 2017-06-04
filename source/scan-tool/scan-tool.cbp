@@ -41,6 +41,7 @@
 			<Add library="zip" />
 			<Add library="archive" />
 			<Add library="z" />
+			<Add library="unshield" />
 		</Linker>
 		<Unit filename="../../libstriezel/archive/7z/archive.cpp" />
 		<Unit filename="../../libstriezel/archive/7z/archive.hpp" />
@@ -57,6 +58,8 @@
 		<Unit filename="../../libstriezel/archive/gzip/archive.cpp" />
 		<Unit filename="../../libstriezel/archive/gzip/archive.hpp" />
 		<Unit filename="../../libstriezel/archive/gzip/entry.hpp" />
+		<Unit filename="../../libstriezel/archive/installshield/archive.cpp" />
+		<Unit filename="../../libstriezel/archive/installshield/archive.hpp" />
 		<Unit filename="../../libstriezel/archive/iso9660/archive.cpp" />
 		<Unit filename="../../libstriezel/archive/iso9660/archive.hpp" />
 		<Unit filename="../../libstriezel/archive/rar/archive.cpp" />

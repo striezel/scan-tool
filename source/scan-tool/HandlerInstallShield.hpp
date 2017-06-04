@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2016, 2017  Dirk Stolle
+    Copyright (C) 2017  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,16 +18,30 @@
  -------------------------------------------------------------------------------
 */
 
-#ifndef SCANTOOL_VERSION_HPP
-#define SCANTOOL_VERSION_HPP
+#ifndef SCANTOOL_VT_HANDLERINSTALLSHIELD_HPP
+#define SCANTOOL_VT_HANDLERINSTALLSHIELD_HPP
 
-#include <string>
+#include "HandlerGeneric.hpp"
+#include "../../libstriezel/archive/installshield/archive.hpp"
 
 namespace scantool
 {
-    /** \brief version for scan-tool and scan-tool-cache
-     */
-  const std::string version ="version 0.49, 2017-06-05";
+
+namespace virustotal
+{
+
+struct InstallShieldDetection
+{
+  static bool isArcT(const std::string& fn)
+  {
+    return libstriezel::installshield::archive::isInstallShield(fn);
+  }
+}; //struct
+
+typedef HandlerGeneric<libstriezel::installshield::archive, InstallShieldDetection> HandlerInstallShield;
+
 } //namespace
 
-#endif // SCANTOOL_VERSION_HPP
+} //namespace
+
+#endif // SCANTOOL_VT_HANDLERINSTALLSHIELD_HPP

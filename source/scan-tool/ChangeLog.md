@@ -1,5 +1,11 @@
 # ChangeLog for scan-tool
 
+## Version 0.49 (2017-06-05)
+  - add InstallShield Cabinet handler: If told via the commend line
+    option --installshield, scan-tool will extract InstallShield Cabinet
+    archives and scan each contained file individually before scanning the
+    archive itself.
+
 ## Version 0.48 (2017-06-04)
   - add Rar handler: If told via the commend line option --rar, scan-tool will
     extract Roschal archives and scan each contained file individually before
