@@ -1,0 +1,19 @@
+# Use the official gcc image, based on debian.
+# It can use version tags as well, like gcc:5.2.
+# See https://hub.docker.com/_/gcc/ for more info.
+image: gcc
+
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+
+build:
+  stage: build
+  before_script: 
+    - apt-get update
+    - apt-get -y install cmake catch libarchive-dev libcurl4-gnutls-dev libjsoncpp-dev libunshield-dev libzip-dev
+  script: 
+    - mkdir ./build
+    - cd ./build
+    - cmake ../
+    - make -j4
+    - ctest -V
