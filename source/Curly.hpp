@@ -157,6 +157,48 @@ class Curly
     bool limitUpstreamSpeed(const unsigned int maxBytesPerSecond);
 
 
+    /** \brief checks whether Curly will follow redirects
+     *
+     * \return Returns true, if Curly's perform() method will follow redirects.
+     * Returns false, if redirects are ignored.
+     * \remarks Default behaviour is not to follow redirects.
+     * You can limit the maximum number of redirects which are followed with
+     * setMaximumRedirects() function.
+     */
+    bool followsRedirects() const;
+
+
+    /** \brief changes whether Curly::perform() shall follow redirects.
+     *
+     * \param follow  Set this to true, if Curly shall follow redirects.
+     *                False (default) means that redirects are ignored.
+     * \remarks Default behaviour is not to follow redirects.
+     * You can limit the maximum number of redirects which are followed with
+     * setMaximumRedirects() function.
+     */
+    void followRedirects(const bool follow);
+
+
+    /** \brief gets the maximum number of redirects that Curly will follow
+     *
+     * \return Returns the maximum number of redirects that Curly will follow.
+     * \remarks This setting only takes effect, if followsRedirects() returns
+     *          true. Default value is -1, which means that there is no limit
+     *          on the number of redirects.
+     */
+    long int maximumRedirects() const;
+
+
+    /** \brief Set the maximum number of redirects that Curly will follow.
+     *
+     * \param maxRedirect  the new maximum number of redirects
+     * \remarks This setting only takes effect, if followsRedirects() returns
+     *          true. Negative values are interpreted as "follow (up to) an
+     *          indefinite number of redirects". Preset value is -1.
+     */
+    void setMaximumRedirects(const long int maxRedirect);
+
+
     /** \brief performs the (POST) request
      *
      * \param response  reference to a string that will be filled with the
@@ -251,6 +293,8 @@ class Curly
     std::string m_certFile; /**< the path to the certificate file to verify the peer with */
     long m_LastResponseCode; /**< response code of the last request */
     std::string m_LastContentType; /**< string that holds the last content type */
+    bool m_followRedirects; /**< whether to follow redirects */
+    long int m_maxRedirects; /**< maximum number of redirects that Curly will follow */
     std::vector<std::string> m_ResponseHeaders; /**< response headers returned by the last request */
     unsigned int m_MaxUpstreamSpeed; /**< limit for upstream / upload in bytes per second */
 }; //class Curly

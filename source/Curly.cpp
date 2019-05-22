@@ -104,6 +104,8 @@ Curly::Curly()
   m_certFile(""),
   m_LastResponseCode(0),
   m_LastContentType(""),
+  m_followRedirects(false),
+  m_maxRedirects(-1),
   m_ResponseHeaders(std::vector<std::string>()),
   m_MaxUpstreamSpeed(0)
 {
@@ -144,7 +146,7 @@ std::string Curly::getPostField(const std::string& name) const
   const auto iter = m_PostFields.find(name);
   if (iter != m_PostFields.end())
     return iter->second;
-  return std::move(std::string(""));
+  return std::string();
 }
 
 bool Curly::removePostField(const std::string& name)
@@ -228,6 +230,29 @@ bool Curly::limitUpstreamSpeed(const unsigned int maxBytesPerSecond)
     return false;
   m_MaxUpstreamSpeed = maxBytesPerSecond;
   return true;
+}
+
+bool Curly::followsRedirects() const
+{
+  return m_followRedirects;
+}
+
+void Curly::followRedirects(const bool follow)
+{
+  m_followRedirects = follow;
+}
+
+long int Curly::maximumRedirects() const
+{
+  return m_maxRedirects;
+}
+
+void Curly::setMaximumRedirects(const long int maxRedirect)
+{
+  if (maxRedirect >= 0)
+    m_maxRedirects = maxRedirect;
+  else
+    m_maxRedirects = -1; //map all negative values to -1
 }
 
 bool Curly::perform(std::string& response)
@@ -326,6 +351,32 @@ bool Curly::perform(std::string& response)
       return false;
     }
   } //if upload speed limit is above 511 bytes per second
+
+  //set redirection parameters
+  if (followsRedirects())
+  {
+    //make cURL follow redirects
+    retCode = curl_easy_setopt(handle, CURLOPT_FOLLOWLOCATION, 1L);
+    if (retCode != CURLE_OK)
+    {
+      std::cerr << "cURL error: setting redirection mode failed!" << std::endl;
+      std::cerr << curl_easy_strerror(retCode) << std::endl;
+      curl_easy_cleanup(handle);
+      return false;
+    }
+    //set limit - but only if we are not "limited" to infinite redirects
+    if (maximumRedirects() >= 0)
+    {
+      retCode = curl_easy_setopt(handle, CURLOPT_MAXREDIRS, maximumRedirects());
+      if (retCode != CURLE_OK)
+      {
+        std::cerr << "cURL error: setting redirection limit failed!" << std::endl;
+        std::cerr << curl_easy_strerror(retCode) << std::endl;
+        curl_easy_cleanup(handle);
+        return false;
+      } //if cURL error
+    } //if redirect limit is given
+  } //if redirects are followed
 
   //add custom headers
   struct curl_slist * header_list = nullptr;
