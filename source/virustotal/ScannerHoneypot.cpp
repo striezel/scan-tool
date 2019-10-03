@@ -101,7 +101,7 @@ ScannerHoneypot::Report honeypotReportFromJSONRoot(const Json::Value& root)
     report.scans.clear();
   }
 
-  return std::move(report);
+  return report;
 }
 
 ScannerHoneypot::ScannerHoneypot(const std::string& apikey, const bool honourTimeLimits, const bool silent)
