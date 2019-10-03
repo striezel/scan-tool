@@ -115,25 +115,25 @@ bool ReportV2::fromJSONRoot(const Json::Value& root)
       data->engine = *iter;
 
       const Json::Value engVal = js_scans.get(*iter, Json::Value());
-      //detected
+      // detected
       Json::Value val = engVal["detected"];
       if (!val.empty() && val.isBool())
         data->detected = val.asBool();
       else
         data->detected = false;
-      //version
+      // version
       val = engVal["version"];
       if (!val.empty() && val.isString())
         data->version = val.asString();
       else
         data->version = "";
-      //result
+      // result
       val = engVal["result"];
       if (!val.empty() && val.isString())
         data->result = val.asString();
       else
         data->result = "";
-      //update
+      // update
       val = engVal["update"];
       if (!val.empty() && val.isString())
         data->update = val.asString();
@@ -141,8 +141,8 @@ bool ReportV2::fromJSONRoot(const Json::Value& root)
         data->update = "";
       scans.push_back(std::move(data));
       ++iter;
-    } //while
-  } //if "scans" is present
+    } // while
+  } // if "scans" is present
   else
     scans.clear();
 
@@ -161,12 +161,12 @@ bool ReportV2::notFound() const
   return (response_code == 0);
 }
 
-bool ReportV2::stillInQueue() const
+bool ReportV2::stillInQueue() const noexcept
 {
   /* Response code -2 means that this stuff is still queued for analysis. */
   return (response_code == -2);
 }
 
-} //namespace
+} // namespace
 
-} //namespace
+} // namespace

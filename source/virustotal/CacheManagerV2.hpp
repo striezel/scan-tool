@@ -35,7 +35,7 @@ namespace virustotal
 class CacheManagerV2
 {
   public:
-    /** \brief default constructor
+    /** \brief Constructor.
      *
      * \param cacheRoot  path to the root directory of the cache;
      *                   an empty string will result in the default path for
@@ -44,7 +44,7 @@ class CacheManagerV2
     CacheManagerV2(const std::string& cacheRoot = "");
 
 
-    /** \brief gets the path of the default cache directory
+    /** \brief Gets the path of the default cache directory.
      *
      * \return Returns the path to the default cache directory.
      * \remarks The directory does not necessarily need to exist.
@@ -52,13 +52,13 @@ class CacheManagerV2
     static std::string getDefaultCacheDirectory();
 
 
-    /** \brief gets the path of the current cache directory
+    /** \brief Gets the path of the current cache directory.
      *
      * \return Returns the path to the current cache directory.
      * \remarks The directory does not necessarily need to exist.
      *          Use createCacheDirectory() to create it.
      */
-    const std::string& getCacheDirectory() const;
+    const std::string& getCacheDirectory() const noexcept;
 
 
     /** \brief Tries to create the cache directory, if it does not exist yet.
@@ -96,7 +96,7 @@ class CacheManagerV2
     static std::string getPathForCachedElement(const std::string& resourceID, const std::string& cacheRoot);
 
 
-    /** \brief tries to delete the cached element for a given resource ID
+    /** \brief Tries to delete the cached element for a given resource ID.
      *
      * \param resourceID  the resource ID, i.e. a SHA256 hash
      * \return Returns true, if the cached resource was deleted or did not
@@ -107,7 +107,7 @@ class CacheManagerV2
     bool deleteCachedElement(const std::string& resourceID);
 
 
-    /** \brief tries to delete the cached element for a given resource ID,
+    /** \brief Tries to delete the cached element for a given resource ID,
      *         using a custom cache root directory
      *
      * \param resourceID  the resource ID, i.e. a SHA256 hash
@@ -120,16 +120,16 @@ class CacheManagerV2
     static bool deleteCachedElement(const std::string& resourceID, const std::string& cacheRoot);
 
 
-    /** \brief checks whether the given file name (basename only) is a valid for a cached element
+    /** \brief Checks whether the given file name (basename only) is a valid for a cached element.
      *
      * \param basename  the basename of the file
-     * \return Returns true, if the given basename could identify a cached element.
+     * \return Returns true, if the given @basename could identify a cached element.
      * Returns false otherwise.
      */
     static bool isCachedElementName(const std::string& basename);
 
 
-    /** \brief checks all present cache files for integrity
+    /** \brief Checks all present cache files for integrity.
      *
      * \param deleteCorrupted  If set to true, corrupted cache files will be deleted.
      * \param deleteUnknown    If set to true, all reports of resources that are not
@@ -141,7 +141,7 @@ class CacheManagerV2
     uint_least32_t checkIntegrity(const bool deleteCorrupted, const bool deleteUnknown) const;
 
 
-    /** \brief tries to perform the request cache transition from old to new
+    /** \brief Tries to perform the request cache transition from old to new
      * directory structure.
      *
      * \return Returns zero in case of success.
@@ -151,9 +151,9 @@ class CacheManagerV2
      */
     int performTransition();
   private:
-    /** \brief moves cached files from the old cache directory structure
+    /** \brief Moves cached files from the old cache directory structure
      *         without subdirectories to their new location in the current
-     *         directory structure with 256 subdirectories
+     *         directory structure with 256 subdirectories.
      *
      * \return Returns the number of files that were moved.
      * \remarks The request cache without subdirectories was used in versions
@@ -164,9 +164,9 @@ class CacheManagerV2
     uint_least32_t transitionOneTo256();
 
 
-    /** \brief moves cached files from the old cache directory structure with
+    /** \brief Moves cached files from the old cache directory structure with
      *         16 subdirectories to their new location in the current directory
-     *         structure with 256 subdirectories
+     *         structure with 256 subdirectories.
      *
      * \return Returns the number of files that were moved.
      * \remarks The request cache with 16 subdirectories was used in versions
@@ -178,10 +178,10 @@ class CacheManagerV2
 
 
     std::string m_CacheRoot; /**< path to the chosen root cache directory */
-}; //class
+}; // class
 
-} //namespace
+} // namespace
 
-} //namespace
+} // namespace
 
 #endif // SCANTOOL_VT_CACHEMANAGERV2_HPP

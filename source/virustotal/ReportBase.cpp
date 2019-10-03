@@ -34,6 +34,6 @@ ReportBase::ReportBase()
 {
 }
 
-} //namespace
+} // namespace
 
-} //namespace
+} // namespace

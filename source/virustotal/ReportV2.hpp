@@ -39,7 +39,7 @@ struct ReportV2: public ReportBase
   ///default constructor
   ReportV2();
 
-  /** \brief gets a report from a JSON object
+  /** \brief Gets a report from a JSON object.
    *
    * \param root  the root element of the JSON
    * \return Returns true, if the report could be filled. Might be only partially filled.
@@ -50,28 +50,28 @@ struct ReportV2: public ReportBase
   bool fromJSONRoot(const Json::Value& root);
 
 
-  /** \brief checks whether the response code indicates, that the requested resource
-   * is present/was found and could be retrieved
+  /** \brief Checks whether the response code indicates, that the requested resource
+   * is present / was found and could be retrieved.
    *
    * \return Returns true, if the requested item could be retrieved.
    */
   virtual bool successfulRetrieval() const override;
 
 
-  /** \brief checks whether the response code indicates, that the requested resource
-   * is not present/was not found
+  /** \brief Checks whether the response code indicates, that the requested resource
+   * is not present / was not found.
    *
    * \return Returns true, if the requested item was not found.
    */
   virtual bool notFound() const override;
 
 
-  /** \brief checks whether the response code indicates, that the requested resource
-   * is still queued for scanning
+  /** \brief Checks whether the response code indicates, that the requested resource
+   * is still queued for scanning.
    *
    * \return Returns true, if the requested item is still queued for analysis.
    */
-  bool stillInQueue() const /*override*/;
+  bool stillInQueue() const noexcept;
 
 
   std::string verbose_msg; /**< message from VirusTotal API */
@@ -80,14 +80,14 @@ struct ReportV2: public ReportBase
 
   int total;     /**< total number of scan engines */
 
-  //hashes
+  // hashes
   std::string md5;    /**< MD5 hash of the file */
   std::string sha1;   /**< SHA1 hash of the file */
   std::string sha256; /**< SHA256 hash of the file */
-}; //struct Report
+}; // struct Report
 
-} //namespace
+} // namespace
 
-} //namespace
+} // namespace
 
 #endif // SCANTOOL_VT_REPORTV2_HPP

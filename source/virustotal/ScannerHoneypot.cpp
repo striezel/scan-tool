@@ -46,7 +46,7 @@ ScannerHoneypot::Report honeypotReportFromJSONRoot(const Json::Value& root)
     report.permalink = "";
 
   const Json::Value reportElem = root["report"];
-  //first array element is scan date
+  // first array element is scan date
   if (reportElem.isValidIndex(0))
   {
     val = reportElem.get(0u, Json::Value(Json::nullValue));
@@ -66,7 +66,7 @@ ScannerHoneypot::Report honeypotReportFromJSONRoot(const Json::Value& root)
 
   report.positives = 0;
 
-  //second array element is list of engines
+  // second array element is list of engines
   if (reportElem.isValidIndex(1))
   {
     const Json::Value engines = reportElem.get(1u, Json::Value(Json::nullValue));
@@ -91,11 +91,11 @@ ScannerHoneypot::Report honeypotReportFromJSONRoot(const Json::Value& root)
           ++report.positives;
         report.scans.push_back(std::move(data));
         ++iter;
-      } //while
-    } //if
+      } // while
+    } // if
     else
       report.scans.clear();
-  } //if valid index
+  } // if valid index
   else
   {
     report.scans.clear();
@@ -153,7 +153,7 @@ void ScannerHoneypot::hashLookupWasNow()
 bool ScannerHoneypot::getReport(const std::string& scan_id, Report& report)
 {
   waitForHashLookupLimitExpiration();
-  //send request
+  // send request
   Curly cURL;
   cURL.setURL("https://www.virustotal.com/api/get_submitted_file_report.json");
   cURL.addPostField("resource", scan_id);
@@ -220,7 +220,7 @@ bool ScannerHoneypot::scan(const std::string& filename, std::string& scan_id)
     return false;
 
   waitForScanLimitExpiration();
-  //send request
+  // send request
   Curly cURL;
   cURL.setURL("https://www.virustotal.com/api/bulk_scan_file.json");
   cURL.addPostField("key", m_apikey);
@@ -298,19 +298,19 @@ bool ScannerHoneypot::scan(const std::string& filename, std::string& scan_id)
     scan_id = "";
   if (!result.empty() && result.isInt())
   {
-    //Result code 1 means resource is queued for scan.
+    // Result code 1 means resource is queued for scan.
     return ((result.asInt() == 1) && !scan_id.empty());
   }
-  //No result element: something is wrong with the API.
+  // No result element: something is wrong with the API.
   return false;
 }
 
-int64_t ScannerHoneypot::maxScanSize() const
+int64_t ScannerHoneypot::maxScanSize() const noexcept
 {
-  //Maximum allowed scan size should be 32 MB.
+  // Maximum allowed scan size should be 32 MB.
   return 32 * 1024 * 1024;
 }
 
-} //namespace
+} // namespace
 
-} //namespace
+} // namespace

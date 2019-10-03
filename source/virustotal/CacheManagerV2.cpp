@@ -65,7 +65,7 @@ std::string CacheManagerV2::getDefaultCacheDirectory()
           + libstriezel::filesystem::pathDelimiter + "vt-cache");
 }
 
-const std::string& CacheManagerV2::getCacheDirectory() const
+const std::string& CacheManagerV2::getCacheDirectory() const noexcept
 {
   return m_CacheRoot;
 }

@@ -36,10 +36,10 @@ struct EngineV2: public scantool::Engine
 
   std::string version; /**< version of the antivirus engine */
   std::string update;  /**< last update of the antivirus engine */
-}; //struct Engine
+}; // struct Engine
 
-} //namespace
+} // namespace
 
-} //namespace
+} // namespace
 
 #endif // ENGINEV2_HPP

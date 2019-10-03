@@ -24,7 +24,7 @@
 #include <string>
 #include <vector>
 
-/** \brief class that holds the configuration settings
+/** \brief Holds the configuration settings.
  */
 class Configuration
 {
@@ -38,20 +38,20 @@ class Configuration
     static const char cCommentCharacter;
 
 
-    /** \brief returns the API key
+    /** \brief Returns the API key.
      *
-     * \return returns the API key. Returns an empty string,
+     * \return Returns the API key. Returns an empty string,
      *         if no API key was read yet.
      */
-    const std::string& apikey() const;
+    const std::string& apikey() const noexcept;
 
 
-    /** \brief clears/resets existing values
+    /** \brief Clears / resets existing values.
      */
     void clear();
 
 
-    /** \brief tries to read the configuration file from the given file name.
+    /** \brief Tries to read the configuration file from the given file name.
      *
      * \param fileName path to the configuration file
      * \return Returns true in case of success, or false if an error occurred.
@@ -59,6 +59,6 @@ class Configuration
     bool loadFromFile(const std::string& fileName);
   private:
     std::string m_apikey; /**< the API key */
-}; //class
+}; // class
 
 #endif // SCANTOOL_CONFIGURATION_HPP

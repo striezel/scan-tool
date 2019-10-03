@@ -41,13 +41,6 @@ bool ReportHoneypot::notFound() const
   return (response_code == 0);
 }
 
-/*
-bool ReportHoneypot::stillInQueue() const
-{
-  #warning Result code for this state is not known.
-}
-*/
+} // namespace
 
-} //namespace
-
-} //namespace
+} // namespace

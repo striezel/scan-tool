@@ -28,7 +28,7 @@ namespace metascan
 
 Report::Report()
 : file_id(""),
-  //scan_result part of report
+  // scan_result part of report
   scan_details(std::vector<Engine>()),
   rescan_available(false),
   scan_all_result_i(-1),
@@ -48,11 +48,11 @@ Report::Report()
 Report::FileInfo::FileInfo()
 : file_size(-1),
   upload_timestamp(""),
-  //hashes
+  // hashes
   md5(""),
   sha1(""),
   sha256(""),
-  //file categorization
+  // file categorization
   file_type_category(""),
   file_type_description(""),
   file_type_extension(""),
@@ -71,7 +71,7 @@ bool Report::fromJSONRoot(const Json::Value& root)
   else
   {
     file_id = "";
-  } //else
+  } // else
 
   // scan_results
   const Json::Value js_scan_results = root["scan_results"];
@@ -130,8 +130,8 @@ bool Report::fromJSONRoot(const Json::Value& root)
         scan_details.push_back(eng);
         // most important: increment iterator to avoid endless loop
         ++iter;
-      } //while
-    } //if scan_details object exists
+      } // while
+    } // if scan_details object exists
     else
     {
       scan_details.clear();
@@ -141,14 +141,14 @@ bool Report::fromJSONRoot(const Json::Value& root)
          false here.
       */
       return false;
-    } //else (no scan_details
+    } // else (no scan_details)
 
     // rescan_available
     js_value = js_scan_results["rescan_available"];
     if (!js_value.empty() && js_value.isBool())
       rescan_available = js_value.asBool();
     else
-      rescan_available = false; //assume worst
+      rescan_available = false; // assume worst
     // scan_all_result_i
     js_value = js_scan_results["scan_all_result_i"];
     if (!js_value.empty() && js_value.isInt())
@@ -191,7 +191,7 @@ bool Report::fromJSONRoot(const Json::Value& root)
       scan_all_result_a = js_value.asString();
     else
       scan_all_result_a.clear();
-  } //if scan_results is present
+  } // if scan_results is present
   else
   {
     // make all members of scan_results part empty
@@ -204,7 +204,7 @@ bool Report::fromJSONRoot(const Json::Value& root)
     progress_percentage = -1;
     in_queue = -1;
     scan_all_result_a.clear();
-  } //else
+  } // else
 
   // file_info
   const Json::Value js_file_info = root["file_info"];
@@ -264,7 +264,7 @@ bool Report::fromJSONRoot(const Json::Value& root)
       file_info.display_name = js_value.asString();
     else
       file_info.display_name.clear();
-  } //if file_info is present
+  } // if file_info is present
   else
     file_info = FileInfo();
 
@@ -293,10 +293,10 @@ bool Report::successfulRetrieval() const
 
 bool Report::notFound() const
 {
-  //simple way to check for "not found"
+  // simple way to check for "not found"
   return (data_id.empty() || scan_details.empty());
 }
 
-} //namespace
+} // namespace
 
-} //namespace
+} // namespace

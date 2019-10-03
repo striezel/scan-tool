@@ -31,10 +31,12 @@ namespace scantool
 namespace metascan
 {
 
+/** \brief Scanner for MetaScanOnline.
+ */
 class Scanner: public scantool::Scanner
 {
   public:
-    /** \brief default constructor
+    /** \brief Constructor.
      *
      * \param apikey   the Metadefender Cloud API key used for scanning
      * \param honourTimeLimits   whether or not time limits should be honoured
@@ -46,7 +48,7 @@ class Scanner: public scantool::Scanner
 
     struct ScanData
     {
-      //default constructor
+      // default constructor
       ScanData();
 
       std::string data_id; /**< Data ID used for retrieving scan result */
@@ -64,28 +66,28 @@ class Scanner: public scantool::Scanner
     }; //struct
 
 
-    /** \brief sets a new API key
+    /** \brief Sets a new API key.
      *
      * \param apikey   the Metadefender Cloud API key used for scanning
      */
     void setApiKey(const std::string& apikey);
 
 
-    /** \brief duration between consecutive file scan requests, if time limit is respected
+    /** \brief Gets the duration between consecutive file scan requests, if time limit is respected.
      *
      * \return Returns the minimum interval between two consecutive file scan requests.
      */
     virtual std::chrono::milliseconds timeBetweenConsecutiveScanRequests() const override;
 
 
-    /** \brief duration between consecutive hash lookups, if time limit is respected
+    /** \brief Gets duration between consecutive hash lookups, if time limit is respected.
      *
      * \return Returns the minimum interval between two consecutive hash lookups.
      */
     virtual std::chrono::milliseconds timeBetweenConsecutiveHashLookups() const override;
 
 
-    /** \brief retrieves a scan report
+    /** \brief Retrieves a scan report.
      *
      * \param resource   resource identifier
      * \param report     reference to a Report structure where the report's data will be stored
@@ -95,7 +97,7 @@ class Scanner: public scantool::Scanner
     bool getReport(const std::string& resource, Report& report);
 
 
-    /** \brief requests a re-scan of an already uploaded file
+    /** \brief Requests a re-scan of an already uploaded file.
      *
      * \param file_id    the file_id (as seen in report from getReport())
      * \param scan_data  the scan_data which can be used to query the report later
@@ -105,7 +107,7 @@ class Scanner: public scantool::Scanner
     bool rescan(const std::string& file_id, ScanData& scan_data);
 
 
-    /** \brief upload a file and request a scan of the file
+    /** \brief Uploads a file and requests a scan of the file.
      *
      * \param filename   name of the (local) file that shall be uploaded and scanned
      * \param scan_data  the scan_data which can be used to query the report later
@@ -115,19 +117,19 @@ class Scanner: public scantool::Scanner
     bool scan(const std::string& filename, ScanData& scan_data);
 
 
-    /** \brief returns the maximum file size that is allowed to be scanned
+    /** \brief Returns the maximum file size that is allowed to be scanned.
      *
      * \return maximum size in bytes that can still be scanned
      */
-    virtual int64_t maxScanSize() const override;
+    virtual int64_t maxScanSize() const noexcept override;
   private:
     std::string m_apikey; /**< holds the Metadefender Cloud API key */
     std::string m_certFile; /**< certificate file for peer verification */
-}; //class
+}; // class
 
-} //namespace
+} // namespace
 
-} //namespace
+} // namespace
 
 
 // custom specialization of std::hash for scantool::metascan::Scanner::ScanData

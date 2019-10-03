@@ -29,7 +29,7 @@ Configuration::Configuration()
 {
 }
 
-const std::string& Configuration::apikey() const
+const std::string& Configuration::apikey() const noexcept
 {
   return m_apikey;
 }
@@ -48,24 +48,24 @@ bool Configuration::loadFromFile(const std::string& fileName)
     return false;
   }
 
-  //clear existing values
+  // clear existing values
   clear();
 
   const unsigned int cMaxLine = 1024;
   char buffer[cMaxLine];
   std::string line = "";
   std::string::size_type sep_pos = 0;
-  while (input.getline(buffer, cMaxLine-1))
+  while (input.getline(buffer, cMaxLine - 1))
   {
-    buffer[cMaxLine-1] = '\0';
+    buffer[cMaxLine - 1] = '\0';
     line = std::string(buffer);
-    //check for possible carriage return at end (happens on Windows systems)
+    // check for possible carriage return at end (happens on Windows systems)
     if (!line.empty())
     {
-      if (line.at(line.length()-1)=='\r')
+      if (line.at(line.length() - 1) == '\r')
       {
-        line.erase(line.length()-1);
-      }//if
+        line.erase(line.length() - 1);
+      }
     }
 
     if (!line.empty())
@@ -77,16 +77,16 @@ bool Configuration::loadFromFile(const std::string& fileName)
         if (sep_pos == std::string::npos || sep_pos == 0)
         {
           std::cout << "Configuration::loadFromFile: ERROR: Invalid line found: \""
-                    << line <<"\".\nGeneral format: \"Name of Setting=value\"\n"
+                    << line << "\".\nGeneral format: \"Name of Setting=value\"\n"
                     << "Loading from file cancelled.\n";
           input.close();
           return false;
         }
 
         const std::string name = line.substr(0, sep_pos);
-        if (name=="apikey")
+        if (name == "apikey")
         {
-          m_apikey = line.substr(sep_pos+1);
+          m_apikey = line.substr(sep_pos + 1);
         }
         else
         {
@@ -94,10 +94,10 @@ bool Configuration::loadFromFile(const std::string& fileName)
                     << line <<"\".\nKnown entries: apikey.\n";
           input.close();
           return false;
-        } //else
-      } //if not comment
-    }//if not empty
-  }//while
+        } // else
+      } // if not comment
+    } // if not empty
+  } // while
   input.close();
   return true;
 }

@@ -32,12 +32,14 @@ namespace scantool
 namespace virustotal
 {
 
+/** \brief Scanner for VirusTotal Honeypot API.
+ */
 class ScannerHoneypot: public scantool::Scanner
 {
   public:
     typedef ReportHoneypot Report;
 
-    /** \brief default constructor
+    /** \brief Constructor.
      *
      * \param apikey   the VirusTotal API key used for scanning
      * \param honourTimeLimits   whether or not time limits should be honoured
@@ -46,38 +48,38 @@ class ScannerHoneypot: public scantool::Scanner
     ScannerHoneypot(const std::string& apikey, const bool honourTimeLimits = true, const bool silent = false);
 
 
-    /** \brief sets a new API key
+    /** \brief Sets a new API key.
      *
      * \param apikey   the VirusTotal API key used for scanning
      */
     void setApiKey(const std::string& apikey);
 
 
-    /** \brief duration between consecutive file scan requests, if time limit is respected
+    /** \brief Gets the duration between consecutive file scan requests, if time limit is respected.
      *
      * \return Returns the minimum interval between two consecutive file scan requests.
      */
     virtual std::chrono::milliseconds timeBetweenConsecutiveScanRequests() const override;
 
 
-    /** \brief duration between consecutive hash lookups, if time limit is respected
+    /** \brief Gets the duration between consecutive hash lookups, if time limit is respected.
      *
      * \return Returns the minimum interval between two consecutive hash lookups.
      */
     virtual std::chrono::milliseconds timeBetweenConsecutiveHashLookups() const override;
 
 
-    /** \brief sets the time of the last request to now
+    /** \brief Sets the time of the last request to now.
      */
     virtual void scanRequestWasNow() override;
 
 
-    /** \brief sets the time of the last hash lookup to now
+    /** \brief Sets the time of the last hash lookup to now.
      */
     virtual void hashLookupWasNow() override;
 
 
-    /** \brief retrieves a scan report
+    /** \brief Retrieves a scan report.
      *
      * \param scan_id    scan ID of a previously submitted file
      * \param report     reference to a Report structure where the report's data will be stored
@@ -87,7 +89,7 @@ class ScannerHoneypot: public scantool::Scanner
     bool getReport(const std::string& scan_id, Report& report);
 
 
-    /** \brief upload a file and request a scan of the file
+    /** \brief Uploads a file and requests a scan of the file.
      *
      * \param filename   name of the (local) file that shall be uploaded and scanned
      * \param scan_id    the scan_id (resource) which can be used to query the report later
@@ -102,17 +104,17 @@ class ScannerHoneypot: public scantool::Scanner
     bool scan(const std::string& filename, std::string& scan_id);
 
 
-    /** \brief returns the maximum file size that is allowed to be scanned
+    /** \brief Returns the maximum file size that is allowed to be scanned.
       *
       * \return maximum size in bytes that can still be scanned
       */
-    virtual int64_t maxScanSize() const override;
+    virtual int64_t maxScanSize() const noexcept override;
   private:
     std::string m_apikey; /**< holds the VirusTotal API key */
-}; //class
+}; // class
 
-} //namespace
+} // namespace
 
-} //namespace
+} // namespace
 
 #endif // SCANTOOL_VT_SCANNERHONEYPOT_HPP

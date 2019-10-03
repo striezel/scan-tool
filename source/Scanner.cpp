@@ -28,12 +28,12 @@ namespace scantool
 Scanner::Scanner(const bool honourTimeLimits, const bool _silent)
 : m_HonourLimit(honourTimeLimits),
   m_Silent(_silent),
-  //We assume that time limits will not be higher than 24 hours.
+  // We assume that time limits will not be higher than 24 hours.
   m_LastScanRequest(std::chrono::steady_clock::now() - std::chrono::hours(24)),
   m_LastHashLookup(std::chrono::steady_clock::now() - std::chrono::hours(24))
 { }
 
-bool Scanner::honoursTimeLimit() const
+bool Scanner::honoursTimeLimit() const noexcept
 {
   return m_HonourLimit;
 }
@@ -43,7 +43,7 @@ void Scanner::honourTimeLimit(const bool doHonour)
   m_HonourLimit = doHonour;
 }
 
-bool Scanner::silent() const
+bool Scanner::silent() const noexcept
 {
   return m_Silent;
 }
@@ -75,7 +75,7 @@ void Scanner::hashLookupWasNow()
 
 void Scanner::waitForScanLimitExpiration()
 {
-  //If time limit is not honoured, we can exit here.
+  // If time limit is not honoured, we can exit here.
   if (!honoursTimeLimit())
     return;
 
@@ -92,14 +92,14 @@ void Scanner::waitForScanLimitExpiration()
       else
         std::clog << std::chrono::duration_cast<std::chrono::milliseconds>(duration).count()
                   << " millisecond(s) for time limit to expire..." << std::endl;
-    } //if not silent
+    } // if not silent
     std::this_thread::sleep_for(duration);
-  } //if waiting is required
+  } // if waiting is required
 }
 
 void Scanner::waitForHashLookupLimitExpiration()
 {
-  //If time limit is not honoured, we can exit here.
+  // If time limit is not honoured, we can exit here.
   if (!honoursTimeLimit())
     return;
 
@@ -116,9 +116,9 @@ void Scanner::waitForHashLookupLimitExpiration()
       else
         std::clog << std::chrono::duration_cast<std::chrono::milliseconds>(duration).count()
                   << " millisecond(s) for time limit to expire..." << std::endl;
-    } //if not silent
+    } // if not silent
     std::this_thread::sleep_for(duration);
-  } //if waiting is required
+  } // if waiting is required
 }
 
-} //namespace
+} // namespace

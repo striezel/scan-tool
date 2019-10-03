@@ -93,7 +93,7 @@ bool ScannerV2::getReport(const std::string& resource, Report& report, const boo
   if (useCache && !cacheDir.empty() && !cachedFilePath.empty()
       && libstriezel::filesystem::file::exists(cachedFilePath))
   {
-    //try to read JSON data from cached file
+    // try to read JSON data from cached file
     std::ifstream cachedJSON(cachedFilePath, std::ios_base::in | std::ios_base::binary);
     if (!cachedJSON.good())
     {
@@ -105,7 +105,7 @@ bool ScannerV2::getReport(const std::string& resource, Report& report, const boo
     {
       response.append(temp);
     }
-    //File should be read until EOF, but failbit and badbit should not be set.
+    // File should be read until EOF, but failbit and badbit should not be set.
     if (!cachedJSON.eof() || cachedJSON.bad() || cachedJSON.fail())
     {
       cachedJSON.close();
@@ -114,11 +114,11 @@ bool ScannerV2::getReport(const std::string& resource, Report& report, const boo
       return false;
     }
     cachedJSON.close();
-  } //if cached JSON file shall be used
+  } // if cached JSON file shall be used
   else
   {
     waitForHashLookupLimitExpiration();
-    //send request via cURL
+    // send request via cURL
     Curly cURL;
     cURL.setURL("https://www.virustotal.com/vtapi/v2/file/report");
     cURL.addPostField("resource", resource);
@@ -188,8 +188,8 @@ bool ScannerV2::getReport(const std::string& resource, Report& report, const boo
         return false;
       }
       cachedJSON.close();
-    } //if request cache is enabled
-  } //else (normal, uncached request)
+    } // if request cache is enabled
+  } // else (normal, uncached request)
   Json::Value root; // will contain the root value after parsing.
   Json::Reader jsonReader;
   const bool success = jsonReader.parse(response, root, false);
@@ -203,7 +203,7 @@ bool ScannerV2::getReport(const std::string& resource, Report& report, const boo
       && libstriezel::filesystem::file::exists(cachedFilePath))
     {
       CacheManagerV2::deleteCachedElement(resource, cacheDir);
-    } //if
+    } // if
     return false;
   }
 
@@ -225,7 +225,7 @@ bool ScannerV2::getReport(const std::string& resource, Report& report, const boo
 bool ScannerV2::rescan(const std::string& resource, std::string& scan_id)
 {
   waitForScanLimitExpiration();
-  //send request
+  // send request
   Curly cURL;
   cURL.setURL("https://www.virustotal.com/vtapi/v2/file/rescan");
   cURL.addPostField("resource", resource);
@@ -302,12 +302,12 @@ bool ScannerV2::rescan(const std::string& resource, std::string& scan_id)
     scan_id = "";
   if (!response_code.empty() && response_code.isInt())
   {
-    //Response code 1 means resource is queued for rescan.
-    //Response code 0 means resource is not present in file store.
-    //Response code -1 means that some kind of error occurred.
+    // Response code 1 means resource is queued for rescan.
+    // Response code 0 means resource is not present in file store.
+    // Response code -1 means that some kind of error occurred.
     return ((response_code.asInt() == 1) && !scan_id.empty());
   }
-  //No response_code element: something is wrong with the API.
+  // No response_code element: something is wrong with the API.
   return false;
 }
 
@@ -317,7 +317,7 @@ bool ScannerV2::scan(const std::string& filename, std::string& scan_id)
     return false;
 
   waitForScanLimitExpiration();
-  //send request
+  // send request
   Curly cURL;
   cURL.setURL("https://www.virustotal.com/vtapi/v2/file/scan");
   cURL.addPostField("apikey", m_apikey);
@@ -400,19 +400,19 @@ bool ScannerV2::scan(const std::string& filename, std::string& scan_id)
     scan_id = "";
   if (!response_code.empty() && response_code.isInt())
   {
-    //Response code 1 means resource is queued for scan.
+    // Response code 1 means resource is queued for scan.
     return ((response_code.asInt() == 1) && !scan_id.empty());
   }
-  //No response_code element: something is wrong with the API.
+  // No response_code element: something is wrong with the API.
   return false;
 }
 
-int64_t ScannerV2::maxScanSize() const
+int64_t ScannerV2::maxScanSize() const noexcept
 {
-  //Maximum allowed scan size is 32 MB.
+  // Maximum allowed scan size is 32 MB.
   return 32 * 1024 * 1024;
 }
 
-} //namespace
+} // namespace
 
-} //namespace
+} // namespace

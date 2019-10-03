@@ -26,19 +26,23 @@
 namespace scantool
 {
 
+/** \brief Holds scan result for a single engine.
+ */
 struct Engine
 {
-  ///default constructor
+  /** \brief Default constructor.
+   */
   Engine();
 
-  ///virtual destructor
+  /** \brief Virtual destructor (for derived classes).
+   */
   virtual ~Engine() {}
 
   std::string engine;  /**< name of the antivirus engine */
   bool detected;       /**< whether the engine detected a virus */
   std::string result;  /**< name of the detected malware */
-}; //struct Engine
+}; // struct Engine
 
-} //namespace
+} // namespace
 
 #endif // SCANTOOL_ENGINE_HPP

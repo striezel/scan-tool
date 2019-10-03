@@ -41,13 +41,13 @@ struct ReportBase: public scantool::Report
 
   int response_code;     /**< response code from VirusTotal API */
 
-  int positives; /**< number of engines that detected a virus */
+  int positives;         /**< number of engines that detected a virus */
 
   std::string permalink; /**< permanent link to the scan result */
-}; //struct
+}; // struct
 
-} //namespace
+} // namespace
 
-} //namespace
+} // namespace
 
 #endif // SCANTOOL_VT_REPORTBASE_HPP

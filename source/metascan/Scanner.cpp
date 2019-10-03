@@ -111,19 +111,19 @@ bool Scanner::getReport(const std::string& resource, Report& report)
     std::cerr << "Error in Scanner::getReport(): Bad request!" << std::endl;
     return false;
   }
-  //401: wrong or missing API key
+  // 401: wrong or missing API key
   if (cURL.getResponseCode() == 401)
   {
     std::cerr << "Error in Scanner::getReport(): API key is wrong or missing!" << std::endl;
     return false;
   }
-  //403: greetings from your hourly rate limit
+  // 403: greetings from your hourly rate limit
   if (cURL.getResponseCode() == 403)
   {
     std::cerr << "Error in Scanner::getReport(): Hourly rate limit reached!" << std::endl;
     return false;
   }
-  //response code should be 200
+  // Response code should be 200.
   if (cURL.getResponseCode() != 200)
   {
     std::cerr << "Error in Scanner::getReport(): Unexpected HTTP status code "
@@ -159,7 +159,7 @@ bool Scanner::getReport(const std::string& resource, Report& report)
               << "JSON does not contain data to fill a report!" << std::endl;
     return false;
   }
-  //all done here
+
   return true;
 }
 
@@ -170,11 +170,11 @@ bool Scanner::rescan(const std::string& file_id, ScanData& scan_data)
 
   std::string response = "";
   waitForScanLimitExpiration();
-  //send request via cURL
+  // send request via cURL
   Curly cURL;
   cURL.setURL("https://scan.metadefender.com/v2/rescan/" + file_id);
-  //add API key
-  cURL.addHeader("apikey: "+m_apikey);
+  // add API key
+  cURL.addHeader("apikey: " + m_apikey);
 
   if (!m_certFile.empty())
   {
@@ -183,9 +183,9 @@ bool Scanner::rescan(const std::string& file_id, ScanData& scan_data)
       std::cerr << "Error in Scanner::rescan(): Certificate file could not be set." << std::endl;
       return false;
     }
-  } //if certificate file
+  } // if certificate file
 
-  //perform request
+  // perform request
   if (!cURL.perform(response))
   {
     std::cerr << "Error in Scanner::rescan(): Request could not be performed." << std::endl;
@@ -193,25 +193,25 @@ bool Scanner::rescan(const std::string& file_id, ScanData& scan_data)
   }
   scanRequestWasNow();
 
-  //400: Bad request
+  // 400: Bad request
   if (cURL.getResponseCode() == 400)
   {
     std::cerr << "Error in Scanner::rescan(): Bad request!" << std::endl;
     return false;
   }
-  //401: wrong or missing API key
+  // 401: wrong or missing API key
   if (cURL.getResponseCode() == 401)
   {
     std::cerr << "Error in Scanner::rescan(): API key is wrong or missing!" << std::endl;
     return false;
   }
-  //500: internal server error / server temporary unavailable
+  // 500: internal server error / server temporary unavailable
   if (cURL.getResponseCode() == 500)
   {
     std::cerr << "Error in Scanner::rescan(): Internal server error / server temporarily unavailable!" << std::endl;
     return false;
   }
-  //503: Server temporary unavailable. There're too many unfinished file in pending queue.
+  // 503: Server temporary unavailable. There're too many unfinished files in pending queue.
   if (cURL.getResponseCode() == 503)
   {
     std::cerr << "Error in Scanner::rescan(): Service temporarily unavailable!"
@@ -219,7 +219,7 @@ bool Scanner::rescan(const std::string& file_id, ScanData& scan_data)
               << " Try again later." << std::endl;
     return false;
   }
-  //response code should be 200
+  // Response code should be 200.
   if (cURL.getResponseCode() != 200)
   {
     std::cerr << "Error in Scanner::rescan(): Unexpected HTTP status code "
@@ -248,24 +248,24 @@ bool Scanner::rescan(const std::string& file_id, ScanData& scan_data)
               << "JSON data!" << std::endl;
     return false;
   }
-  //data_id
+  // data_id
   Json::Value js_value = root["data_id"];
   if (!js_value.empty() && js_value.isString())
     scan_data.data_id = js_value.asString();
   else
   {
     scan_data.data_id.clear();
-  } //else
-  //rest_ip
+  } // else
+  // rest_ip
   js_value = root["rest_ip"];
   if (!js_value.empty() && js_value.isString())
     scan_data.rest_ip = js_value.asString();
   else
   {
     scan_data.rest_ip.clear();
-  } //else
+  } // else
 
-  //Found?
+  // Found?
   return (!scan_data.data_id.empty() && !scan_data.rest_ip.empty());
 }
 
@@ -274,7 +274,7 @@ bool Scanner::scan(const std::string& filename, ScanData& scan_data)
   if (filename.empty())
     return false;
 
-  //get file content, so we can put it into HTTP POST body later
+  // get file content, so we can put it into HTTP POST body later
   /* This might cause huge memory consumption for large files, so we should be
      careful which files we use here.
   */
@@ -282,16 +282,16 @@ bool Scanner::scan(const std::string& filename, ScanData& scan_data)
   if (!libstriezel::filesystem::file::readIntoString(filename, content))
     return false;
 
-  //wait
+  // wait
   waitForScanLimitExpiration();
 
-  //send request
+  // send request
   Curly cURL;
   cURL.setURL("https://scan.metadefender.com/v2/file");
   cURL.addHeader("apikey: " + m_apikey);
-  //scope for "basename" stuff
+  // scope for "basename" stuff
   {
-    //add "basename" of file for better file info after scan
+    // add "basename" of file for better file info after scan
     std::string dummy, fName, ext;
     libstriezel::filesystem::splitPathFileExtension(filename, libstriezel::filesystem::pathDelimiter, dummy, fName, ext);
     if (!fName.empty())
@@ -300,13 +300,13 @@ bool Scanner::scan(const std::string& filename, ScanData& scan_data)
         cURL.addHeader("filename: " + fName + '.' + ext);
       else
         cURL.addHeader("filename: " + fName);
-    } //if
-  } //scope
+    } // if
+  } // scope
 
-  //set file content as HTTP POST body
+  // set file content as HTTP POST body
   cURL.setPostBody(content);
 
-  //set certificate file, if one was specified
+  // set certificate file, if one was specified
   if (!m_certFile.empty())
   {
     if (!cURL.setCertificateFile(m_certFile))
@@ -314,7 +314,7 @@ bool Scanner::scan(const std::string& filename, ScanData& scan_data)
       std::cerr << "Error in Scanner::scan(): Certificate file could not be set." << std::endl;
       return false;
     }
-  } //if certificate file
+  } // if certificate file
 
   std::string response = "";
   if (!cURL.perform(response))
@@ -324,31 +324,31 @@ bool Scanner::scan(const std::string& filename, ScanData& scan_data)
   }
   scanRequestWasNow();
 
-  //400: Bad request
+  // 400: Bad request
   if (cURL.getResponseCode() == 400)
   {
     std::cerr << "Error in Scanner::scan(): Bad request!" << std::endl;
     return false;
   }
-  //401: wrong or missing API key
+  // 401: wrong or missing API key
   if (cURL.getResponseCode() == 401)
   {
     std::cerr << "Error in Scanner::scan(): API key is wrong or missing!" << std::endl;
     return false;
   }
-  //403: scan limit reached
+  // 403: scan limit reached
   if (cURL.getResponseCode() == 403)
   {
     std::cerr << "Error in Scanner::scan(): The hourly scan limit has been reached!" << std::endl;
     return false;
   }
-  //500: internal server error / server temporary unavailable
+  // 500: internal server error / server temporary unavailable
   if (cURL.getResponseCode() == 500)
   {
     std::cerr << "Error in Scanner::scan(): Internal server error / server temporarily unavailable!" << std::endl;
     return false;
   }
-  //503: Server temporary unavailable due to maintenance or overloading.
+  // 503: Server temporary unavailable due to maintenance or overloading.
   if (cURL.getResponseCode() == 503)
   {
     std::cerr << "Error in Scanner::scan(): Service temporarily"
@@ -356,7 +356,7 @@ bool Scanner::scan(const std::string& filename, ScanData& scan_data)
               << " Try again later." << std::endl;
     return false;
   }
-  //response code should be 200
+  // response code should be 200
   if (cURL.getResponseCode() != 200)
   {
     std::cerr << "Error in Scanner::scan(): Unexpected HTTP status code "
@@ -386,33 +386,33 @@ bool Scanner::scan(const std::string& filename, ScanData& scan_data)
               << "JSON data!" << std::endl;
     return false;
   }
-  //data_id
+  // data_id
   Json::Value js_value = root["data_id"];
   if (!js_value.empty() && js_value.isString())
     scan_data.data_id = js_value.asString();
   else
   {
     scan_data.data_id.clear();
-  } //else
-  //rest_ip
+  } // else
+  // rest_ip
   js_value = root["rest_ip"];
   if (!js_value.empty() && js_value.isString())
     scan_data.rest_ip = js_value.asString();
   else
   {
     scan_data.rest_ip.clear();
-  } //else
+  } // else
 
-  //Did we get the data and initialize a scan?
+  // Did we get the data and initialize a scan?
   return (!scan_data.data_id.empty() && !scan_data.rest_ip.empty());
 }
 
-int64_t Scanner::maxScanSize() const
+int64_t Scanner::maxScanSize() const noexcept
 {
-  //Assume 140 MB like on the web interface.
-  return 140*1024*1024;
+  // Assume 140 MB like on the web interface.
+  return 140 * 1024 * 1024;
 }
 
-} //namespace
+} // namespace
 
-} //namespace
+} // namespace

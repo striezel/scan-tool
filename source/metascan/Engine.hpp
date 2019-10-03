@@ -32,16 +32,17 @@ namespace metascan
 
 struct Engine: public scantool::Engine
 {
-  ///default constructor
+  /** \brief Constructor.
+   */
   Engine();
 
-  int scan_result_i; /**< numeric value to represent scan result */
+  int scan_result_i;    /**< numeric value to represent scan result */
   std::string def_time; /**< date of virus definitions of the anti-virus engine */
   std::chrono::milliseconds scan_time;  /**< time in milliseconds required for scan by this AV engine */
-}; //struct Engine
+}; // struct Engine
 
-} //namespace
+} // namespace
 
-} //namespace
+} // namespace
 
 #endif // SCANTOOL_MSO_ENGINE_HPP

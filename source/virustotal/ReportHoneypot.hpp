@@ -36,24 +36,24 @@ struct ReportHoneypot: public ReportBase
   ReportHoneypot();
 
 
-  /** \brief checks whether the response code indicates, that the requested resource
-   * is present/was found and could be retrieved
+  /** \brief Checks whether the response code indicates, that the requested resource
+   * is present / was found and could be retrieved.
    *
    * \return Returns true, if the requested item could be retrieved.
    */
   virtual bool successfulRetrieval() const override;
 
 
-  /** \brief checks whether the response code indicates, that the requested resource
-   * is not present/was not found
+  /** \brief Checks whether the response code indicates, that the requested resource
+   * is not present / was not found.
    *
    * \return Returns true, if the requested item was not found.
    */
   virtual bool notFound() const override;
-}; //struct ReportHoneypot
+}; // struct ReportHoneypot
 
-} //namespace
+} // namespace
 
-} //namespace
+} // namespace
 
 #endif // SCANTOOL_VT_REPORTHONEYPOT_HPP

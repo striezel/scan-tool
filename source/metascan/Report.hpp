@@ -33,9 +33,10 @@ namespace scantool
 namespace metascan
 {
 
+/** \brief Report data for MetaScanOnline. */
 struct Report
 {
-  /** \brief default constructor */
+  /** \brief Default constructor. */
   Report();
 
   /** \brief structure for the file_info part in reports */
@@ -44,24 +45,24 @@ struct Report
     /** \brief default constructor */
     FileInfo();
 
-    //general information
+    // general information
     int64_t file_size; /**< size of the file in bytes */
     std::string upload_timestamp; /**< time of upload */
-    //hashes
+    // hashes
     std::string md5;    /**< MD5 hash of the file */
     std::string sha1;   /**< SHA1 hash of the file */
     std::string sha256; /**< SHA256 hash of the file */
-    //file categorization
+    // file categorization
     std::string file_type_category; /**< file category, shorthand / abbreviation */
     std::string file_type_description; /**< description of the file type */
     std::string file_type_extension; /**< description of extension, e.g. "EXE/DLL" */
     std::string display_name; /**< basename of the file */
-  }; //struct FileInfo
+  }; // struct FileInfo
 
 
 
   std::string file_id;
-  //scan_result part of report
+  // scan_result part of report
   std::vector<Engine> scan_details;
   bool rescan_available;
   int scan_all_result_i;
@@ -76,7 +77,7 @@ struct Report
   std::string data_id;
   int top_threat;
 
-  /** \brief gets a report from a JSON object
+  /** \brief Gets a report from a JSON object,
    *
    * \param root  the root element of the JSON
    * \return Returns true, if the report could be filled. Might be only partially filled.
@@ -87,24 +88,24 @@ struct Report
   bool fromJSONRoot(const Json::Value& root);
 
 
-  /** \brief checks whether the response indicates, that the requested resource
-   * is present/was found and could be retrieved
+  /** \brief Checks whether the response indicates, that the requested resource
+   * is present / was found and could be retrieved.
    *
    * \return Returns true, if the requested item could be retrieved.
    */
-  virtual bool successfulRetrieval() const /*override*/;
+  virtual bool successfulRetrieval() const;
 
 
-  /** \brief checks whether the response indicates, that the requested resource
-   * is not present/was not found
+  /** \brief Checks whether the response indicates, that the requested resource
+   * is not present / was not found.
    *
    * \return Returns true, if the requested item was not found.
    */
-  virtual bool notFound() const /* override */;
-}; //class
+  virtual bool notFound() const;
+}; // class
 
-} //namespace
+} // namespace
 
-} //namespace
+} // namespace
 
 #endif // SCANTOOL_MSO_REPORT_HPP
