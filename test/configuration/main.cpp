@@ -24,7 +24,6 @@
 
 int main(int argc, char** argv)
 {
-  std::string filename = "";
   if ((argc < 2) || (argv == nullptr) || (argv[1] == nullptr))
   {
     std::cout << "Error: This program expects a configuration file name as "
