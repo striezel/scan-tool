@@ -12,3 +12,6 @@ add_subdirectory (date)
 
 # Recurse into subdirectory for configuration test.
 add_subdirectory (configuration)
+
+# Recurse into subdirectory for the parser tests.
+add_subdirectory (parser)

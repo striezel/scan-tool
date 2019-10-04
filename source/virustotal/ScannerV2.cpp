@@ -21,7 +21,6 @@
 #include "ScannerV2.hpp"
 #include <fstream>
 #include <iostream>
-#include <jsoncpp/json/reader.h>
 #include "CacheManagerV2.hpp"
 #include "../Curly.hpp"
 #include "../../libstriezel/filesystem/directory.hpp"
@@ -190,9 +189,8 @@ bool ScannerV2::getReport(const std::string& resource, Report& report, const boo
       cachedJSON.close();
     } // if request cache is enabled
   } // else (normal, uncached request)
-  Json::Value root; // will contain the root value after parsing.
-  Json::Reader jsonReader;
-  const bool success = jsonReader.parse(response, root, false);
+
+  const bool success = report.fromJsonString(response);
   if (!success)
   {
     std::cerr << "Error in ScannerV2::getReport(): Unable to parse JSON data!" << std::endl;
@@ -207,19 +205,7 @@ bool ScannerV2::getReport(const std::string& resource, Report& report, const boo
     return false;
   }
 
-  #ifdef SCAN_TOOL_DEBUG
-  const Json::Value response_code = root["response_code"];
-  const Json::Value verbose_msg = root["verbose_msg"];
-  if (!response_code.empty() && response_code.isInt())
-  {
-    std::cout << "response_code: " << response_code.asInt() << std::endl;
-  }
-  if (!verbose_msg.empty() && verbose_msg.isString())
-  {
-    std::cout << "verbose_msg: " << verbose_msg.asString() << std::endl;
-  }
-  #endif
-  return report.fromJSONRoot(root);
+  return success;
 }
 
 bool ScannerV2::rescan(const std::string& resource, std::string& scan_id)
