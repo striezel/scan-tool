@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2015, 2016  Dirk Stolle
+    Copyright (C) 2015, 2016, 2019  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@
 */
 
 #include "Report.hpp"
+#include <iostream>
 
 namespace scantool
 {
@@ -283,6 +284,21 @@ bool Report::fromJSONRoot(const Json::Value& root)
 
   // all fine here
   return true;
+}
+
+bool Report::fromJsonString(const std::string& jsonString)
+{
+  // parse JSON response
+  Json::Value root; // will contain the root value after parsing.
+  Json::Reader jsonReader;
+  const bool success = jsonReader.parse(jsonString, root, false);
+  if (!success)
+  {
+    std::cerr << "Error in Report::fromJsonString(): Unable to "
+              << "parse JSON data!" << std::endl;
+    return false;
+  }
+  return fromJSONRoot(root);
 }
 
 bool Report::successfulRetrieval() const

@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2015, 2016  Dirk Stolle
+    Copyright (C) 2015, 2016, 2019  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -86,6 +86,17 @@ struct Report
    *          may be partially undefined.
    */
   bool fromJSONRoot(const Json::Value& root);
+
+
+  /** \brief Gets a report from a stringified JSON.
+   *
+   * \param jsonString  the JSON string
+   * \return Returns true, if the report could be filled. Might be only partially filled.
+   *         Returns false, if an unrecoverable error occurred.
+   * \remarks If the function returns false, the content of the report object
+   *          may be partially undefined.
+   */
+  bool fromJsonString(const std::string& jsonString);
 
 
   /** \brief Checks whether the response indicates, that the requested resource

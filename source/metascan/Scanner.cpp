@@ -83,9 +83,9 @@ bool Scanner::getReport(const std::string& resource, Report& report)
   waitForHashLookupLimitExpiration();
   //send request via cURL
   Curly cURL;
-  cURL.setURL("https://hashlookup.metadefender.com/v2/hash/"+resource);
+  cURL.setURL("https://hashlookup.metadefender.com/v2/hash/" + resource);
   //add API key
-  cURL.addHeader("apikey: "+m_apikey);
+  cURL.addHeader("apikey: " + m_apikey);
   //indicate that we want more meta data for the file
   cURL.addHeader("file_metadata: 1");
 
