@@ -1,5 +1,10 @@
 # ChangeLog for vt-api-request
 
+## Version 1.0.4 (2019-10-06)
+
+The C++ standard used during compilation has been raised from C++11 to C++14.
+Most compilers should support that by now.
+
 ## Version 1.0.3 (2016-03-24)
   - add option to read the API key from a file
     This way the API key will not appear in the process list and/or shell

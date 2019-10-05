@@ -1,5 +1,10 @@
 # ChangeLog for mso-api-request
 
+## Version 1.0.1 (2019-10-06)
+
+The C++ standard used during compilation has been raised from C++11 to C++14.
+Most compilers should support that by now.
+
 ## Version 1.0.0 (2016-06-15)
   - adjust scan limits for Metadefender public API according to
     https://www.opswat.com/blog/preventing-illegitimate-use-of-metadefender

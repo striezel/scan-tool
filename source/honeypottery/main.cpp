@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2015, 2016  Dirk Stolle
+    Copyright (C) 2015, 2016, 2019  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@
 
 void showVersion()
 {
-  std::cout << "honeypottery, version 0.0.5, 2016-03-24\n";
+  std::cout << "honeypottery, version 0.0.6, 2019-10-06\n";
 }
 
 void showHelp()

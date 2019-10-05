@@ -36,7 +36,7 @@ into a root terminal.
 Get the source directly from Git by cloning the Git repository and change to
 the directory after the repository is completely cloned:
 
-    git clone https://github.com/striezel/scan-tool.git ./scan-tool
+    git clone https://gitlab.com/striezel/scan-tool.git ./scan-tool
     cd scan-tool
     git submodule update --init
 
@@ -65,7 +65,7 @@ created during the build process and then type:
 If all tests succeeded, the output of the above command should end with
 something like:
 
-    100% tests passed, 0 tests failed out of 37
+    100% tests passed, 0 tests failed out of 39
 
     Total Test time (real) =  85.99 sec
 
@@ -74,7 +74,7 @@ it was intended by the developer.
 
 ## Copyright and Licensing
 
-Copyright 2015, 2016, 2017  Dirk Stolle
+Copyright 2015, 2016, 2017, 2019  Dirk Stolle
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

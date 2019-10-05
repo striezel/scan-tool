@@ -1,5 +1,10 @@
 # ChangeLog for scan-tool-cache
 
+## Version 0.50 (2019-10-06)
+
+The C++ standard used during compilation has been raised from C++11 to C++14.
+Most compilers should support that by now.
+
 ## Version 0.45 (2017-03-01)
   - minor text fix in cache integrity check
 

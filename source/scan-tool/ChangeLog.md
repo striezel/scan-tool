@@ -1,5 +1,10 @@
 # ChangeLog for scan-tool
 
+## Version 0.50 (2019-10-06)
+
+The C++ standard used during compilation has been raised from C++11 to C++14.
+Most compilers should support that by now.
+
 ## Version 0.49 (2017-06-05)
   - add InstallShield Cabinet handler: If told via the commend line
     option --installshield, scan-tool will extract InstallShield Cabinet
