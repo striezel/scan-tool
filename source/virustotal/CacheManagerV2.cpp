@@ -33,6 +33,8 @@ namespace scantool
 namespace virustotal
 {
 
+const int64_t maxCacheFileSize = 1024 * 1024 * 2;
+
 CacheManagerV2::CacheManagerV2(const std::string& cacheRoot)
 : m_CacheRoot(cacheRoot)
 {
@@ -74,13 +76,13 @@ bool CacheManagerV2::createCacheDirectory()
 {
   if (!libstriezel::filesystem::directory::exists(m_CacheRoot))
   {
-    //try to create the directory (and its parent directories, if missing)
+    // try to create the directory (and its parent directories, if missing)
     if (!libstriezel::filesystem::directory::createRecursive(m_CacheRoot))
       return false;
-  } //if cache directory does not exist
+  } // if cache directory does not exist
   const std::vector<char> subChars = { '0', '1', '2', '3', '4', '5', '6', '7',
                                        '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
-  //create sub directories
+  // create sub directories
   for (const auto & charOne : subChars)
   {
     for (const auto & charTwo : subChars)
@@ -89,13 +91,14 @@ bool CacheManagerV2::createCacheDirectory()
                               + std::string(1, charOne) + std::string(1, charTwo);
       if (!libstriezel::filesystem::directory::exists(subDirectory))
       {
-        //try to create the directory
+        // try to create the directory
         if (!libstriezel::filesystem::directory::create(subDirectory))
           return false;
-      } //if cache sub directory does not exist
-    } //for (inner)
-  } //for (outer)
-  //Cache directory already exists. We've got nothing more to do here.
+      } // if cache sub directory does not exist
+    } // for (inner)
+  } // for (outer)
+
+  // Cache directory already exists. We've got nothing more to do here.
   return true;
 }
 
@@ -135,19 +138,19 @@ bool CacheManagerV2::deleteCachedElement(const std::string& resourceID)
 bool CacheManagerV2::deleteCachedElement(const std::string& resourceID, const std::string& cacheRoot)
 {
   const std::string cachedFile = getPathForCachedElement(resourceID, cacheRoot);
-  //An empty string indicates invalid resource ID.
+  // An empty string indicates invalid resource ID.
   if (cachedFile.empty())
     return false;
 
   if (!libstriezel::filesystem::file::exists(cachedFile))
     return true;
-  //File exists, delete it.
+  // File exists, delete it.
   return libstriezel::filesystem::file::remove(cachedFile);
 }
 
 bool CacheManagerV2::isCachedElementName(const std::string& basename)
 {
-  //file name has to end with ".json"
+  // file name has to end with ".json"
   return (stringEndsWith(basename, ".json")
     // first 64 characters must form a valid SHA256 hash
     && SHA256::isValidHash(basename.substr(0, 64))
@@ -188,7 +191,7 @@ uint_least32_t CacheManagerV2::checkIntegrity(const bool deleteCorrupted, const 
                   + libstriezel::filesystem::pathDelimiter + file.fileName;
             const auto fileSize = libstriezel::filesystem::file::getSize64(fileName);
             // check, if file is way too large for a proper cache file
-            if (fileSize >= 1024*1024*2)
+            if (fileSize >= maxCacheFileSize)
             {
               // Several kilobytes are alright, but not megabytes.
               ++corrupted;
@@ -307,7 +310,7 @@ uint_least32_t CacheManagerV2::transitionOneTo256()
                           + file.fileName;
       const auto fileSize = libstriezel::filesystem::file::getSize64(fileName);
       // check, if file is way too large for a proper cache file
-      if (fileSize >= 1024 * 1024 * 2)
+      if (fileSize >= maxCacheFileSize)
       {
         // Several kilobytes are alright, but not megabytes.
         std::clog << "Info: JSON file " << fileName
@@ -395,7 +398,7 @@ uint_least32_t CacheManagerV2::transition16To256()
                 + libstriezel::filesystem::pathDelimiter + file.fileName;
           const auto fileSize = libstriezel::filesystem::file::getSize64(fileName);
           // check, if file is way too large for a proper cache file
-          if (fileSize >= 1024*1024*2)
+          if (fileSize >= maxCacheFileSize)
           {
             // Several kilobytes are alright, but not megabytes.
             std::clog << "Info: JSON file " << fileName
