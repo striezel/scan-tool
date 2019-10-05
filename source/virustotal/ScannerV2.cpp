@@ -21,6 +21,7 @@
 #include "ScannerV2.hpp"
 #include <fstream>
 #include <iostream>
+#include <jsoncpp/json/reader.h>
 #include "CacheManagerV2.hpp"
 #include "../Curly.hpp"
 #include "../../libstriezel/filesystem/directory.hpp"

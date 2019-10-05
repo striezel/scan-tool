@@ -32,10 +32,11 @@ namespace scantool
 namespace virustotal
 {
 
+/** Updates cached reports while iterating over the cache. */
 class IterationOperationUpdate: public IterationOperation
 {
   public:
-    /** \brief constructor
+    /** \brief Constructor.
      *
      * \param apikey  the VirusTotal API key used for scanning/updating
      * \param silent  whether or not output to the standard output should be reduced
@@ -45,22 +46,21 @@ class IterationOperationUpdate: public IterationOperation
     IterationOperationUpdate(const std::string& apikey, const bool silent, const std::chrono::system_clock::time_point& ageLimit, const std::string& cacheDir);
 
 
-    /** \brief performs the operation for a single cached element
+    /** \brief Performs the operation for a single cached element.
      *
      * \param fileName   file name of the cached element
-     * \remarks Has to be implemented by descendant class.
      */
     virtual void process(const std::string& fileName) override;
 
 
-    /** \brief returns a vector of all pending rescans by resource ID
+    /** \brief Returns a vector of all pending rescans by resource ID.
      *
      * \return Returns a vector of strings containing a resource ID each.
      */
     const std::vector<std::string>& pendingRescans() const;
 
 
-    /** \brief provides access to the internal scanner instance
+    /** \brief Provides access to the internal scanner instance.
      *
      * \return Returns the internal ScannerV2.
      */
@@ -71,10 +71,10 @@ class IterationOperationUpdate: public IterationOperation
     std::chrono::system_clock::time_point m_ageLimit; /**< limit for updates */
     CacheManagerV2 m_cacheMgr; /**< cache manager instance */
     std::vector<std::string> m_pendingRescans; /**< list of pending rescans */
-}; //class
+}; // class
 
-} //namespace
+} // namespace
 
-} //namespace
+} // namespace
 
 #endif // SCANTOOL_VT_ITERATIONOPERATIONUPDATE_HPP

@@ -32,7 +32,6 @@ namespace virustotal
 
 CacheIteration::CacheIteration()
 {
-  //empty
 }
 
 bool CacheIteration::iterate(const std::string& cacheDir, IterationOperation& op)
@@ -40,7 +39,7 @@ bool CacheIteration::iterate(const std::string& cacheDir, IterationOperation& op
   if (cacheDir.empty())
     return false;
 
-  //No cache directory? Nothing to do.
+  // No cache directory? Nothing to do.
   if (!libstriezel::filesystem::directory::exists(cacheDir))
     return true;
 
@@ -69,16 +68,16 @@ bool CacheIteration::iterate(const std::string& cacheDir, IterationOperation& op
         {
           if (!file.isDirectory && CacheManagerV2::isCachedElementName(file.fileName))
           {
-            //process file
+            // process file
             op.process(currentSubDirectory + libstriezel::filesystem::pathDelimiter + file.fileName);
-          } //if file is a cached report
-        } //for
-      } //if subdirectory exists
-    } //for (second char)
-  } //for (first char)
+          } // if file is a cached report
+        } // for
+      } // if subdirectory exists
+    } // for (second char)
+  } // for (first char)
   return true;
 }
 
-} //namespace
+} // namespace
 
-} //namespace
+} // namespace

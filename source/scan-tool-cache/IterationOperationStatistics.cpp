@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2016  Dirk Stolle
+    Copyright (C) 2016, 2019  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -41,69 +41,56 @@ IterationOperationStatistics::IterationOperationStatistics(const std::chrono::sy
 
 void IterationOperationStatistics::process(const std::string& fileName)
 {
-  //increase number of total cached files
+  // increase number of total cached files
   ++m_total;
-  //check, if file is way too large for a proper cache file
+  // check, if file is way too large for a proper cache file
   const auto fileSize = libstriezel::filesystem::file::getSize64(fileName);
-  if (fileSize >= 1024*1024*2)
+  if (fileSize >= 1024 * 1024 * 2)
   {
-    //Several kilobytes are alright, but not megabytes.
+    // Several kilobytes are alright, but not megabytes.
     ++m_unparsable;
+    return;
   }
+
+  std::string content;
+  if (!libstriezel::filesystem::file::readIntoString(fileName, content))
+  {
+    ++m_unparsable;
+    return;
+  }
+
+  ReportV2 report;
+  if (!report.fromJsonString(content))
+  {
+    // File is probably not a report.
+    ++m_unparsable;
+    return;
+  }
+
+  // response code zero means: file not known to VirusTotal
+  if (report.response_code == 0)
+  {
+    ++m_unknown;
+  } // if report indicates "unknown" file
   else
   {
-    std::string content = "";
-    if (libstriezel::filesystem::file::readIntoString(fileName, content))
+    if (report.hasTime_t())
     {
-      Json::Value root; // will contain the root value after parsing.
-      Json::Reader jsonReader;
-      const bool success = jsonReader.parse(content, root, false);
-      if (!success)
-      {
-        ++m_unparsable;
-      } //if parsing failed
-      else
-      {
-        ReportV2 report;
-        if (report.fromJSONRoot(root))
-        {
-          //response code zero means: file not known to VirusTotal
-          if (report.response_code == 0)
-          {
-            ++m_unknown;
-          } //if report indicates "unknown" file
-          else
-          {
-            if (report.hasTime_t())
-            {
-              //update oldest report date
-              if (m_oldest == static_cast<std::time_t>(-1))
-                m_oldest = report.scan_date_t;
-              else if (report.scan_date_t < m_oldest)
-                m_oldest = report.scan_date_t;
-              //update newest report date
-              if (m_newest == static_cast<std::time_t>(-1))
-                m_newest = report.scan_date_t;
-              else if (report.scan_date_t > m_newest)
-                m_newest = report.scan_date_t;
-              //update count of old reports
-              if (std::chrono::system_clock::from_time_t(report.scan_date_t) < m_ageLimit)
-                ++m_oldReports;
-            } //if time_t value is set
-          } //else (report contains some info)
-        } //if report could be filled from JSON
-        else
-        {
-          //JSON data is probably not a report
-          ++m_unparsable;
-        }
-      } //else (JSON parsing was successful)
-    } //if file could be read
-    else
-    {
-      ++m_unparsable;
-    }
-  } //else
+      // update oldest report date
+      if (m_oldest == static_cast<std::time_t>(-1))
+        m_oldest = report.scan_date_t;
+      else if (report.scan_date_t < m_oldest)
+        m_oldest = report.scan_date_t;
+      // update newest report date
+      if (m_newest == static_cast<std::time_t>(-1))
+        m_newest = report.scan_date_t;
+      else if (report.scan_date_t > m_newest)
+        m_newest = report.scan_date_t;
+      // update count of old reports
+      if (std::chrono::system_clock::from_time_t(report.scan_date_t) < m_ageLimit)
+        ++m_oldReports;
+    } // if time_t value is set
+  } // else (report contains some info)
 }
 
 uint_least32_t IterationOperationStatistics::total() const
@@ -135,6 +122,6 @@ uint_least32_t IterationOperationStatistics::oldReports() const
   return m_oldReports;
 }
 
-} //namespace
+} // namespace
 
-} //namespace
+} // namespace

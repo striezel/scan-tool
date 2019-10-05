@@ -33,11 +33,11 @@ namespace virustotal
 class CacheIteration
 {
   public:
-    ///constructor
+    /// Constructor.
     CacheIteration();
 
 
-    /** \brief iterates over all files in the request cache
+    /** \brief Iterates over all files in the request cache.
      *
      * \param cacheDir  the root directory of the request cache
      * \param op        class that performs the iteration operation for each file
@@ -45,10 +45,10 @@ class CacheIteration
      *         Returns false, if not (error occurred).
      */
     bool iterate(const std::string& cacheDir, IterationOperation& op);
-}; //class
+}; // class
 
-} //namespace
+} // namespace
 
-} //namespace
+} // namespace
 
 #endif // SCANTOOL_VT_CACHEITERATION_HPP

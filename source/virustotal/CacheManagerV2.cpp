@@ -181,88 +181,76 @@ uint_least32_t CacheManagerV2::checkIntegrity(const bool deleteCorrupted, const 
         #endif // SCAN_TOOL_DEBUG
         for (auto const & file : files)
         {
-          //entry must not be a directory and have valid file name
+          // entry must not be a directory and have valid file name
           if (!file.isDirectory && isCachedElementName(file.fileName))
           {
             const auto fileName = currentSubDirectory
                   + libstriezel::filesystem::pathDelimiter + file.fileName;
             const auto fileSize = libstriezel::filesystem::file::getSize64(fileName);
-            //check, if file is way too large for a proper cache file
+            // check, if file is way too large for a proper cache file
             if (fileSize >= 1024*1024*2)
             {
-              //Several kilobytes are alright, but not megabytes.
+              // Several kilobytes are alright, but not megabytes.
               ++corrupted;
               std::clog << "Info: JSON file " << fileName
                         << " is too large for a cached response!" << std::endl;
               if (deleteCorrupted)
                 libstriezel::filesystem::file::remove(fileName);
-            } //if file is too large
+            } // if file is too large
             else
             {
               std::string content = "";
               if (libstriezel::filesystem::file::readIntoString(fileName, content))
               {
-                Json::Value root; // will contain the root value after parsing.
-                Json::Reader jsonReader;
-                const bool success = jsonReader.parse(content, root, false);
-                if (!success)
+                ReportV2 report;
+                if (report.fromJsonString(content))
                 {
+                  // response code zero means: file not known to VirusTotal
+                  if (deleteUnknown && (report.response_code == 0))
+                  {
+                    std::cout << "Info: " << fileName << " contains no relevant data." << std::endl;
+                    libstriezel::filesystem::file::remove(fileName);
+                  } // if report can be deleted
+                  // check SHA256 hash
+                  else if ((report.sha256 != file.fileName.substr(0, 64))
+                           or (firstChar != file.fileName[0])
+                           or (secondChar != file.fileName[1]))
+                  {
+                    std::cout << "Info: SHA256 hash of " << file.fileName
+                              << " is \"" << report.sha256 << "\" and does not"
+                              << " match file name." << std::endl;
+                    ++corrupted;
+                    if (deleteCorrupted)
+                      libstriezel::filesystem::file::remove(fileName);
+                  } // else if SHA256 does not match
+                } // if report could be filled from JSON
+                else
+                {
+                  // JSON data is probably not a report
                   std::clog << "Info: JSON data from " << fileName << " could not be parsed!" << std::endl;
                   ++corrupted;
                   if (deleteCorrupted)
                     libstriezel::filesystem::file::remove(fileName);
-                } //if parsing failed
-                else
-                {
-                  ReportV2 report;
-                  if (report.fromJSONRoot(root))
-                  {
-                    //response code zero means: file not known to VirusTotal
-                    if (deleteUnknown && (report.response_code == 0))
-                    {
-                      std::cout << "Info: " << fileName << " contains no relevant data." << std::endl;
-                      libstriezel::filesystem::file::remove(fileName);
-                    } //if report can be deleted
-                    //check SHA256 hash
-                    else if ((report.sha256 != file.fileName.substr(0, 64))
-                             or (firstChar != file.fileName[0])
-                             or (secondChar != file.fileName[1]))
-                    {
-                      std::cout << "Info: SHA256 hash of " << file.fileName
-                                << " is \"" << report.sha256 << "\" and does not"
-                                << " match file name." << std::endl;
-                      ++corrupted;
-                      if (deleteCorrupted)
-                        libstriezel::filesystem::file::remove(fileName);
-                    } //else if SHA256 does not match
-                  } //if report could be filled from JSON
-                  else
-                  {
-                    //JSON data is probably not a report
-                    ++corrupted;
-                    if (deleteCorrupted)
-                      libstriezel::filesystem::file::remove(fileName);
-                  }
-                } //else (JSON parsing was successful)
-              } //if file was read
+                }
+              } // if file was read
               else
               {
                 std::cout << "Error: Could not read file " << fileName << "!"
                           << std::endl;
               }
-            } //else (file size might be OK)
-          } //if JSON file with correct name
+            } // else (file size might be OK)
+          } // if JSON file with correct name
           else
           {
             if (!file.isDirectory)
             {
               std::cout << "Info: File " << file.fileName << " has incorrect naming scheme." << std::endl;
             }
-          } //else (incorrect naming)
-        } //for (inner)
-      } //if subdirectory exists
-    } //for (2nd char)
-  } //for (1st char)
+          } // else (incorrect naming)
+        } // for (inner)
+      } // if subdirectory exists
+    } // for (2nd char)
+  } // for (1st char)
   return corrupted;
 }
 
@@ -275,7 +263,7 @@ int CacheManagerV2::performTransition()
     return 0;
   }
 
-  //create new cache directory structure
+  // create new cache directory structure
   if (!createCacheDirectory())
   {
     std::cout << "Error: Could not create new cache directory structure!" << std::endl;
@@ -283,9 +271,9 @@ int CacheManagerV2::performTransition()
   }
 
   std::cout << "Performing cache transition. This may take a while ..." << std::endl;
-  //transition for very old cache files (v0.20 and v0.21)
+  // transition for very old cache files (v0.20 and v0.21)
   auto movedFiles = transitionOneTo256();
-  //transition for mildly old cache files (v0.22 - v0.25)
+  // transition for mildly old cache files (v0.22 - v0.25)
   movedFiles += transition16To256();
   if (movedFiles == 0)
     std::cout << "No cached files were moved." << std::endl;
@@ -312,69 +300,59 @@ uint_least32_t CacheManagerV2::transitionOneTo256()
   #endif // SCAN_TOOL_DEBUG
   for (auto const & file : files)
   {
-    //entry must not be a directory and have a valid file name
+    // entry must not be a directory and have a valid file name
     if (!file.isDirectory && isCachedElementName(file.fileName))
     {
       const auto fileName = libstriezel::filesystem::slashify(m_CacheRoot)
                           + file.fileName;
       const auto fileSize = libstriezel::filesystem::file::getSize64(fileName);
-      //check, if file is way too large for a proper cache file
-      if (fileSize >= 1024*1024*2)
+      // check, if file is way too large for a proper cache file
+      if (fileSize >= 1024 * 1024 * 2)
       {
-        //Several kilobytes are alright, but not megabytes.
+        // Several kilobytes are alright, but not megabytes.
         std::clog << "Info: JSON file " << fileName
                   << " is too large for a cached response!" << std::endl;
         libstriezel::filesystem::file::remove(fileName);
-      } //if file is too large
+      } // if file is too large
       else
       {
         std::string content = "";
         if (libstriezel::filesystem::file::readIntoString(fileName, content))
         {
-          Json::Value root; // will contain the root value after parsing.
-          Json::Reader jsonReader;
-          const bool success = jsonReader.parse(content, root, false);
-          if (!success)
+          ReportV2 report;
+          if (report.fromJsonString(content))
           {
-            std::clog << "Info: JSON data from " << fileName << " could not be parsed!" << std::endl;
-            libstriezel::filesystem::file::remove(fileName);
-          } //if parsing failed
-          else
-          {
-            ReportV2 report;
-            if (report.fromJSONRoot(root))
+            // response code zero means: file not known to VirusTotal
+            if (report.response_code == 0)
             {
-              //response code zero means: file not known to VirusTotal
-              if (report.response_code == 0)
-              {
-                std::cout << "Info: " << fileName << " contains no relevant data." << std::endl;
-                libstriezel::filesystem::file::remove(fileName);
-              } //if report can be deleted
-              else
-              {
-                const std::string newPath = getPathForCachedElement(file.fileName.substr(0, 64));
-                if (libstriezel::filesystem::file::rename(fileName, newPath))
-                  ++moved_files;
-                else
-                {
-                  std::cout << "Error: Could not move file " << fileName
-                            << " to " << newPath << "!" << std::endl;
-                }
-              } //else (file contains relevant data)
-            } //if report could be filled from JSON data
+              std::cout << "Info: " << fileName << " contains no relevant data." << std::endl;
+              libstriezel::filesystem::file::remove(fileName);
+            } // if report can be deleted
             else
             {
-              //JSON data is probably not a report
-              libstriezel::filesystem::file::remove(fileName);
-            }
-          } //else (JSON parsing was successful)
-        } //if file was read
+              const std::string newPath = getPathForCachedElement(file.fileName.substr(0, 64));
+              if (libstriezel::filesystem::file::rename(fileName, newPath))
+                ++moved_files;
+              else
+              {
+                std::cout << "Error: Could not move file " << fileName
+                          << " to " << newPath << "!" << std::endl;
+              }
+            } // else (file contains relevant data)
+          } // if report could be filled from JSON data
+          else
+          {
+            // File is probably not a report's JSON.
+            std::clog << "Info: JSON data from " << fileName << " could not be parsed!" << std::endl;
+            libstriezel::filesystem::file::remove(fileName);
+          }
+        } // if file was read
         else
         {
           std::cout << "Error: Could not read file " << fileName << "!" << std::endl;
         }
-      } //else (file size might be OK)
-    } //if JSON file with correct name
+      } // else (file size might be OK)
+    } // if JSON file with correct name
     else
     {
       if (!file.isDirectory)
@@ -382,7 +360,7 @@ uint_least32_t CacheManagerV2::transitionOneTo256()
         std::cout << "Info: File " << file.fileName << " has incorrect naming scheme." << std::endl;
       }
     }
-  } //for
+  } // for
   return moved_files;
 }
 
@@ -410,89 +388,79 @@ uint_least32_t CacheManagerV2::transition16To256()
 
       for (auto const & file : files)
       {
-        //entry must not be a directory and file name has to be valid
+        // entry must not be a directory and file name has to be valid
         if (!file.isDirectory && isCachedElementName(file.fileName))
         {
           const auto fileName = currentSubDirectory
                 + libstriezel::filesystem::pathDelimiter + file.fileName;
           const auto fileSize = libstriezel::filesystem::file::getSize64(fileName);
-          //check, if file is way too large for a proper cache file
+          // check, if file is way too large for a proper cache file
           if (fileSize >= 1024*1024*2)
           {
-            //Several kilobytes are alright, but not megabytes.
+            // Several kilobytes are alright, but not megabytes.
             std::clog << "Info: JSON file " << fileName
                       << " is too large for a cached response!" << std::endl;
             libstriezel::filesystem::file::remove(fileName);
-          } //if file is too large
+          } // if file is too large
           else
           {
             std::string content = "";
             if (libstriezel::filesystem::file::readIntoString(fileName, content))
             {
-              Json::Value root; // will contain the root value after parsing.
-              Json::Reader jsonReader;
-              const bool success = jsonReader.parse(content, root, false);
-              if (!success)
+              ReportV2 report;
+              if (report.fromJsonString(content))
               {
-                std::clog << "Info: JSON data from " << fileName << " could not be parsed!" << std::endl;
-                libstriezel::filesystem::file::remove(fileName);
-              } //if parsing failed
-              else
-              {
-                ReportV2 report;
-                if (report.fromJSONRoot(root))
+                // response code zero means: file not known to VirusTotal
+                if (report.response_code == 0)
                 {
-                  //response code zero means: file not known to VirusTotal
-                  if (report.response_code == 0)
-                  {
-                    std::cout << "Info: " << fileName << " contains no relevant data." << std::endl;
-                    libstriezel::filesystem::file::remove(fileName);
-                  } //if report can be deleted
-                  else
-                  {
-                    const std::string newPath = getPathForCachedElement(file.fileName.substr(0, 64));
-                    if (libstriezel::filesystem::file::rename(fileName, newPath))
-                      ++moved_files;
-                    else
-                    {
-                      std::cout << "Error: Could not move file " << fileName
-                                << " to " << newPath << "!" << std::endl;
-                    }
-                  } //else (file contains relevant data)
-                } //if report could be filled from JSON data
+                  std::cout << "Info: " << fileName << " contains no relevant data." << std::endl;
+                  libstriezel::filesystem::file::remove(fileName);
+                } // if report can be deleted
                 else
                 {
-                  //JSON data is probably not a report
-                  libstriezel::filesystem::file::remove(fileName);
-                }
-              } //else (JSON parsing was successful)
-            } //if file was read
+                  const std::string newPath = getPathForCachedElement(file.fileName.substr(0, 64));
+                  if (libstriezel::filesystem::file::rename(fileName, newPath))
+                    ++moved_files;
+                  else
+                  {
+                    std::cout << "Error: Could not move file " << fileName
+                              << " to " << newPath << "!" << std::endl;
+                  }
+                } // else (file contains relevant data)
+              } // if report could be filled from JSON data
+              else
+              {
+                // JSON data is probably not a report.
+                std::clog << "Info: JSON data from " << fileName << " could not be parsed!" << std::endl;
+                libstriezel::filesystem::file::remove(fileName);
+              }
+            } // if file was read
             else
             {
               std::cout << "Error: Could not read file " << fileName << "!" << std::endl;
             }
-          } //else (file size might be OK)
-        } //if JSON file with correct name
+          } // else (file size might be OK)
+        } // if JSON file with correct name
         else
         {
           if (!file.isDirectory)
           {
             std::cout << "Info: File " << file.fileName << " has incorrect naming scheme." << std::endl;
           }
-        } //else
-      } //for (inner)
-      //try to remove the directory, because it should be empty / unused by now
+        } // else
+      } // for (inner)
+      // try to remove the directory, because it should be empty / unused by now
       if (!libstriezel::filesystem::directory::remove(currentSubDirectory))
       {
         std::cout << "Warning: Could not remove directory " << currentSubDirectory
                   << ". Maybe this directory is not empty yet or you do not "
                   << "have the required permission to remove it." << std::endl;
       }
-    } //if subdirectory exists
-  } //for
+    } // if subdirectory exists
+  } // for
   return moved_files;
 }
 
-} //namespace
+} // namespace
 
-} //namespace
+} // namespace

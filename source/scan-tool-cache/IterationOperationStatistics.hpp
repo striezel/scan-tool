@@ -32,24 +32,24 @@ namespace scantool
 namespace virustotal
 {
 
+/** Collects while iterating over the cache. */
 class IterationOperationStatistics: public IterationOperation
 {
   public:
-    /** \brief constructor
+    /** \brief Constructor.
      *
      * \param ageLimit the maximum age of reports (older reports will added to the old report count)
      */
     IterationOperationStatistics(const std::chrono::system_clock::time_point& ageLimit);
 
 
-    /** \brief performs the operation for a single cached element
+    /** \brief Performs the operation for a single cached element.
      *
      * \param fileName   file name of the cached element
-     * \remarks Has to be implemented by descendant class.
      */
     virtual void process(const std::string& fileName) override;
 
-    ///functions to return gathered information
+    /// functions to return gathered information
     uint_least32_t total() const;
     uint_least32_t unparsable() const;
     uint_least32_t unknown() const;
@@ -64,10 +64,10 @@ class IterationOperationStatistics: public IterationOperation
     std::time_t m_newest; /**< newest scan date */
     std::chrono::system_clock::time_point m_ageLimit; /**< age limit for "old" reports */
     uint_least32_t m_oldReports; /**< number of old reports */
-}; //class
+}; // class
 
-} //namespace
+} // namespace
 
-} //namespace
+} // namespace
 
 #endif // SCANTOOL_VT_CACHE_ITERATIONOPERATIONSTATISTICS_HPP

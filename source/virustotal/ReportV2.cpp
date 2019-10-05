@@ -20,6 +20,7 @@
 
 #include "ReportV2.hpp"
 #include <iostream>
+#include <jsoncpp/json/reader.h>
 #include "../StringToTimeT.hpp"
 
 namespace scantool
@@ -38,8 +39,17 @@ ReportV2::ReportV2()
 {
 }
 
-bool ReportV2::fromJSONRoot(const Json::Value& root)
+bool ReportV2::fromJsonString(const std::string& jsonString)
 {
+  Json::Value root; // will contain the root value after parsing.
+  Json::Reader reader;
+  const bool success = reader.parse(jsonString, root, false);
+  if (!success)
+  {
+    std::cerr << "Error in ReportV2::fromJsonString(): Unable to parse JSON data!" << std::endl;
+    return false;
+  }
+
   if (root.empty())
     return false;
 
@@ -148,19 +158,6 @@ bool ReportV2::fromJSONRoot(const Json::Value& root)
     scans.clear();
 
   return true;
-}
-
-bool ReportV2::fromJsonString(const std::string& jsonString)
-{
-  Json::Value root; // will contain the root value after parsing.
-  Json::Reader reader;
-  const bool success = reader.parse(jsonString, root, false);
-  if (!success)
-  {
-    std::cerr << "Error in ReportV2::fromJsonString(): Unable to parse JSON data!" << std::endl;
-    return false;
-  }
-  return fromJSONRoot(root);
 }
 
 bool ReportV2::successfulRetrieval() const

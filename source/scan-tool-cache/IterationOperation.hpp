@@ -29,10 +29,11 @@ namespace scantool
 namespace virustotal
 {
 
+/** Interface for operations to perform while iterating over the cache. */
 class IterationOperation
 {
   public:
-    /** \brief performs the operation for a single cached element
+    /** \brief Performs the operation for a single cached element.
      *
      * \param fileName   file name of the cached element
      * \remarks Has to be implemented by descendant class.
@@ -41,10 +42,10 @@ class IterationOperation
 
     /// virtual destructor
     virtual ~IterationOperation() {}
-}; //class
+}; // class
 
-} //namespace
+} // namespace
 
-} //namespace
+} // namespace
 
 #endif // SCANTOOL_VT_CACHE_ITERATIONOPERATION_HPP

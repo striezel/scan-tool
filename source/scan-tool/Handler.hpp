@@ -21,6 +21,7 @@
 #ifndef SCANTOOL_VT_HANDLER_HPP
 #define SCANTOOL_VT_HANDLER_HPP
 
+#include <map>
 #include <set>
 #include <unordered_map>
 #include "../virustotal/CacheManagerV2.hpp"
