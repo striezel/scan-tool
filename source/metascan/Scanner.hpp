@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2015, 2016  Dirk Stolle
+    Copyright (C) 2015, 2016, 2019  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -63,7 +63,19 @@ class Scanner: public scantool::Scanner
        *          of ScanData in ordered data structures like sets or maps.
        */
       bool operator < (const ScanData& other) const;
-    }; //struct
+
+
+      /** \brief Gets ScanData from a stringified JSON.
+       *
+       * \param jsonString  the JSON string
+       * \return Returns true, if the ScanData could be filled. Might be only
+       *         partially filled.
+       *         Returns false, if an unrecoverable error occurred.
+       * \remarks If the function returns false, the content of the ScanData
+       *          object may be partially undefined.
+       */
+      bool fromJsonString(const std::string& jsonString);
+    }; // struct
 
 
     /** \brief Sets a new API key.

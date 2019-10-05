@@ -24,7 +24,6 @@
 #include <cstdint>
 #include <string>
 #include <vector>
-#include <jsoncpp/json/reader.h>
 #include "Engine.hpp"
 
 namespace scantool
@@ -60,7 +59,6 @@ struct Report
   }; // struct FileInfo
 
 
-
   std::string file_id;
   // scan_result part of report
   std::vector<Engine> scan_details;
@@ -76,16 +74,6 @@ struct Report
   FileInfo file_info; /**< file_info part in report */
   std::string data_id;
   int top_threat;
-
-  /** \brief Gets a report from a JSON object,
-   *
-   * \param root  the root element of the JSON
-   * \return Returns true, if the report could be filled. Might be only partially filled.
-   *         Returns false, if an unrecoverable error occurred.
-   * \remarks If the function returns false, the content of the report object
-   *          may be partially undefined.
-   */
-  bool fromJSONRoot(const Json::Value& root);
 
 
   /** \brief Gets a report from a stringified JSON.
@@ -104,7 +92,7 @@ struct Report
    *
    * \return Returns true, if the requested item could be retrieved.
    */
-  virtual bool successfulRetrieval() const;
+  bool successfulRetrieval() const;
 
 
   /** \brief Checks whether the response indicates, that the requested resource
@@ -112,7 +100,7 @@ struct Report
    *
    * \return Returns true, if the requested item was not found.
    */
-  virtual bool notFound() const;
+  bool notFound() const;
 }; // class
 
 } // namespace

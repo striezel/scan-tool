@@ -20,6 +20,7 @@
 
 #include "Scanner.hpp"
 #include <iostream>
+#include <jsoncpp/json/reader.h>
 #include "../Curly.hpp"
 #include "../../libstriezel/hash/sha256/sha256.hpp"
 #include "../../libstriezel/filesystem/directory.hpp"
@@ -51,6 +52,37 @@ bool Scanner::ScanData::operator< (const ScanData& other) const
   if (data_id == other.data_id)
     return (rest_ip < other.rest_ip);
   return false;
+}
+
+bool Scanner::ScanData::fromJsonString(const std::string& jsonString)
+{
+  // parse JSON response
+  Json::Value root; // will contain the root value after parsing.
+  Json::Reader jsonReader;
+  const bool success = jsonReader.parse(jsonString, root, false);
+  if (!success)
+  {
+    std::cerr << "Error in Scanner::ScanData::fromJsonString(): Unable to parse"
+              << " JSON data!" << std::endl;
+    return false;
+  }
+  // data_id
+  Json::Value js_value = root["data_id"];
+  if (!js_value.empty() && js_value.isString())
+    data_id = js_value.asString();
+  else
+  {
+    data_id.clear();
+  } // else
+  // rest_ip
+  js_value = root["rest_ip"];
+  if (!js_value.empty() && js_value.isString())
+    rest_ip = js_value.asString();
+  else
+  {
+    rest_ip.clear();
+  } // else
+  return true;
 }
 
 void Scanner::setApiKey(const std::string& apikey)
@@ -142,21 +174,11 @@ bool Scanner::getReport(const std::string& resource, Report& report)
             << "Content-Type: " << cURL.getContentType() << std::endl
             << "Response text: " << response << std::endl;
   #endif
-  // parse JSON response
-  Json::Value root; // will contain the root value after parsing.
-  Json::Reader jsonReader;
-  const bool success = jsonReader.parse(response, root, false);
-  if (!success)
-  {
-    std::cerr << "Error in Scanner::getReport(): Unable to "
-              << "parse JSON data!" << std::endl;
-    return false;
-  }
   // fill report with JSON data
-  if (!report.fromJSONRoot(root))
+  if (!report.fromJsonString(response))
   {
-    std::cerr << "Error in Scanner::getReport(): The parsed "
-              << "JSON does not contain data to fill a report!" << std::endl;
+    std::cerr << "Error in Scanner::getReport(): The response does not"
+              << " contain JSON data to fill a report!" << std::endl;
     return false;
   }
 
@@ -238,33 +260,13 @@ bool Scanner::rescan(const std::string& file_id, ScanData& scan_data)
             << "Content-Type: " << cURL.getContentType() << std::endl
             << "Response text: " << response << std::endl;
   #endif
-  // parse JSON response
-  Json::Value root; // will contain the root value after parsing.
-  Json::Reader jsonReader;
-  const bool success = jsonReader.parse(response, root, false);
+  const bool success = scan_data.fromJsonString(response);
   if (!success)
   {
     std::cerr << "Error in Scanner::rescan(): Unable to parse "
               << "JSON data!" << std::endl;
     return false;
   }
-  // data_id
-  Json::Value js_value = root["data_id"];
-  if (!js_value.empty() && js_value.isString())
-    scan_data.data_id = js_value.asString();
-  else
-  {
-    scan_data.data_id.clear();
-  } // else
-  // rest_ip
-  js_value = root["rest_ip"];
-  if (!js_value.empty() && js_value.isString())
-    scan_data.rest_ip = js_value.asString();
-  else
-  {
-    scan_data.rest_ip.clear();
-  } // else
-
   // Found?
   return (!scan_data.data_id.empty() && !scan_data.rest_ip.empty());
 }
@@ -376,32 +378,13 @@ bool Scanner::scan(const std::string& filename, ScanData& scan_data)
             << "Content-Type: " << cURL.getContentType() << std::endl
             << "Response text: " << response << std::endl;
   #endif
-  // parse JSON response
-  Json::Value root; // will contain the root value after parsing.
-  Json::Reader jsonReader;
-  const bool success = jsonReader.parse(response, root, false);
+  const bool success = scan_data.fromJsonString(response);
   if (!success)
   {
     std::cerr << "Error in Scanner::scan(): Unable to parse "
               << "JSON data!" << std::endl;
     return false;
   }
-  // data_id
-  Json::Value js_value = root["data_id"];
-  if (!js_value.empty() && js_value.isString())
-    scan_data.data_id = js_value.asString();
-  else
-  {
-    scan_data.data_id.clear();
-  } // else
-  // rest_ip
-  js_value = root["rest_ip"];
-  if (!js_value.empty() && js_value.isString())
-    scan_data.rest_ip = js_value.asString();
-  else
-  {
-    scan_data.rest_ip.clear();
-  } // else
 
   // Did we get the data and initialize a scan?
   return (!scan_data.data_id.empty() && !scan_data.rest_ip.empty());

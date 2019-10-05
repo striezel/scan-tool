@@ -20,6 +20,7 @@
 
 #include "Report.hpp"
 #include <iostream>
+#include <jsoncpp/json/reader.h>
 
 namespace scantool
 {
@@ -61,8 +62,19 @@ Report::FileInfo::FileInfo()
 {
 }
 
-bool Report::fromJSONRoot(const Json::Value& root)
+bool Report::fromJsonString(const std::string& jsonString)
 {
+  // parse JSON response
+  Json::Value root; // will contain the root value after parsing.
+  Json::Reader jsonReader;
+  const bool success = jsonReader.parse(jsonString, root, false);
+  if (!success)
+  {
+    std::cerr << "Error in Report::fromJsonString(): Unable to "
+              << "parse JSON data!" << std::endl;
+    return false;
+  }
+
   if (root.empty())
     return false;
 
@@ -284,21 +296,6 @@ bool Report::fromJSONRoot(const Json::Value& root)
 
   // all fine here
   return true;
-}
-
-bool Report::fromJsonString(const std::string& jsonString)
-{
-  // parse JSON response
-  Json::Value root; // will contain the root value after parsing.
-  Json::Reader jsonReader;
-  const bool success = jsonReader.parse(jsonString, root, false);
-  if (!success)
-  {
-    std::cerr << "Error in Report::fromJsonString(): Unable to "
-              << "parse JSON data!" << std::endl;
-    return false;
-  }
-  return fromJSONRoot(root);
 }
 
 bool Report::successfulRetrieval() const
