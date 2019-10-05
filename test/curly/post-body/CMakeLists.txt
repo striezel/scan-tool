@@ -11,7 +11,7 @@ set(test_curly_post_body_sources
 if (CMAKE_COMPILER_IS_GNUCC)
     add_definitions (-Wall -O2 -fexceptions)
 endif (CMAKE_COMPILER_IS_GNUCC)
-add_definitions(-std=c++0x)
+add_definitions(-std=c++14)
 
 set( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -s" )
 

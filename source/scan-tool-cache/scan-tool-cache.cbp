@@ -31,7 +31,7 @@
 		</Build>
 		<Compiler>
 			<Add option="-Weffc++" />
-			<Add option="-std=c++0x" />
+			<Add option="-std=c++14" />
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
