@@ -26,33 +26,31 @@
 int main()
 {
   Curly get;
-  //set URL
   get.setURL(std::string("https://httpbin.org/response-headers?")
             + "Key=value"
             + "&X-Response-Header=foo+bar"
             + "&Xyz=Abc+def+ghi");
-  //perform request
-  std::string response = "";
+  std::string response;
   if (!get.perform(response))
   {
     std::cout << "Error: Could not perform GET request!" << std::endl;
     return 1;
   }
-  //check HTTP status code
+  // check HTTP status code
   if (get.getResponseCode() != 200)
   {
     std::cout << "Error: HTTP status code is not 200, it is "
               << get.getResponseCode() << " instead!" << std::endl;
     return 1;
   }
-  //check content type
+  // check content type
   if (get.getContentType() != "application/json" && !get.getContentType().empty())
   {
     std::cout << "Error: Content type is not application/json, it is "
               << get.getContentType() << " instead!" << std::endl;
     return 1;
   }
-  //print response
+  // print response
   std::cout << "Response:" << std::endl << response << std::endl << std::endl;
 
   const std::vector<std::string>& headers = get.responseHeaders();
@@ -63,28 +61,28 @@ int main()
   }
   std::cout << std::endl;
 
-  //check for "Key: value"
-  std::vector<std::string>::const_iterator iter = std::find(headers.begin(), headers.end(), "Key: value");
+  // check for "Key: value" - lower case, because httpbin returns them that way
+  std::vector<std::string>::const_iterator iter = std::find(headers.begin(), headers.end(), "key: value");
   if (iter == headers.end())
   {
     std::cout << "Error: element \"Key: value\" is not among the response headers!" << std::endl;
     return 1;
   }
-  //check for "X-Response-Header: foo bar"
-  iter = std::find(headers.begin(), headers.end(), "X-Response-Header: foo bar");
+  // check for "X-Response-Header: foo bar"
+  iter = std::find(headers.begin(), headers.end(), "x-response-header: foo bar");
   if (iter == headers.end())
   {
     std::cout << "Error: element \"X-Response-Header: foo bar\" is not among the response headers!" << std::endl;
     return 1;
   }
-  //check for "Xyz: Abc def ghi"
-  iter = std::find(headers.begin(), headers.end(), "Xyz: Abc def ghi");
+  // check for "Xyz: Abc def ghi"
+  iter = std::find(headers.begin(), headers.end(), "xyz: Abc def ghi");
   if (iter == headers.end())
   {
     std::cout << "Error: element \"Xyz: Abc def ghi\" is not among the response headers!" << std::endl;
     return 1;
   }
-  //Response headers are OK.
+  // Response headers are OK.
   std::cout << "Curly's response headers are just fine." << std::endl;
   return 0;
 }
