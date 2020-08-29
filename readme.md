@@ -6,6 +6,9 @@ content. It uses the public ReST API provided by
 
 ## Build status
 
+* GitLab CI:
+[![GitLab pipeline status](https://gitlab.com/striezel/scan-tool/badges/master/pipeline.svg)](https://gitlab.com/striezel/scan-tool/-/pipelines)
+* Travis CI:
 [![Build Status](https://travis-ci.org/striezel/scan-tool.svg?branch=master)](https://travis-ci.org/striezel/scan-tool)
 
 ## Building from source
