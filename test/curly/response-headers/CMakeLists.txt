@@ -11,6 +11,7 @@ project(test_curly_response_headers)
 #add_definitions(-DDEFINE_CONSTANT_HERE -DANOTHER_ONE_THERE -DTHIS_IS_THE_THIRD)
 
 set(test_curly_response_headers_sources
+    ../../../libstriezel/common/StringUtils.cpp
     ../../../source/Curly.cpp
     response-headers.cpp)
 

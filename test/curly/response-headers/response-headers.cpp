@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of the scan-tool test suite.
-    Copyright (C) 2015, 2016  Dirk Stolle
+    Copyright (C) 2015, 2016, 2020  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@
 #include <iostream>
 #include <vector>
 #include "../../../source/Curly.hpp"
+#include "../../../libstriezel/common/StringUtils.hpp"
 
 int main()
 {
@@ -61,22 +62,22 @@ int main()
   }
   std::cout << std::endl;
 
-  // check for "Key: value" - lower case, because httpbin returns them that way
-  std::vector<std::string>::const_iterator iter = std::find(headers.begin(), headers.end(), "key: value");
+  // check for "Key: value"
+  std::vector<std::string>::const_iterator iter = std::find_if(headers.begin(), headers.end(), [](const std::string &x) { return toLowerString(x) == "key: value"; });
   if (iter == headers.end())
   {
     std::cout << "Error: element \"Key: value\" is not among the response headers!" << std::endl;
     return 1;
   }
   // check for "X-Response-Header: foo bar"
-  iter = std::find(headers.begin(), headers.end(), "x-response-header: foo bar");
+  iter = std::find_if(headers.begin(), headers.end(), [](const std::string &x) { return toLowerString(x) == "x-response-header: foo bar"; });
   if (iter == headers.end())
   {
     std::cout << "Error: element \"X-Response-Header: foo bar\" is not among the response headers!" << std::endl;
     return 1;
   }
   // check for "Xyz: Abc def ghi"
-  iter = std::find(headers.begin(), headers.end(), "xyz: Abc def ghi");
+  iter = std::find_if(headers.begin(), headers.end(), [](const std::string &x) { return toLowerString(x) == "xyz: abc def ghi"; });
   if (iter == headers.end())
   {
     std::cout << "Error: element \"Xyz: Abc def ghi\" is not among the response headers!" << std::endl;

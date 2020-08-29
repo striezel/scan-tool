@@ -27,13 +27,12 @@
 		<Linker>
 			<Add library="curl" />
 		</Linker>
+		<Unit filename="../../../libstriezel/common/StringUtils.cpp" />
+		<Unit filename="../../../libstriezel/common/StringUtils.hpp" />
 		<Unit filename="../../../source/Curly.cpp" />
 		<Unit filename="../../../source/Curly.hpp" />
 		<Unit filename="response-headers.cpp" />
 		<Extensions>
-			<code_completion />
-			<envvars />
-			<debugger />
 			<lib_finder disable_auto="1" />
 		</Extensions>
 	</Project>
