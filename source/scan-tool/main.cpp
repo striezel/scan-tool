@@ -796,7 +796,7 @@ int main(int argc, char ** argv)
     return scantool::rcSignalHandlerError;
   } //if
   #else
-    #error Unknown operating system! No known signal handing facility.
+    #error Unknown operating system! No known signal handling facility.
   #endif // defined
 
   //create scanner: pass API key, honour time limits, set silent mode
