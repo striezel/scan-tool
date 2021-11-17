@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2015, 2016, 2019  Dirk Stolle
+    Copyright (C) 2015, 2016, 2019, 2021  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 
 #include "ReportV2.hpp"
 #include <iostream>
-#include <jsoncpp/json/reader.h>
+#include "../../third-party/simdjson/simdjson.h"
 #include "../StringToTimeT.hpp"
 
 namespace scantool
@@ -41,40 +41,42 @@ ReportV2::ReportV2()
 
 bool ReportV2::fromJsonString(const std::string& jsonString)
 {
-  Json::Value root; // will contain the root value after parsing.
-  Json::Reader reader;
-  const bool success = reader.parse(jsonString, root, false);
-  if (!success)
+  simdjson::dom::parser parser;
+  simdjson::dom::element doc;
+  auto error = parser.parse(jsonString).get(doc);
+  if (error)
   {
     std::cerr << "Error in ReportV2::fromJsonString(): Unable to parse JSON data!" << std::endl;
     return false;
   }
 
-  if (root.empty())
-    return false;
-
-  Json::Value val = root["response_code"];
-  if (!val.empty() && val.isInt())
-    response_code = val.asInt();
+  simdjson::dom::element elem;
+  doc["response_code"].tie(elem, error);
+  if (!error && elem.is_int64())
+  {
+    response_code = elem.get<int64_t>();
+  }
   else
     response_code = 0;
-  val = root["verbose_msg"];
-  if (!val.empty() && val.isString())
-    verbose_msg = val.asString();
-  val = root["resource"];
-  if (!val.empty() && val.isString())
-    resource = val.asString();
+  doc["verbose_msg"].tie(elem, error);
+  if (!error && elem.is_string())
+    verbose_msg = elem.get<std::string_view>().value();
   else
-    resource.clear();
-  val = root["scan_id"];
-  if (!val.empty() && val.isString())
-    scan_id = val.asString();
+    verbose_msg.clear();
+  doc["resource"].tie(elem, error);
+  if (!error && elem.is_string())
+    resource = elem.get<std::string_view>().value();
   else
     scan_id.clear();
-  val = root["scan_date"];
-  if (!val.empty() && val.isString())
+  doc["scan_id"].tie(elem, error);
+  if (!error && elem.is_string())
+    scan_id = elem.get<std::string_view>().value();
+  else
+    scan_id.clear();
+  doc["scan_date"].tie(elem, error);
+  if (!error && elem.is_string())
   {
-    scan_date = val.asString();
+    scan_date = elem.get<std::string_view>().value();
     if (!stringToTimeT(scan_date, scan_date_t))
       scan_date_t = static_cast<std::time_t>(-1);
   }
@@ -83,76 +85,72 @@ bool ReportV2::fromJsonString(const std::string& jsonString)
     scan_date = "";
     scan_date_t = static_cast<std::time_t>(-1);
   }
-  val = root["total"];
-  if (!val.empty() && val.isInt())
-    total = val.asInt();
+  doc["total"].tie(elem, error);
+  if (!error && elem.is_int64())
+    total = elem.get<int64_t>();
   else
     total = -1;
-  val = root["positives"];
-  if (!val.empty() && val.isInt())
-    positives = val.asInt();
+  doc["positives"].tie(elem, error);
+  if (!error && elem.is_int64())
+    positives = elem.get<int64_t>();
   else
     positives = -1;
-  val = root["permalink"];
-  if (!val.empty() && val.isString())
-    permalink = val.asString();
+  doc["permalink"].tie(elem, error);
+  if (!error && elem.is_string())
+    permalink = elem.get<std::string_view>().value();
   else
     permalink.clear();
-  val = root["md5"];
-  if (!val.empty() && val.isString())
-    md5 = val.asString();
+  doc["md5"].tie(elem, error);
+  if (!error && elem.is_string())
+    md5 = elem.get<std::string_view>().value();
   else
     md5.clear();
-  val = root["sha1"];
-  if (!val.empty() && val.isString())
-    sha1 = val.asString();
+  doc["sha1"].tie(elem, error);
+  if (!error && elem.is_string())
+    sha1 = elem.get<std::string_view>().value();
   else
     sha1.clear();
-  val = root["sha256"];
-  if (!val.empty() && val.isString())
-    sha256 = val.asString();
+  doc["sha256"].tie(elem, error);
+  if (!error && elem.is_string())
+    sha256 = elem.get<std::string_view>().value();
   else
     sha256.clear();
-  const Json::Value js_scans = root["scans"];
-  if (!js_scans.empty() && js_scans.isObject())
+  doc["scans"].tie(elem, error);
+  if (!error && elem.is_object())
   {
+    const simdjson::dom::object js_scans(elem);
     scans.clear();
-    const auto members = js_scans.getMemberNames();
-    auto iter = members.cbegin();
-    const auto itEnd = members.cend();
-    while (iter != itEnd)
+    for (const auto [key, value]: js_scans)
     {
       std::shared_ptr<EngineV2> data(new EngineV2());
-      data->engine = *iter;
+      data->engine = key;
 
-      const Json::Value engVal = js_scans.get(*iter, Json::Value());
       // detected
-      Json::Value val = engVal["detected"];
-      if (!val.empty() && val.isBool())
-        data->detected = val.asBool();
+      value["detected"].tie(elem, error);
+      if (!error && elem.is_bool())
+        data->detected = elem.get<bool>().value();
       else
         data->detected = false;
       // version
-      val = engVal["version"];
-      if (!val.empty() && val.isString())
-        data->version = val.asString();
+      value["version"].tie(elem, error);
+      if (!error && elem.is_string())
+        data->version = elem.get<std::string_view>().value();
       else
         data->version = "";
       // result
-      val = engVal["result"];
-      if (!val.empty() && val.isString())
-        data->result = val.asString();
+      value["result"].tie(elem, error);
+      if (!error && elem.is_string())
+        data->result = elem.get<std::string_view>().value();
       else
         data->result = "";
       // update
-      val = engVal["update"];
-      if (!val.empty() && val.isString())
-        data->update = val.asString();
+      value["update"].tie(elem, error);
+      if (!error && elem.is_string())
+        data->update = elem.get<std::string_view>().value();
       else
         data->update = "";
       scans.push_back(std::move(data));
-      ++iter;
-    } // while
+    }
   } // if "scans" is present
   else
     scans.clear();

@@ -32,7 +32,7 @@
 		<Compiler>
 			<Add option="-Weffc++" />
 			<Add option="-Wall" />
-			<Add option="-std=c++14" />
+			<Add option="-std=c++17" />
 			<Add option="-fexceptions" />
 		</Compiler>
 		<Linker>
@@ -86,6 +86,8 @@
 		<Unit filename="../../libstriezel/hash/sha256/MessageSource.hpp" />
 		<Unit filename="../../libstriezel/hash/sha256/sha256.cpp" />
 		<Unit filename="../../libstriezel/hash/sha256/sha256.hpp" />
+		<Unit filename="../../third-party/simdjson/simdjson.cpp" />
+		<Unit filename="../../third-party/simdjson/simdjson.h" />
 		<Unit filename="../Configuration.cpp" />
 		<Unit filename="../Configuration.hpp" />
 		<Unit filename="../Curly.cpp" />
@@ -139,9 +141,6 @@
 		<Unit filename="summary.cpp" />
 		<Unit filename="summary.hpp" />
 		<Extensions>
-			<code_completion />
-			<envvars />
-			<debugger />
 			<lib_finder disable_auto="1" />
 		</Extensions>
 	</Project>
