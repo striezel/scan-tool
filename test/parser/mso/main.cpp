@@ -218,7 +218,7 @@ int main(int argc, char** argv)
     }
     if (eng.scan_time.count() != 3484)
     {
-      std::cerr << "Error: ClamAV scan_result_i does not match the expected value!" << std::endl;
+      std::cerr << "Error: ClamAV scan_time does not match the expected value!" << std::endl;
       return 1;
     }
   }
@@ -258,7 +258,7 @@ int main(int argc, char** argv)
     }
     if (eng.scan_time.count() != 2359)
     {
-      std::cerr << "Error: Sophos scan_result_i does not match the expected value!" << std::endl;
+      std::cerr << "Error: Sophos scan_time does not match the expected value!" << std::endl;
       return 1;
     }
   }
