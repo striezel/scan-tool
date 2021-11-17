@@ -37,7 +37,6 @@
 		</Compiler>
 		<Linker>
 			<Add library="curl" />
-			<Add library="jsoncpp" />
 			<Add library="zip" />
 			<Add library="archive" />
 			<Add library="z" />

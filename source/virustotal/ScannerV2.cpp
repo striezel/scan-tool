@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2015, 2016  Dirk Stolle
+    Copyright (C) 2015, 2016, 2021  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -21,11 +21,11 @@
 #include "ScannerV2.hpp"
 #include <fstream>
 #include <iostream>
-#include <jsoncpp/json/reader.h>
 #include "CacheManagerV2.hpp"
 #include "../Curly.hpp"
 #include "../../libstriezel/filesystem/directory.hpp"
 #include "../../libstriezel/filesystem/file.hpp"
+#include "../../third-party/simdjson/simdjson.h"
 
 namespace scantool
 {
@@ -255,44 +255,50 @@ bool ScannerV2::rescan(const std::string& resource, std::string& scan_id)
             << "Content-Type: " << cURL.getContentType() << std::endl
             << "Response text: " << response << std::endl;
   #endif
-  Json::Value root; // will contain the root value after parsing.
-  Json::Reader jsonReader;
-  const bool success = jsonReader.parse(response, root, false);
-  if (!success)
+  simdjson::dom::parser parser;
+  simdjson::dom::element doc;
+  auto error = parser.parse(response).get(doc);
+  if (error)
   {
     std::cerr << "Error in ScannerV2::rescan(): Unable to parse JSON data!" << std::endl;
     return false;
   }
 
-  const Json::Value response_code = root["response_code"];
-  const Json::Value retrieved_scan_id = root["scan_id"];
+  simdjson::dom::element response_code;
+  simdjson::error_code response_code_error;
+  doc["response_code"].tie(response_code, response_code_error);
+  simdjson::dom::element retrieved_scan_id;
+  simdjson::error_code retrieved_scan_id_error;
+  doc["scan_id"].tie(retrieved_scan_id, retrieved_scan_id_error);
   #ifdef SCAN_TOOL_DEBUG
-  const Json::Value verbose_msg = root["verbose_msg"];
-  if (!response_code.empty() && response_code.isInt())
+  simdjson::dom::element verbose_msg;
+  simdjson::error_code verbose_msg_error;
+  doc["verbose_msg"].tie(verbose_msg, verbose_msg_error);
+  if (!response_code_error && response_code.is_int64())
   {
-    std::cout << "response_code: " << response_code.asInt() << std::endl;
+    std::cout << "response_code: " << response_code.get<int64_t>() << std::endl;
   }
-  if (!verbose_msg.empty() && verbose_msg.isString())
+  if (!verbose_msg_error && verbose_msg.is_string())
   {
-    std::cout << "verbose_msg: " << verbose_msg.asString() << std::endl;
+    std::cout << "verbose_msg: " << verbose_msg.get<std::string_view>().value() << std::endl;
   }
-  if (!retrieved_scan_id.empty() && retrieved_scan_id.isString())
+  if (!retrieved_scan_id_error && retrieved_scan_id.is_string())
   {
-    std::cout << "scan_id: " << retrieved_scan_id.asString() << std::endl;
+    std::cout << "scan_id: " << retrieved_scan_id.get<std::string_view>().value() << std::endl;
   }
   #endif
-  if (!retrieved_scan_id.empty() && retrieved_scan_id.isString())
+  if (!retrieved_scan_id_error && retrieved_scan_id.is_string())
   {
-    scan_id = retrieved_scan_id.asString();
+    scan_id = retrieved_scan_id.get<std::string_view>().value();
   }
   else
     scan_id = "";
-  if (!response_code.empty() && response_code.isInt())
+  if (!response_code_error && response_code.is_int64())
   {
     // Response code 1 means resource is queued for rescan.
     // Response code 0 means resource is not present in file store.
     // Response code -1 means that some kind of error occurred.
-    return ((response_code.asInt() == 1) && !scan_id.empty());
+    return ((response_code.get<int64_t>() == 1) && !scan_id.empty());
   }
   // No response_code element: something is wrong with the API.
   return false;
@@ -353,42 +359,48 @@ bool ScannerV2::scan(const std::string& filename, std::string& scan_id)
             << "Content-Type: " << cURL.getContentType() << std::endl
             << "Response text: " << response << std::endl;
   #endif
-  Json::Value root; // will contain the root value after parsing.
-  Json::Reader jsonReader;
-  const bool success = jsonReader.parse(response, root, false);
-  if (!success)
+  simdjson::dom::parser parser;
+  simdjson::dom::element doc;
+  auto error = parser.parse(response).get(doc);
+  if (error)
   {
     std::cerr << "Error in ScannerV2::scan(): Unable to parse JSON data!" << std::endl;
     return false;
   }
 
-  const Json::Value response_code = root["response_code"];
-  const Json::Value retrieved_scan_id = root["scan_id"];
+  simdjson::dom::element response_code;
+  simdjson::error_code response_code_error;
+  doc["response_code"].tie(response_code, response_code_error);
+  simdjson::dom::element retrieved_scan_id;
+  simdjson::error_code retrieved_scan_id_error;
+  doc["scan_id"].tie(retrieved_scan_id, retrieved_scan_id_error);
   #ifdef SCAN_TOOL_DEBUG
-  if (!response_code.empty() && response_code.isInt())
+  if (!response_code_error && response_code.is_int64())
   {
-    std::cout << "response_code: " << response_code.asInt() << std::endl;
+    std::cout << "response_code: " << response_code.get<int64_t>() << std::endl;
   }
-  const Json::Value verbose_msg = root["verbose_msg"];
-  if (!verbose_msg.empty() && verbose_msg.isString())
+  simdjson::dom::element verbose_msg;
+  simdjson::error_code verbose_msg_error;
+  doc["verbose_msg"].tie(verbose_msg, verbose_msg_error);
+  if (!verbose_msg_error && verbose_msg.is_string())
   {
-    std::cout << "verbose_msg: " << verbose_msg.asString() << std::endl;
+    std::cout << "verbose_msg: " << verbose_msg.get<std::string_view>().value() << std::endl;
   }
-  if (!retrieved_scan_id.empty() && retrieved_scan_id.isString())
+  if (!retrieved_scan_id_error && retrieved_scan_id.is_string())
   {
-    std::cout << "scan_id: " << retrieved_scan_id.asString() << std::endl;
+    std::cout << "scan_id: " << retrieved_scan_id.get<std::string_view>().value() << std::endl;
   }
   #endif
-  if (!retrieved_scan_id.empty() && retrieved_scan_id.isString())
+  if (!retrieved_scan_id_error && retrieved_scan_id.is_string())
   {
-    scan_id = retrieved_scan_id.asString();
+    scan_id = retrieved_scan_id.get<std::string_view>().value();
   }
   else
     scan_id = "";
-  if (!response_code.empty() && response_code.isInt())
+  if (!response_code_error && response_code.is_int64())
   {
     // Response code 1 means resource is queued for scan.
-    return ((response_code.asInt() == 1) && !scan_id.empty());
+    return ((response_code.get<int64_t>() == 1) && !scan_id.empty());
   }
   // No response_code element: something is wrong with the API.
   return false;

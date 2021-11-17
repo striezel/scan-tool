@@ -37,7 +37,6 @@
 		</Compiler>
 		<Linker>
 			<Add library="curl" />
-			<Add library="jsoncpp" />
 		</Linker>
 		<Unit filename="../../libstriezel/common/StringUtils.cpp" />
 		<Unit filename="../../libstriezel/common/StringUtils.hpp" />
