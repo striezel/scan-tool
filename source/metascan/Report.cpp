@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2015, 2016, 2019  Dirk Stolle
+    Copyright (C) 2015, 2016, 2019, 2021  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 
 #include "Report.hpp"
 #include <iostream>
-#include <jsoncpp/json/reader.h>
+#include "../../third-party/simdjson/simdjson.h"
 
 namespace scantool
 {
@@ -29,102 +29,98 @@ namespace metascan
 {
 
 Report::Report()
-: file_id(""),
+: file_id(std::string()),
   // scan_result part of report
   scan_details(std::vector<Engine>()),
   rescan_available(false),
   scan_all_result_i(-1),
-  start_time(""),
+  start_time(std::string()),
   total_time(-1),
   total_avs(-1),
   progress_percentage(-1),
   in_queue(-1),
-  scan_all_result_a(""),
+  scan_all_result_a(std::string()),
   // end of scan_result part of report
   file_info(FileInfo()),
-  data_id(""),
+  data_id(std::string()),
   top_threat(-1)
 {
 }
 
 Report::FileInfo::FileInfo()
 : file_size(-1),
-  upload_timestamp(""),
+  upload_timestamp(std::string()),
   // hashes
-  md5(""),
-  sha1(""),
-  sha256(""),
+  md5(std::string()),
+  sha1(std::string()),
+  sha256(std::string()),
   // file categorization
-  file_type_category(""),
-  file_type_description(""),
-  file_type_extension(""),
-  display_name("")
+  file_type_category(std::string()),
+  file_type_description(std::string()),
+  file_type_extension(std::string()),
+  display_name(std::string())
 {
 }
 
 bool Report::fromJsonString(const std::string& jsonString)
 {
   // parse JSON response
-  Json::Value root; // will contain the root value after parsing.
-  Json::Reader jsonReader;
-  const bool success = jsonReader.parse(jsonString, root, false);
-  if (!success)
+  simdjson::dom::parser parser;
+  simdjson::dom::element doc;
+  auto error = parser.parse(jsonString).get(doc);
+  if (error)
   {
     std::cerr << "Error in Report::fromJsonString(): Unable to "
               << "parse JSON data!" << std::endl;
     return false;
   }
 
-  if (root.empty())
-    return false;
-
-  Json::Value js_value = root["file_id"];
-  if (!js_value.empty() && js_value.isString())
-    file_id = js_value.asString();
+  simdjson::dom::element elem;
+  doc["file_id"].tie(elem, error);
+  if (!error && elem.is_string())
+    file_id = elem.get<std::string_view>().value();
   else
   {
     file_id = "";
-  } // else
+  }
 
   // scan_results
-  const Json::Value js_scan_results = root["scan_results"];
-  if (!js_scan_results.empty() && js_scan_results.isObject())
+  doc["scan_results"].tie(elem, error);
+  if (!error && elem.is_object())
   {
-    const Json::Value js_scan_details = js_scan_results["scan_details"];
-    if (!js_scan_details.empty() && js_scan_details.isObject())
+    const simdjson::dom::object js_scan_results(elem);
+    js_scan_results["scan_details"].tie(elem, error);
+    if (!error && elem.is_object())
     {
-      const auto members = js_scan_details.getMemberNames();
-      auto iter = members.cbegin();
-      const auto itEnd = members.cend();
+      const simdjson::dom::object js_scan_details(elem);
       scan_details.clear();
-      while (iter != itEnd)
+      for (const auto [key, value]: js_scan_details)
       {
         Engine eng;
-        const Json::Value engVal = js_scan_details.get(*iter, Json::Value());
         /* The engine name is the member name. */
-        eng.engine = *iter;
+        eng.engine = key;
         // scan_result_i
-        js_value = engVal["scan_result_i"];
-        if (!js_value.empty() && js_value.isInt())
-          eng.scan_result_i = js_value.asInt();
+        value["scan_result_i"].tie(elem, error);
+        if (!error && elem.is_int64())
+          eng.scan_result_i = elem.get<int64_t>().value();
         else
           eng.scan_result_i = -1;
         // threat_found -> maps to member "result" in base class Engine
-        js_value = engVal["threat_found"];
-        if (!js_value.empty() && js_value.isString())
-          eng.result = js_value.asString();
+        value["threat_found"].tie(elem, error);
+        if (!error && elem.is_string())
+          eng.result = elem.get<std::string_view>().value();
         else
           eng.result.clear();
         // def_time
-        js_value = engVal["def_time"];
-        if (!js_value.empty() && js_value.isString())
-          eng.def_time = js_value.asString();
+        value["def_time"].tie(elem, error);
+        if (!error && elem.is_string())
+          eng.def_time = elem.get<std::string_view>().value();
         else
           eng.def_time.clear();
         // scan_time
-        js_value = engVal["scan_time"];
-        if (!js_value.empty() && js_value.isInt())
-          eng.scan_time = std::chrono::milliseconds(js_value.asInt());
+        value["scan_time"].tie(elem, error);
+        if (!error && elem.is_int64())
+          eng.scan_time = std::chrono::milliseconds(elem.get<int64_t>().value());
         else
           eng.scan_time = std::chrono::milliseconds(-1);
         // check detection status
@@ -137,13 +133,11 @@ bool Report::fromJsonString(const std::string& jsonString)
                 scan_result_i is in {1; 2; 8} or if the name of the found
                 virus/threat is not empty.
          */
-        eng.detected = ((eng.scan_result_i == 1) or (eng.scan_result_i == 2)
-                     or (eng.scan_result_i == 8) or (!eng.result.empty()));
+        eng.detected = ((eng.scan_result_i == 1) || (eng.scan_result_i == 2)
+                     || (eng.scan_result_i == 8) || !eng.result.empty());
         // push it to the list of engines
         scan_details.push_back(eng);
-        // most important: increment iterator to avoid endless loop
-        ++iter;
-      } // while
+      } // for
     } // if scan_details object exists
     else
     {
@@ -157,51 +151,51 @@ bool Report::fromJsonString(const std::string& jsonString)
     } // else (no scan_details)
 
     // rescan_available
-    js_value = js_scan_results["rescan_available"];
-    if (!js_value.empty() && js_value.isBool())
-      rescan_available = js_value.asBool();
+    js_scan_results["rescan_available"].tie(elem, error);
+    if (!error && elem.is_bool())
+      rescan_available = elem.get<bool>().value();
     else
       rescan_available = false; // assume worst
     // scan_all_result_i
-    js_value = js_scan_results["scan_all_result_i"];
-    if (!js_value.empty() && js_value.isInt())
-      scan_all_result_i = js_value.asInt();
+    js_scan_results["scan_all_result_i"].tie(elem, error);
+    if (!error && elem.is_int64())
+      scan_all_result_i = elem.get<int64_t>().value();
     else
       scan_all_result_i = -1;
     // start_time
-    js_value = js_scan_results["start_time"];
-    if (!js_value.empty() && js_value.isString())
-      start_time = js_value.asString();
+    js_scan_results["start_time"].tie(elem, error);
+    if (!error && elem.is_string())
+      start_time = elem.get<std::string_view>().value();
     else
       start_time.clear();
     // total_time
-    js_value = js_scan_results["total_time"];
-    if (!js_value.empty() && js_value.isInt())
-      total_time = js_value.asInt();
+    js_scan_results["total_time"].tie(elem, error);
+    if (!error && elem.is_int64())
+      total_time = elem.get<int64_t>().value();
     else
       total_time = -1;
     // total_avs
-    js_value = js_scan_results["total_avs"];
-    if (!js_value.empty() && js_value.isInt())
-      total_avs = js_value.asInt();
+    js_scan_results["total_avs"].tie(elem, error);
+    if (!error && elem.is_int64())
+      total_avs = elem.get<int64_t>().value();
     else
       total_avs = -1;
     // progress_percentage
-    js_value = js_scan_results["progress_percentage"];
-    if (!js_value.empty() && js_value.isInt())
-      progress_percentage = js_value.asInt();
+    js_scan_results["progress_percentage"].tie(elem, error);
+    if (!error && elem.is_int64())
+      progress_percentage = elem.get<int64_t>().value();
     else
       progress_percentage = -1;
     // in_queue
-    js_value = js_scan_results["in_queue"];
-    if (!js_value.empty() && js_value.isInt())
-      in_queue = js_value.asInt();
+    js_scan_results["in_queue"].tie(elem, error);
+    if (!error && elem.is_int64())
+      in_queue = elem.get<int64_t>().value();
     else
       in_queue = -1;
     // scan_all_result_a
-    js_value = js_scan_results["scan_all_result_a"];
-    if (!js_value.empty() && js_value.isString())
-      scan_all_result_a = js_value.asString();
+    js_scan_results["scan_all_result_a"].tie(elem, error);
+    if (!error && elem.is_string())
+      scan_all_result_a = elem.get<std::string_view>().value();
     else
       scan_all_result_a.clear();
   } // if scan_results is present
@@ -220,61 +214,62 @@ bool Report::fromJsonString(const std::string& jsonString)
   } // else
 
   // file_info
-  const Json::Value js_file_info = root["file_info"];
-  if (!js_file_info.empty() && js_file_info.isObject())
+  doc["file_info"].tie(elem, error);
+  if (!error && elem.is_object())
   {
+    const simdjson::dom::object js_file_info(elem);
     // file_size
-    js_value = js_file_info["file_size"];
-    if (!js_value.empty() && js_value.isInt())
-      file_info.file_size = js_value.asInt64();
+    js_file_info["file_size"].tie(elem, error);
+    if (!error && elem.is_int64())
+      file_info.file_size = elem.get<int64_t>().value();
     else
       file_info.file_size = -1;
     // upload_timestamp
-    js_value = js_file_info["upload_timestamp"];
-    if (!js_value.empty() && js_value.isString())
-      file_info.upload_timestamp = js_value.asString();
+    js_file_info["upload_timestamp"].tie(elem, error);
+    if (!error && elem.is_string())
+      file_info.upload_timestamp = elem.get<std::string_view>().value();
     else
       file_info.upload_timestamp.clear();
     // md5
-    js_value = js_file_info["md5"];
-    if (!js_value.empty() && js_value.isString())
-      file_info.md5 = js_value.asString();
+    js_file_info["md5"].tie(elem, error);
+    if (!error && elem.is_string())
+      file_info.md5 = elem.get<std::string_view>().value();
     else
       file_info.md5.clear();
     // sha1
-    js_value = js_file_info["sha1"];
-    if (!js_value.empty() && js_value.isString())
-      file_info.sha1 = js_value.asString();
+    js_file_info["sha1"].tie(elem, error);
+    if (!error && elem.is_string())
+      file_info.sha1 = elem.get<std::string_view>().value();
     else
       file_info.sha1.clear();
     // sha256
-    js_value = js_file_info["sha256"];
-    if (!js_value.empty() && js_value.isString())
-      file_info.sha256 = js_value.asString();
+    js_file_info["sha256"].tie(elem, error);
+    if (!error && elem.is_string())
+      file_info.sha256 = elem.get<std::string_view>().value();
     else
       file_info.sha256.clear();
     // file_type_category
-    js_value = js_file_info["file_type_category"];
-    if (!js_value.empty() && js_value.isString())
-      file_info.file_type_category = js_value.asString();
+    js_file_info["file_type_category"].tie(elem, error);
+    if (!error && elem.is_string())
+      file_info.file_type_category = elem.get<std::string_view>().value();
     else
       file_info.file_type_category.clear();
     // file_type_description
-    js_value = js_file_info["file_type_description"];
-    if (!js_value.empty() && js_value.isString())
-      file_info.file_type_description = js_value.asString();
+    js_file_info["file_type_description"].tie(elem, error);
+    if (!error && elem.is_string())
+      file_info.file_type_description = elem.get<std::string_view>().value();
     else
       file_info.file_type_description.clear();
     // file_type_extension
-    js_value = js_file_info["file_type_extension"];
-    if (!js_value.empty() && js_value.isString())
-      file_info.file_type_extension = js_value.asString();
+    js_file_info["file_type_extension"].tie(elem, error);
+    if (!error && elem.is_string())
+      file_info.file_type_extension = elem.get<std::string_view>().value();
     else
       file_info.file_type_extension.clear();
     // display_name
-    js_value = js_file_info["display_name"];
-    if (!js_value.empty() && js_value.isString())
-      file_info.display_name = js_value.asString();
+    js_file_info["display_name"].tie(elem, error);
+    if (!error && elem.is_string())
+      file_info.display_name = elem.get<std::string_view>().value();
     else
       file_info.display_name.clear();
   } // if file_info is present
@@ -282,15 +277,15 @@ bool Report::fromJsonString(const std::string& jsonString)
     file_info = FileInfo();
 
   // data_id
-  js_value = root["data_id"];
-  if (!js_value.empty() && js_value.isString())
-    data_id = js_value.asString();
+  doc["data_id"].tie(elem, error);
+  if (!error && elem.is_string())
+    data_id = elem.get<std::string_view>().value();
   else
     data_id = "";
   // top_threat
-  js_value = root["top_threat"];
-  if (!js_value.empty() && js_value.isInt())
-    top_threat = js_value.asInt();
+  doc["top_threat"].tie(elem, error);
+  if (!error && elem.is_int64())
+    top_threat = elem.get<int64_t>().value();
   else
     top_threat = -1;
 
