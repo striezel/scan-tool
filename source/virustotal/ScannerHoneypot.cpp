@@ -22,80 +22,12 @@
 #include <iostream>
 #include "../../third-party/simdjson/simdjson.h"
 #include "../Curly.hpp"
-#include "../StringToTimeT.hpp"
 
 namespace scantool
 {
 
 namespace virustotal
 {
-
-ScannerHoneypot::Report honeypotReportFromJSONRoot(const simdjson::dom::element& doc)
-{
-  ScannerHoneypot::Report report;
-  simdjson::dom::element elem;
-  simdjson::error_code error;
-  doc["result"].tie(elem, error);
-  if (!error && elem.is_int64())
-    report.response_code = elem.get<int64_t>().value();
-  else
-    report.response_code = 0;
-
-  doc["permalink"].tie(elem, error);
-  if (!error && elem.is_string())
-    report.permalink = elem.get<std::string_view>().value();
-  else
-    report.permalink = "";
-
-  simdjson::dom::element reportElem;
-  doc["report"].tie(reportElem, error);
-  // first array element is scan date
-  if (!error && reportElem.is_array() && !reportElem.at(0))
-  {
-    error = reportElem.at(0).get(elem);
-    if (!error && elem.is_string())
-      report.scan_date = elem.get<std::string_view>().value();
-    else
-      report.scan_date = "";
-    if (!stringToTimeT(report.scan_date, report.scan_date_t))
-      report.scan_date_t = static_cast<std::time_t>(-1);
-  }
-  else
-  {
-    report.scan_date = "";
-    report.scan_date_t = static_cast<std::time_t>(-1);
-    report.scans.clear();
-  }
-
-  report.positives = 0;
-
-  // second array element is list of engines
-  simdjson::dom::element engines;
-  error = reportElem.at(1).get(engines);
-  if (!error && engines.is_object())
-  {
-    const simdjson::dom::object enginesObject(engines);
-    for (const auto [key, value] : enginesObject)
-    {
-      scantool::Report::EnginePtr data = std::make_shared<scantool::Engine>();
-      data->engine = key;
-      if (value.is_string())
-      {
-        data->result = value.get<std::string_view>().value();
-      }
-      else
-        data->result = "";
-      data->detected = !data->result.empty();
-      if (data->detected)
-        ++report.positives;
-      report.scans.push_back(std::move(data));
-    } // for
-  } // if
-  else
-    report.scans.clear();
-
-  return report;
-}
 
 ScannerHoneypot::ScannerHoneypot(const std::string& apikey, const bool honourTimeLimits, const bool silent)
 : Scanner(honourTimeLimits, silent),
@@ -204,8 +136,7 @@ bool ScannerHoneypot::getReport(const std::string& scan_id, Report& report)
     std::cout << "result: " << result.get<int64_t>().value() << std::endl;
   }
   #endif
-  report = honeypotReportFromJSONRoot(doc);
-  return false;
+  return report.fromJsonString(response);
 }
 
 bool ScannerHoneypot::scan(const std::string& filename, std::string& scan_id)

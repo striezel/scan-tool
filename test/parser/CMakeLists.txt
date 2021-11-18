@@ -6,3 +6,6 @@ add_subdirectory (mso)
 
 # Recurse into subdirectory for the VirusTotal v2 parser.
 add_subdirectory (vt-v2)
+
+# Recurse into subdirectory for the VirusTotal Honeypot API parser.
+add_subdirectory (honeypot)
