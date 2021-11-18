@@ -2,12 +2,21 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="parser-vt-v2" />
+		<Option title="parser-vt-honeypot" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
+			<Target title="Debug">
+                                <Option output="bin/Debug/parser-vt-honeypot" prefix_auto="1" extension_auto="1" />
+                                <Option object_output="obj/Debug/" />
+                                <Option type="1" />
+                                <Option compiler="gcc" />
+                                <Compiler>
+                                        <Add option="-g" />
+                                </Compiler>
+                        </Target>
 			<Target title="Release">
-				<Option output="bin/Release/parser-vt-v2" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/Release/parser-vt-honeypot" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Release/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
@@ -34,12 +43,10 @@
 		<Unit filename="../../../source/Report.hpp" />
 		<Unit filename="../../../source/StringToTimeT.cpp" />
 		<Unit filename="../../../source/StringToTimeT.hpp" />
-		<Unit filename="../../../source/virustotal/EngineV2.cpp" />
-		<Unit filename="../../../source/virustotal/EngineV2.hpp" />
 		<Unit filename="../../../source/virustotal/ReportBase.cpp" />
 		<Unit filename="../../../source/virustotal/ReportBase.hpp" />
-		<Unit filename="../../../source/virustotal/ReportV2.cpp" />
-		<Unit filename="../../../source/virustotal/ReportV2.hpp" />
+		<Unit filename="../../../source/virustotal/ReportHoneypot.cpp" />
+		<Unit filename="../../../source/virustotal/ReportHoneypot.hpp" />
 		<Unit filename="../../../third-party/simdjson/simdjson.cpp" />
 		<Unit filename="../../../third-party/simdjson/simdjson.h" />
 		<Unit filename="main.cpp" />

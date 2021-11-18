@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of the scan-tool test suite.
-    Copyright (C) 2016  Dirk Stolle
+    Copyright (C) 2016, 2021  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@
 #include <fstream>
 #include <iostream>
 #include <vector>
-#include <jsoncpp/json/reader.h>
+#include "../../../third-party/simdjson/simdjson.h"
 #include "../../../source/Curly.hpp"
 
 int main()
@@ -31,7 +31,7 @@ int main()
   // basic URL
   const std::string HeadToThisPlaceSecurely = "https://httpbin.org/post";
 
-  //test data
+  // test data
   /* Note: The version of libjsoncpp that is used with Debian 7 ("wheezy") and
      Ubuntu 12.04 ("precise") is 0.6.0, and that version has a problem with
      embedded NUL characters in strings. In fact, strings returned by
@@ -43,11 +43,11 @@ int main()
      bytes, although that would be an interesting test case.
   */
   const std::vector<std::string> testData = {
-    "", //empty string
-    "This is a test.", //string without any "special" characters
-    std::string("Line one\nLine two\r\nLine three\t\vTest"), //line feeds etc.
+    "", // empty string
+    "This is a test.", // string without any "special" characters
+    std::string("Line one\nLine two\r\nLine three\t\vTest"), // line feeds etc.
     std::string(200, '\x05'), // 200 bytes with value 5
-    //test the first 128 possible characters / bytes, except the NUL byte
+    // test the first 128 possible characters / bytes, except the NUL byte
     // (See reason for exclusion of NUL byte above.)
     "\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f",
     "\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f",
@@ -58,9 +58,9 @@ int main()
     "\x60\x61\x62\x63\x64\x65\x66\x67\x68\x69\x6a\x6b\x6c\x6d\x6e\x6f",
     "\x70\x71\x72\x73\x74\x75\x76\x77\x78\x79\x7a\x7b\x7c\x7d\x7e\x7f",
     /*
-    //Bytes from 0x80 turn the data element in httpbin.org's response into an
-    //octet stream, which is base64-encoded. However, I do not want to write a
-    //base64 decoder for that test, so I'll leave the rest out of the test.
+    // Bytes from 0x80 turn the data element in httpbin.org's response into an
+    // octet stream, which is base64-encoded. However, I do not want to write a
+    // base64 decoder for that test, so I'll leave the rest out of the test.
     "\x80\x81\x82\x83\x84\x85\x86\x87\x88\x89\x8a\x8b\x8c\x8d\x8e\x8f",
     "\x90\x91\x92\x93\x94\x95\x96\x97\x98\x99\x9a\x9b\x9c\x9d\x9e\x9f",
     "\xa0\xa1\xa2\xa3\xa4\xa5\xa6\xa7\xa8\xa9\xaa\xab\xac\xad\xae\xaf",
@@ -72,26 +72,26 @@ int main()
     */
   };
 
-  //iterate over test data
+  // iterate over test data
   for (const auto & elem : testData)
   {
     Curly postBody;
-    //set URL
+    // set URL
     postBody.setURL(HeadToThisPlaceSecurely);
-    //add the post body - this time an empty one
+    // add the post body
     if (!postBody.setPostBody(elem))
     {
       std::cout << "Error: Could not set POST body!" << std::endl;
       return 1;
     }
-    //set content type to text/plain to avoid interpretation as URL encoded form
+    // set content type to text/plain to avoid interpretation as URL encoded form
     if (!postBody.addHeader("Content-Type: text/plain"))
     {
       std::cout << "Error: Could not add Content-Type header!" << std::endl;
       return 1;
     }
 
-    //perform request
+    // perform request
     std::string response = "";
     if (!postBody.perform(response))
     {
@@ -99,14 +99,14 @@ int main()
       return 1;
     }
 
-    //check HTTP status code
+    // check HTTP status code
     if (postBody.getResponseCode() != 200)
     {
       std::cout << "Error: HTTP status code is not 200, it is "
                 << postBody.getResponseCode() << " instead!" << std::endl;
       return 1;
     }
-    //check content type
+    // check content type
     if (postBody.getContentType() != "application/json" && !postBody.getContentType().empty())
     {
       std::cout << "Error: Content type is not application/json, it is "
@@ -114,33 +114,34 @@ int main()
       return 1;
     }
 
-    //check response
-    Json::Value root; // will contain the root value after parsing
-    Json::Reader jsonReader;
-    const bool success = jsonReader.parse(response, root, false);
-    if (!success)
+    // check response
+    simdjson::dom::parser parser;
+    simdjson::dom::element doc;
+    auto error = parser.parse(response).get(doc);
+    if (error)
     {
       std::cerr << "Error: Unable to parse JSON data from response!" << std::endl;
       std::cerr << "Response:" << std::endl << response << std::endl << std::endl;
       return 1;
     }
 
-    const Json::Value data = root["data"];
-    if (data.empty() || !data.isString())
+    simdjson::dom::element data;
+    doc["data"].tie(data, error);
+    if (error || !data.is_string())
     {
       std::cerr << "Error: data element in response is empty or no string!" << std::endl;
       std::cerr << "Response:" << std::endl << response << std::endl << std::endl;
       return 1;
     }
-    //check against original value
-    if (data.asString() != elem)
+    // check against original value
+    if (data.get<std::string_view>().value() != elem)
     {
       std::cerr << "Error: Value of data is not \""<< elem << "\", but \""
-                << data.asString() << "\" instead!" << std::endl;
+                << data.get<std::string_view>().value() << "\" instead!\n";
       std::cerr << "Response:" << std::endl << response << std::endl << std::endl;
       return 1;
     }
-  } //for
+  }
 
   std::cout << "Curly's POST body seems to be OK." << std::endl;
   return 0;

@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2015, 2016  Dirk Stolle
+    Copyright (C) 2015, 2016, 2021  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -20,11 +20,11 @@
 
 #include "Scanner.hpp"
 #include <iostream>
-#include <jsoncpp/json/reader.h>
 #include "../Curly.hpp"
 #include "../../libstriezel/hash/sha256/sha256.hpp"
 #include "../../libstriezel/filesystem/directory.hpp"
 #include "../../libstriezel/filesystem/file.hpp"
+#include "../../third-party/simdjson/simdjson.h"
 
 namespace scantool
 {
@@ -40,8 +40,8 @@ Scanner::Scanner(const std::string& apikey, const bool honourTimeLimits, const b
 }
 
 Scanner::ScanData::ScanData()
-: data_id(""),
-  rest_ip("")
+: data_id(std::string()),
+  rest_ip(std::string())
 {
 }
 
@@ -57,31 +57,32 @@ bool Scanner::ScanData::operator< (const ScanData& other) const
 bool Scanner::ScanData::fromJsonString(const std::string& jsonString)
 {
   // parse JSON response
-  Json::Value root; // will contain the root value after parsing.
-  Json::Reader jsonReader;
-  const bool success = jsonReader.parse(jsonString, root, false);
-  if (!success)
+  simdjson::dom::parser parser;
+  simdjson::dom::element doc;
+  auto error = parser.parse(jsonString).get(doc);
+  if (error)
   {
     std::cerr << "Error in Scanner::ScanData::fromJsonString(): Unable to parse"
               << " JSON data!" << std::endl;
     return false;
   }
+  simdjson::dom::element elem;
   // data_id
-  Json::Value js_value = root["data_id"];
-  if (!js_value.empty() && js_value.isString())
-    data_id = js_value.asString();
+  doc["data_id"].tie(elem, error);
+  if (!error && elem.is_string())
+    data_id = elem.get<std::string_view>().value();
   else
   {
     data_id.clear();
   } // else
   // rest_ip
-  js_value = root["rest_ip"];
-  if (!js_value.empty() && js_value.isString())
-    rest_ip = js_value.asString();
+  doc["rest_ip"].tie(elem, error);
+  if (!error && elem.is_string())
+    rest_ip = elem.get<std::string_view>().value();
   else
   {
     rest_ip.clear();
-  } // else
+  }
   return true;
 }
 

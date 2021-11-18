@@ -15,22 +15,23 @@ content. It uses the public ReST API provided by
 
 ### Prerequisites
 
-To build the scan-tool from source you need a C++ compiler, CMake 2.8 or later,
-the cURL library (>=7.17), the JsonCpp library, as well as the libarchive,
-libzip and zlib libraries. pkg-config is required to make it easier to find
-compiler options for the installed libraries.
+To build the scan-tool from source you need a C++ compiler with support for
+C++17, CMake 3.8 or later, the cURL library (>=7.17), as well as the libarchive,
+libzip and zlib libraries.
+pkg-config is required to make it easier to find compiler options for the
+installed libraries.
 It also helps to have Git, a distributed version control system, on your build
 system to get the latest source code directly from the Git repository.
 
 All of that can usually be installed be typing
 
     apt-get install cmake g++ git libarchive-dev libcurl4-gnutls-dev \
-    libjsoncpp-dev libzip-dev zlib1g-dev pkg-config
+    libzip-dev zlib1g-dev pkg-config
 
 or
 
     yum install cmake gcc-c++ git libarchive-devel libcurl-devel libzip-devel \
-    jsoncpp-devel zlib-devel pkgconfig
+    zlib-devel pkgconfig
 
 into a root terminal.
 
@@ -54,7 +55,7 @@ Starting in the root directory of the source, you can do the following steps:
     mkdir build
     cd build
     cmake ../
-    make -j2
+    make -j4
 
 ### Test suite
 
@@ -77,7 +78,7 @@ it was intended by the developer.
 
 ## Copyright and Licensing
 
-Copyright 2015, 2016, 2017, 2019  Dirk Stolle
+Copyright 2015, 2016, 2017, 2019, 2021  Dirk Stolle
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

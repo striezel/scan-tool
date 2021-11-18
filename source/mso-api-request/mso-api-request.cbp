@@ -31,13 +31,12 @@
 		</Build>
 		<Compiler>
 			<Add option="-Weffc++" />
-			<Add option="-std=c++14" />
 			<Add option="-Wall" />
+			<Add option="-std=c++17" />
 			<Add option="-fexceptions" />
 		</Compiler>
 		<Linker>
 			<Add library="curl" />
-			<Add library="jsoncpp" />
 		</Linker>
 		<Unit filename="../../libstriezel/common/StringUtils.cpp" />
 		<Unit filename="../../libstriezel/common/StringUtils.hpp" />
@@ -47,24 +46,23 @@
 		<Unit filename="../../libstriezel/filesystem/file.hpp" />
 		<Unit filename="../../libstriezel/hash/sha256/sha256.cpp" />
 		<Unit filename="../../libstriezel/hash/sha256/sha256.hpp" />
+		<Unit filename="../../third-party/simdjson/simdjson.cpp" />
+		<Unit filename="../../third-party/simdjson/simdjson.h" />
 		<Unit filename="../Curly.cpp" />
 		<Unit filename="../Curly.hpp" />
 		<Unit filename="../Engine.cpp" />
 		<Unit filename="../Engine.hpp" />
+		<Unit filename="../ReturnCodes.hpp" />
+		<Unit filename="../Scanner.cpp" />
+		<Unit filename="../Scanner.hpp" />
 		<Unit filename="../metascan/Engine.cpp" />
 		<Unit filename="../metascan/Engine.hpp" />
 		<Unit filename="../metascan/Report.cpp" />
 		<Unit filename="../metascan/Report.hpp" />
-		<Unit filename="../ReturnCodes.hpp" />
-		<Unit filename="../Scanner.cpp" />
-		<Unit filename="../Scanner.hpp" />
 		<Unit filename="../metascan/Scanner.cpp" />
 		<Unit filename="../metascan/Scanner.hpp" />
 		<Unit filename="main.cpp" />
 		<Extensions>
-			<code_completion />
-			<envvars />
-			<debugger />
 			<lib_finder disable_auto="1" />
 		</Extensions>
 	</Project>

@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of the scan-tool test suite.
-    Copyright (C) 2015, 2016  Dirk Stolle
+    Copyright (C) 2015, 2016, 2021  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -21,13 +21,12 @@
 #include <iostream>
 #include <utility>
 #include <vector>
-#include <jsoncpp/json/reader.h>
+#include "../../../third-party/simdjson/simdjson.h"
 #include "../../../source/Curly.hpp"
 
 int main()
 {
   Curly get;
-  //set URL
   get.setURL("https://httpbin.org/headers");
   // test headers
   const std::vector<std::pair<std::string, bool> > testHeaders = {
@@ -57,72 +56,75 @@ int main()
         std::cout << " be added, although that should NOT be possible!" << std::endl;
       return 1;
     }
-  } //for
+  }
 
-  //perform request
+  // perform request
   std::string response = "";
   if (!get.perform(response))
   {
     std::cout << "Error: Could not perform GET request!" << std::endl;
     return 1;
   }
-  //check HTTP status code
+  // check HTTP status code
   if (get.getResponseCode() != 200)
   {
     std::cout << "Error: HTTP status code is not 200, it is "
               << get.getResponseCode() << " instead!" << std::endl;
     return 1;
   }
-  //check content type
+  // check content type
   if (get.getContentType() != "application/json" && !get.getContentType().empty())
   {
     std::cout << "Error: Content type is not application/json, it is "
               << get.getContentType() << " instead!" << std::endl;
     return 1;
   }
-  //check response
+  // check response
   std::cout << "Response:" << std::endl << response << std::endl << std::endl;
 
-  Json::Value root; // will contain the root value after parsing
-  Json::Reader jsonReader;
-  const bool success = jsonReader.parse(response, root, false);
-  if (!success)
+  simdjson::dom::parser parser;
+  simdjson::dom::element doc;
+  auto error = parser.parse(response).get(doc);
+  if (error)
   {
     std::cerr << "Error: Unable to parse JSON data from response!" << std::endl;
     return 1;
   }
 
-  Json::Value headers = root["headers"];
-  if (headers.empty() || !headers.isObject())
+  simdjson::dom::element headers;
+  doc["headers"].tie(headers, error);
+  if (error || !headers.is_object())
   {
     std::cout << "Error: headers element in response is empty or no object!" << std::endl;
     return 1;
   }
-  //check for "Foo: bar"
-  Json::Value val = headers["Foo"];
-  if (val.empty() || !val.isString())
+  simdjson::dom::element elem;
+  // check for "Foo: bar"
+  headers["Foo"].tie(elem, error);
+  if (error || !elem.is_string())
   {
     std::cout << "Error: element Foo in response is empty or no string!" << std::endl;
     return 1;
   }
-  if (val.asString() != "bar")
+  if (elem.get<std::string_view>().value() != "bar")
   {
-    std::cout << "Error: Value of Foo is not \"bar\", but \"" << val.asString()
+    std::cout << "Error: Value of Foo is not \"bar\", but \""
+              << elem.get<std::string_view>().value()
               << "\" instead!" << std::endl;
     return 1;
   }
 
-  //check for "X-Custom-Header-Test: scan-tool test suite"
-  val = headers["X-Custom-Header-Test"];
-  if (val.empty() || !val.isString())
+  // check for "X-Custom-Header-Test: scan-tool test suite"
+  headers["X-Custom-Header-Test"].tie(elem, error);
+  if (error || !elem.is_string())
   {
     std::cout << "Error: element X-Custom-Header-Test in response is empty or no string!" << std::endl;
     return 1;
   }
-  if (val.asString() != "scan-tool test suite")
+  if (elem.get<std::string_view>().value() != "scan-tool test suite")
   {
     std::cout << "Error: Value of X-Custom-Header-Test is not \"scan-tool test suite\", but \""
-              << val.asString() << "\" instead!" << std::endl;
+              << elem.get<std::string_view>().value() << "\" instead!" << std::endl;
     return 1;
   }
   std::cout << "Curly's headers are just fine." << std::endl;

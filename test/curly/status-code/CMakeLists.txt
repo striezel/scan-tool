@@ -1,5 +1,5 @@
-# We might support earlier versions, too, but it's only tested with 2.8.9.
-cmake_minimum_required (VERSION 2.8)
+# We might support earlier versions, too, but try to use a more recent one.
+cmake_minimum_required (VERSION 3.8)
 
 # ################################# #
 # test for Curly::getResponseCode() #
@@ -17,7 +17,8 @@ set(test_curly_status_code_sources
 if (CMAKE_COMPILER_IS_GNUCC)
     add_definitions (-Wall -O2 -fexceptions)
 endif (CMAKE_COMPILER_IS_GNUCC)
-add_definitions(-std=c++14)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -s" )
 

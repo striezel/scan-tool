@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2015, 2016  Dirk Stolle
+    Copyright (C) 2015, 2016, 2021  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -23,17 +23,25 @@
 
 #include "ReportBase.hpp"
 
-namespace scantool
+namespace scantool::virustotal
 {
 
-namespace virustotal
-{
-
-///structure for detection report
+/// structure for detection report of Honeypot API
 struct ReportHoneypot: public ReportBase
 {
-  ///default constructor
+  /// Constructs an instance with no data.
   ReportHoneypot();
+
+
+  /** \brief Gets a report from a JSON string.
+   *
+   * \param jsonString  the JSON string
+   * \return Returns true, if the report could be filled. Might be only partially filled.
+   *         Returns false, if an unrecoverable error occurred.
+   * \remarks If the function returns false, the content of the report object
+   *          may be partially undefined.
+   */
+  bool fromJsonString(const std::string& jsonString);
 
 
   /** \brief Checks whether the response code indicates, that the requested resource
@@ -50,9 +58,7 @@ struct ReportHoneypot: public ReportBase
    * \return Returns true, if the requested item was not found.
    */
   virtual bool notFound() const override;
-}; // struct ReportHoneypot
-
-} // namespace
+};
 
 } // namespace
 
