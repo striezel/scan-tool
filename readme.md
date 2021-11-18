@@ -15,8 +15,9 @@ content. It uses the public ReST API provided by
 
 ### Prerequisites
 
-To build the scan-tool from source you need a C++ compiler, CMake 3.8 or later,
-the cURL library (>=7.17), as well as the libarchive, libzip and zlib libraries.
+To build the scan-tool from source you need a C++ compiler with support for
+C++17, CMake 3.8 or later, the cURL library (>=7.17), as well as the libarchive,
+libzip and zlib libraries.
 pkg-config is required to make it easier to find compiler options for the
 installed libraries.
 It also helps to have Git, a distributed version control system, on your build
