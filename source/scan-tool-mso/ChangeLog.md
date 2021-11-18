@@ -1,8 +1,8 @@
 # ChangeLog for scan-tool-mso
 
-## Version 0.08 (2021-11-??)
+## Version 0.08 (2021-11-18)
 
-The C++ standard used during compilation has been raised from C++11 to C++14.
+The C++ standard used during compilation has been raised from C++14 to C++17.
 Most compilers should support that by now.
 
 The minimum required CMake version for compiling the project is raised from 2.8

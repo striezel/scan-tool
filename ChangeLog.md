@@ -12,6 +12,9 @@ For the changelog of scan-tool-cache see
 For the changelog of honeypottery see
 [source/honeypottery/ChangeLog.md](./source/honeypottery/ChangeLog.md).
 
+For the changelog of scan-tool-mso see
+[source/scan-tool-mso/ChangeLog.md](./source/scan-tool-mso/ChangeLog.md).
+
 For the changelog of mso-api-request see
 [source/mso-api-request/ChangeLog.md](./source/mso-api-request/ChangeLog.md).
 

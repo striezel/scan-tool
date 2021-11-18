@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2016, 2017, 2019  Dirk Stolle
+    Copyright (C) 2016, 2017, 2019, 2021  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -25,9 +25,9 @@
 
 namespace scantool
 {
-    /** \brief version for scan-tool and scan-tool-cache
-     */
-  const std::string version ="version 0.50, 2019-10-06";
-} //namespace
+  /** \brief version for scan-tool and scan-tool-cache
+   */
+  const std::string version = "version 0.51, 2021-11-18";
+} // namespace
 
 #endif // SCANTOOL_VERSION_HPP

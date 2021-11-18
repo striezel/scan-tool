@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2015, 2016, 2019  Dirk Stolle
+    Copyright (C) 2015, 2016, 2019, 2021  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -38,7 +38,6 @@
 #include "../../libstriezel/filesystem/file.hpp"
 #include "../../libstriezel/hash/sha256/FileSourceUtility.hpp"
 #include "../../libstriezel/hash/sha256/sha256.hpp"
-//return codes
 #include "../ReturnCodes.hpp"
 
 void showHelp()
@@ -64,7 +63,7 @@ void showHelp()
 
 void showVersion()
 {
-  std::cout << "scan-tool-mso, version 0.07, 2019-10-06\n";
+  std::cout << "scan-tool-mso, version 0.08, 2021-11-18\n";
 }
 
 /* Four variables that will be used in main() but also in signal handling

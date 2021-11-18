@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2015, 2016, 2019  Dirk Stolle
+    Copyright (C) 2015, 2016, 2019, 2021  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -69,7 +69,7 @@ void showHelp()
 
 void showVersion()
 {
-  std::cout << "vt-api-request, version 1.0.4, 2019-10-06\n";
+  std::cout << "vt-api-request, version 1.0.5, 2021-11-18\n";
 }
 
 int main(int argc, char ** argv)
