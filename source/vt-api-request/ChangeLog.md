@@ -1,5 +1,15 @@
 # ChangeLog for vt-api-request
 
+## Version 1.0.5 (2021-11-??)
+
+The C++ standard used during compilation has been raised from C++11 to C++14.
+Most compilers should support that by now.
+
+The minimum required CMake version for compiling the project is raised from 2.8
+to 3.8.
+
+JSON parsing is now handled by the simdjson library and not by JsonCpp anymore.
+
 ## Version 1.0.4 (2019-10-06)
 
 The C++ standard used during compilation has been raised from C++11 to C++14.

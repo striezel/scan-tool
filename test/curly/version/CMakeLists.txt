@@ -1,5 +1,5 @@
-# We might support earlier versions, too, but it's only tested with 2.8.9.
-cmake_minimum_required (VERSION 2.8)
+# We might support earlier versions, too, but try to use a more recent one.
+cmake_minimum_required (VERSION 3.8)
 
 # ########################################## #
 # test for class Curly's version information #
@@ -7,8 +7,6 @@ cmake_minimum_required (VERSION 2.8)
 
 # test binary for Curly's version information about cURL
 project(test_curly_version)
-
-#add_definitions(-DDEFINE_CONSTANT_HERE -DANOTHER_ONE_THERE -DTHIS_IS_THE_THIRD)
 
 set(test_curly_version_sources
     ../../../source/Curly.cpp
