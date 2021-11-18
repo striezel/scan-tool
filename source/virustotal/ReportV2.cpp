@@ -54,7 +54,7 @@ bool ReportV2::fromJsonString(const std::string& jsonString)
   doc["response_code"].tie(elem, error);
   if (!error && elem.is_int64())
   {
-    response_code = elem.get<int64_t>();
+    response_code = elem.get<int64_t>().value();
   }
   else
     response_code = 0;
@@ -92,7 +92,7 @@ bool ReportV2::fromJsonString(const std::string& jsonString)
     total = -1;
   doc["positives"].tie(elem, error);
   if (!error && elem.is_int64())
-    positives = elem.get<int64_t>();
+    positives = elem.get<int64_t>().value();
   else
     positives = -1;
   doc["permalink"].tie(elem, error);
