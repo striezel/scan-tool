@@ -1,5 +1,5 @@
-# We might support earlier versions, too, but it's only tested with 2.8.9.
-cmake_minimum_required (VERSION 2.8)
+# We might support earlier versions, too, but try to use a more recent one.
+cmake_minimum_required (VERSION 3.8)
 
 # ############################################## #
 # test for class Curly's fields in POST requests #
@@ -9,16 +9,16 @@ cmake_minimum_required (VERSION 2.8)
 # test binary for Curly POST requests
 project(test_curly_post)
 
-#add_definitions(-DDEFINE_CONSTANT_HERE -DANOTHER_ONE_THERE -DTHIS_IS_THE_THIRD)
-
 set(test_curly_post_sources
     ../../../source/Curly.cpp
+    ../../../third-party/simdjson/simdjson.cpp
     post.cpp)
 
 if (CMAKE_COMPILER_IS_GNUCC)
     add_definitions (-Wall -O2 -fexceptions)
 endif (CMAKE_COMPILER_IS_GNUCC)
-add_definitions(-std=c++14)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -s" )
 
@@ -32,15 +32,6 @@ if (CURL_FOUND)
 else ()
   message ( FATAL_ERROR "cURL was not found!" )
 endif (CURL_FOUND)
-# find jsoncpp library
-set(LibJsonCpp_DIR "../../../cmake/" )
-find_package (LibJsonCpp)
-if (LIBJSONCPP_FOUND)
-  include_directories(${LIBJSONCPP_INCLUDE_DIRS})
-  target_link_libraries (test_curly_post ${LIBJSONCPP_LIBRARIES})
-else ()
-  message ( FATAL_ERROR "libjsoncpp was not found!" )
-endif (LIBJSONCPP_FOUND)
 
 # add test for Curly class
 add_test(NAME Curly_POST
