@@ -69,7 +69,7 @@ created during the build process and then type:
 If all tests succeeded, the output of the above command should end with
 something like:
 
-    100% tests passed, 0 tests failed out of 39
+    100% tests passed, 0 tests failed out of 40
 
     Total Test time (real) =  85.99 sec
 
