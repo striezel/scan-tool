@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2015, 2016, 2017  Dirk Stolle
+    Copyright (C) 2015, 2016, 2017, 2021  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -57,7 +57,6 @@
 #include "../../libstriezel/hash/sha256/FileSourceUtility.hpp"
 #include "../../libstriezel/hash/sha256/sha256.hpp"
 #include "../Constants.hpp"
-//return codes
 #include "../ReturnCodes.hpp"
 
 void showHelp()
@@ -232,9 +231,9 @@ BOOL windows_signal_handler(DWORD ctrlSignal)
 
 int main(int argc, char ** argv)
 {
-  //string that will hold the API key
+  // string that will hold the API key
   std::string key = "";
-  //whether output will be reduced
+  // whether output will be reduced
   bool silent = false;
   // limit for "maybe infected"; higher count means infected
   int maybeLimit = 0;
@@ -244,11 +243,11 @@ int main(int argc, char ** argv)
   bool useRequestCache = false;
   // custom cache directory path
   std::string requestCacheDirVT = "";
-  //files that will be checked
+  // files that will be checked
   std::set<std::string> files_scan = std::set<std::string>();
-  //scan strategy
+  // scan strategy
   scantool::virustotal::Strategy selectedStrategy = scantool::virustotal::Strategy::None;
-  //flags for archive file handlers
+  // flags for archive file handlers
   bool handle7Zip = false;
   bool handleZIP = false;
   bool handleTar = false;
@@ -261,7 +260,7 @@ int main(int argc, char ** argv)
   bool handleInstallShield = false;
   bool ignoreExtractionErrors = false;
 
-  if ((argc > 1) and (argv != nullptr))
+  if ((argc > 1) && (argv != nullptr))
   {
     int i = 1;
     while (i < argc)
@@ -269,31 +268,31 @@ int main(int argc, char ** argv)
       if (argv[i] != nullptr)
       {
         const std::string param = std::string(argv[i]);
-        //help parameter
-        if ((param == "--help") or (param == "-?") or (param == "/?"))
+        // help parameter
+        if ((param == "--help") || (param == "-?") || (param == "/?"))
         {
           showHelp();
           return 0;
-        }//help
-        //version information requested?
-        else if ((param == "--version") or (param == "-v"))
+        }
+        // version information requested?
+        else if ((param == "--version") || (param == "-v"))
         {
           showVersion();
           return 0;
-        } //version
-        else if ((param == "--key") or (param == "--apikey"))
+        }
+        else if ((param == "--key") || (param == "--apikey"))
         {
-          //only one key required
+          // only one key required
           if (!key.empty())
           {
-            std::cout << "Error: API key was already specified!" << std::endl;
+            std::cerr << "Error: API key was already specified!" << std::endl;
             return scantool::rcInvalidParameter;
           }
-          //enough parameters?
-          if ((i+1 < argc) and (argv[i+1] != nullptr))
+          // enough parameters?
+          if ((i+1 < argc) && (argv[i+1] != nullptr))
           {
             key = std::string(argv[i+1]);
-            ++i; //Skip next parameter, because it's used as API key already.
+            ++i; // Skip next parameter, because it's used as API key already.
             #ifdef SCAN_TOOL_DEBUG
             if (!silent)
               std::cout << "API key was set to \"" << key << "\"." << std::endl;
@@ -301,48 +300,48 @@ int main(int argc, char ** argv)
           }
           else
           {
-            std::cout << "Error: You have to enter some text after \""
+            std::cerr << "Error: You have to enter some text after \""
                       << param <<"\"." << std::endl;
             return scantool::rcInvalidParameter;
           }
         } //API key
         else if (param == "--keyfile")
         {
-          //only one key required
+          // only one key required
           if (!key.empty())
           {
-            std::cout << "Error: API key was already specified!" << std::endl;
+            std::cerr << "Error: API key was already specified!" << std::endl;
             return scantool::rcInvalidParameter;
           }
-          //enough parameters?
-          if ((i+1 < argc) and (argv[i+1] != nullptr))
+          // enough parameters?
+          if ((i+1 < argc) && (argv[i+1] != nullptr))
           {
             const std::string keyfile = std::string(argv[i+1]);
             if (!libstriezel::filesystem::file::exists(keyfile))
             {
-              std::cout << "Error: The specified key file " << keyfile
+              std::cerr << "Error: The specified key file " << keyfile
                         << " does not exist!" << std::endl;
               /* Technically it's a file error, but let's return "invalid
                  parameter" here, because the file name parameter is wrong/
                  invalid.
               */
               return scantool::rcInvalidParameter;
-            } //if file does not exist
+            } // if file does not exist
             Configuration conf;
             if (!conf.loadFromFile(keyfile))
             {
-              std::cout << "Error: Could not load key from file " << keyfile
+              std::cerr << "Error: Could not load key from file " << keyfile
                         << "!" << std::endl;
               return scantool::rcFileError;
             }
             if (conf.apikey().empty())
             {
-              std::cout << "Error: Key file " << keyfile << " does not contain"
+              std::cerr << "Error: Key file " << keyfile << " does not contain"
                         << " an API key!" << std::endl;
               return scantool::rcFileError;
             }
             key = conf.apikey();
-            ++i; //Skip next parameter, because it's used as key file already.
+            ++i; // Skip next parameter, because it's used as key file already.
             #ifdef SCAN_TOOL_DEBUG
             if (!silent)
               std::cout << "API key was set to \"" << key << "\"." << std::endl;
@@ -350,64 +349,64 @@ int main(int argc, char ** argv)
           }
           else
           {
-            std::cout << "Error: You have to enter a file name after \""
+            std::cerr << "Error: You have to enter a file name after \""
                       << param <<"\"." << std::endl;
             return scantool::rcInvalidParameter;
           }
-        } //API key from file
-        else if ((param == "--silent") or (param == "-s"))
+        } // API key from file
+        else if ((param == "--silent") || (param == "-s"))
         {
-          //Has the silent parameter already been set?
+          // Has the silent parameter already been set?
           if (silent)
           {
-            std::cout << "Error: Parameter " << param << " must not occur more than once!"
+            std::cerr << "Error: Parameter " << param << " must not occur more than once!"
                       << std::endl;
             return scantool::rcInvalidParameter;
           }
           silent = true;
-        } //silent
-        else if ((param == "--maybe") or (param == "--limit"))
+        }
+        else if ((param == "--maybe") || (param == "--limit"))
         {
-          //enough parameters?
-          if ((i+1 < argc) and (argv[i+1] != nullptr))
+          // enough parameters?
+          if ((i+1 < argc) && (argv[i+1] != nullptr))
           {
             const std::string integer = std::string(argv[i+1]);
             int limit = -1;
             if (!stringToInt(integer, limit))
             {
-              std::cout << "Error: \"" << integer << "\" is not an integer!" << std::endl;
+              std::cerr << "Error: \"" << integer << "\" is not an integer!" << std::endl;
               return scantool::rcInvalidParameter;
             }
             if (limit < 0)
             {
-              std::cout << "Error: " << limit << " is negative, but only"
+              std::cerr << "Error: " << limit << " is negative, but only"
                         << " non-negative values are allowed here." << std::endl;
               return scantool::rcInvalidParameter;
             }
             maybeLimit = limit;
-            ++i; //Skip next parameter, because it's used as limit already.
+            ++i; // Skip next parameter, because it's used as limit already.
           }
           else
           {
-            std::cout << "Error: You have to enter an integer value after \""
+            std::cerr << "Error: You have to enter an integer value after \""
                       << param <<"\"." << std::endl;
             return scantool::rcInvalidParameter;
           }
-        } //"maybe" limit
-        else if ((param == "--files") or (param == "--list"))
+        } // "maybe" limit
+        else if ((param == "--files") || (param == "--list"))
         {
-          //enough parameters?
-          if ((i+1 < argc) and (argv[i+1] != nullptr))
+          // enough parameters?
+          if ((i+1 < argc) && (argv[i+1] != nullptr))
           {
             const std::string listFile = std::string(argv[i+1]);
-            ++i; //Skip next parameter, because it's used as list file already.
+            ++i; // Skip next parameter, because it's used as list file already.
             if (!libstriezel::filesystem::file::exists(listFile))
             {
-              std::cout << "Error: File " << listFile << " does not exist!"
+              std::cerr << "Error: File " << listFile << " does not exist!"
                         << std::endl;
               return scantool::rcFileError;
             }
-            //open file and read file names
+            // open file and read file names
             std::ifstream inFile;
             inFile.open(listFile, std::ios_base::in | std::ios_base::binary);
             if (!inFile.good() || !inFile.is_open())
@@ -428,84 +427,84 @@ int main(int argc, char ** argv)
                   std::cout << "Info: Adding " << nextFile << " to list of files for scan." << std::endl;
                   #endif // SCAN_TOOL_DEBUG
                   files_scan.insert(nextFile);
-                } //if
+                }
                 else
                 {
                   std::cout << "Warning: File " << nextFile << " does not exist, skipping it."
                             << std::endl;
                 }
-              } //if string not empty
-            } //while
+              } // if string not empty
+            } // while
             inFile.close();
-          } //if
+          } // if
           else
           {
-            std::cout << "Error: You have to enter a file name after \""
-                      << param <<"\"." << std::endl;
+            std::cerr << "Error: You have to enter a file name after \""
+                      << param << "\"." << std::endl;
             return scantool::rcInvalidParameter;
-          } //else
-        } //list of files
-        //age limit for reports
-        else if ((param == "--max-age") or (param == "--age-limit"))
+          }
+        } // list of files
+        // age limit for reports
+        else if ((param == "--max-age") || (param == "--age-limit"))
         {
           if (maxAgeInDays > 0)
           {
-            std::cout << "Error: Report age has been specified multiple times." << std::endl;
+            std::cerr << "Error: Report age has been specified multiple times." << std::endl;
             return scantool::rcInvalidParameter;
           }
-          //enough parameters?
-          if ((i+1 < argc) and (argv[i+1] != nullptr))
+          // enough parameters?
+          if ((i+1 < argc) && (argv[i+1] != nullptr))
           {
             const std::string integer = std::string(argv[i+1]);
             unsigned int limit = 0;
             if (!stringToUnsignedInt(integer, limit))
             {
-              std::cout << "Error: \"" << integer << "\" is not an unsigned integer!" << std::endl;
+              std::cerr << "Error: \"" << integer << "\" is not an unsigned integer!" << std::endl;
               return scantool::rcInvalidParameter;
             }
             if (limit <= 0)
             {
-              std::cout << "Error: Report age has to be more than zero days." << std::endl;
+              std::cerr << "Error: Report age has to be more than zero days." << std::endl;
               return scantool::rcInvalidParameter;
             }
-            //Is it more than ca. 100 years?
+            // Is it more than ca. 100 years?
             if (limit > 36500)
             {
               if (!silent)
-                std::cout << "Warning: Report age was capped to 36500 days." << std::endl;
+                std::cerr << "Warning: Report age was capped to 36500 days." << std::endl;
               limit = 36500;
             }
-            //Assign the parameter value.
+            // Assign the parameter value.
             maxAgeInDays = limit;
-            ++i; //Skip next parameter, because it's used as limit already.
+            ++i; // Skip next parameter, because it's used as limit already.
           }
           else
           {
-            std::cout << "Error: You have to enter an integer value after \""
-                      << param <<"\"." << std::endl;
+            std::cerr << "Error: You have to enter an integer value after \""
+                      << param << "\"." << std::endl;
             return scantool::rcInvalidParameter;
           }
-        } //age limit
-        else if ((param == "--strategy") or (param == "--logic"))
+        } // age limit
+        else if ((param == "--strategy") || (param == "--logic"))
         {
-          //only one strategy is possible
+          // only one strategy is possible
           if (selectedStrategy != scantool::virustotal::Strategy::None)
           {
-            std::cout << "Error: Scan strategy was already specified!" << std::endl;
+            std::cerr << "Error: Scan strategy was already specified!" << std::endl;
             return scantool::rcInvalidParameter;
           }
-          //enough parameters?
-          if ((i+1 < argc) and (argv[i+1] != nullptr))
+          // enough parameters?
+          if ((i+1 < argc) && (argv[i+1] != nullptr))
           {
             selectedStrategy = scantool::virustotal::stringToStrategy(std::string(argv[i+1]));
-            //Is it a recognized strategy?
+            // Is it a recognized strategy?
             if (selectedStrategy == scantool::virustotal::Strategy::None)
             {
-              std::cout << "Error: \"" << std::string(argv[i+1]) << "\" is not"
+              std::cerr << "Error: \"" << std::string(argv[i+1]) << "\" is not"
                         << " a known scan strategy." << std::endl;
               return scantool::rcInvalidParameter;
             }
-            ++i; //Skip next parameter, because it's used as strategy already.
+            ++i; // Skip next parameter, because it's used as strategy already.
             if (!silent)
               std::cout << "Info: Scan strategy was set to \""
                         << scantool::virustotal::strategyToString(selectedStrategy)
@@ -513,204 +512,204 @@ int main(int argc, char ** argv)
           }
           else
           {
-            std::cout << "Error: You have to enter some text after \""
-                      << param <<"\"." << std::endl;
+            std::cerr << "Error: You have to enter some text after \""
+                      << param << "\"." << std::endl;
             return scantool::rcInvalidParameter;
           }
-        } //scan strategy
-        //use request cache
-        else if ((param == "--cache") or (param == "--request-cache") or (param == "--cache-requests"))
+        } // scan strategy
+        // use request cache
+        else if ((param == "--cache") || (param == "--request-cache") || (param == "--cache-requests"))
         {
           if (useRequestCache)
           {
-            std::cout << "Error: Request cache was already enabled." << std::endl;
+            std::cerr << "Error: Request cache was already enabled." << std::endl;
             return scantool::rcInvalidParameter;
           }
           useRequestCache = true;
-        } //request cache
-        //set custom directory for request cache
-        else if ((param == "--cache-dir") or (param == "--cache-directory") or (param == "--request-cache-directory"))
+        } // request cache
+        // set custom directory for request cache
+        else if ((param == "--cache-dir") || (param == "--cache-directory") || (param == "--request-cache-directory"))
         {
           if (!requestCacheDirVT.empty())
           {
-            std::cout << "Error: Request cache directory was already set to "
+            std::cerr << "Error: Request cache directory was already set to "
                       << requestCacheDirVT << "!" << std::endl;
             return scantool::rcInvalidParameter;
           }
-          //enough parameters?
-          if ((i+1 < argc) and (argv[i+1] != nullptr))
+          // enough parameters?
+          if ((i+1 < argc) && (argv[i+1] != nullptr))
           {
             requestCacheDirVT = libstriezel::filesystem::unslashify(std::string(argv[i+1]));
-            ++i; //Skip next parameter, because it's already used as directory.
+            ++i; // Skip next parameter, because it's already used as directory.
           }
           else
           {
-            std::cout << "Error: You have to enter a directory path after \""
-                      << param <<"\"." << std::endl;
+            std::cerr << "Error: You have to enter a directory path after \""
+                      << param << "\"." << std::endl;
             return scantool::rcInvalidParameter;
           }
-        } //request cache directory
+        } // request cache directory
         else if (param == "--zip")
         {
-          //Has the ZIP option already been set?
+          // Has the ZIP option already been set?
           if (handleZIP)
           {
-            std::cout << "Error: Parameter " << param << " must not occur more than once!"
+            std::cerr << "Error: Parameter " << param << " must not occur more than once!"
                       << std::endl;
             return scantool::rcInvalidParameter;
           }
           handleZIP = true;
-        } //handle ZIP files
+        } // handle ZIP files
         else if ((param == "--7zip") || (param == "--7z") || (param == "--7-zip"))
         {
-          //Has the 7z option already been set?
+          // Has the 7z option already been set?
           if (handle7Zip)
           {
-            std::cout << "Error: Parameter " << param << " must not occur more than once!"
+            std::cerr << "Error: Parameter " << param << " must not occur more than once!"
                       << std::endl;
             return scantool::rcInvalidParameter;
           }
           handle7Zip = true;
-        } //handle 7-Zip files
+        } // handle 7-Zip files
         else if (param == "--tar")
         {
-          //Has the tar option already been set?
+          // Has the tar option already been set?
           if (handleTar)
           {
-            std::cout << "Error: Parameter " << param << " must not occur more than once!"
+            std::cerr << "Error: Parameter " << param << " must not occur more than once!"
                       << std::endl;
             return scantool::rcInvalidParameter;
           }
           handleTar = true;
-        } //handle tape archive files
+        } // handle tape archive files
         else if ((param == "--gzip") || (param == "--gz"))
         {
-          //Has the gzip option already been set?
+          // Has the gzip option already been set?
           if (handleGzip)
           {
-            std::cout << "Error: Parameter " << param << " must not occur more than once!"
+            std::cerr << "Error: Parameter " << param << " must not occur more than once!"
                       << std::endl;
             return scantool::rcInvalidParameter;
           }
           handleGzip = true;
-        } //handle .gz files
+        } // handle .gz files
         else if (param == "--xz")
         {
-          //Has the XZ option already been set?
+          // Has the XZ option already been set?
           if (handleXz)
           {
-            std::cout << "Error: Parameter " << param << " must not occur more than once!"
+            std::cerr << "Error: Parameter " << param << " must not occur more than once!"
                       << std::endl;
             return scantool::rcInvalidParameter;
           }
           handleXz = true;
-        } //handle XZ compressed files
+        } // handle XZ compressed files
         else if (param == "--ar")
         {
-          //Has the Ar option already been set?
+          // Has the Ar option already been set?
           if (handleAr)
           {
-            std::cout << "Error: Parameter " << param << " must not occur more than once!"
+            std::cerr << "Error: Parameter " << param << " must not occur more than once!"
                       << std::endl;
             return scantool::rcInvalidParameter;
           }
           handleAr = true;
-        } //handle Ar archive files
+        } // handle Ar archive files
         else if ((param == "--iso") || (param == "--iso9660"))
         {
-          //Has the ISO9660 option already been set?
+          // Has the ISO9660 option already been set?
           if (handleISO9660)
           {
-            std::cout << "Error: Parameter " << param << " must not occur more than once!"
+            std::cerr << "Error: Parameter " << param << " must not occur more than once!"
                       << std::endl;
             return scantool::rcInvalidParameter;
           }
           handleISO9660 = true;
-        } //handle .iso files
+        } // handle .iso files
         else if ((param == "--cab") || (param == "--cabinet"))
         {
-          //Has the CAB option already been set?
+          // Has the CAB option already been set?
           if (handleCab)
           {
-            std::cout << "Error: Parameter " << param << " must not occur more than once!"
+            std::cerr << "Error: Parameter " << param << " must not occur more than once!"
                       << std::endl;
             return scantool::rcInvalidParameter;
           }
           handleCab = true;
-        } //handle .cab files
+        } // handle .cab files
         else if (param == "--rar")
         {
-          //Has the Rar option already been set?
+          // Has the Rar option already been set?
           if (handleRar)
           {
-            std::cout << "Error: Parameter " << param << " must not occur more than once!"
+            std::cerr << "Error: Parameter " << param << " must not occur more than once!"
                       << std::endl;
             return scantool::rcInvalidParameter;
           }
           handleRar = true;
-        } //handle .rar files
+        } // handle .rar files
         else if ((param == "--installshield") || (param == "--unshield"))
         {
-          //Has the InstallShield option already been set?
+          // Has the InstallShield option already been set?
           if (handleInstallShield)
           {
-            std::cout << "Error: Parameter " << param << " must not occur more than once!"
+            std::cerr << "Error: Parameter " << param << " must not occur more than once!"
                       << std::endl;
             return scantool::rcInvalidParameter;
           }
           handleInstallShield = true;
-        } //handle InstallShield CAB files
+        } // handle InstallShield CAB files
         else if ((param == "--ignore-extraction-errors") || (param == "--ignore-archive-errors"))
         {
-          //Has the ignore option already been set?
+          // Has the ignore option already been set?
           if (ignoreExtractionErrors)
           {
-            std::cout << "Error: Parameter " << param << " must not occur more than once!"
+            std::cerr << "Error: Parameter " << param << " must not occur more than once!"
                       << std::endl;
             return scantool::rcInvalidParameter;
           }
           ignoreExtractionErrors = true;
-        } //ignore archive extraction errors
-        else if ((param == "--integrity") or (param == "-i"))
+        } // ignore archive extraction errors
+        else if ((param == "--integrity") || (param == "-i"))
         {
-          //add note about new executable for cache stuff
-          std::cout << "Error: Checking cache for corrupt files is now done "
+          // add note about new executable for cache stuff
+          std::cerr << "Error: Checking cache for corrupt files is now done "
                     << "by scan-tool-cache. Use scan-tool-cache instead."
                     << std::endl;
           return scantool::rcInvalidParameter;
-        } //integrity check
-        else if ((param == "--transition") or (param == "--cache-transition"))
+        } // integrity check
+        else if ((param == "--transition") || (param == "--cache-transition"))
         {
-          //add note about new executable for cache stuff
-          std::cout << "Error: Cache transition is now done by scan-tool-cache."
+          // add note about new executable for cache stuff
+          std::cerr << "Error: Cache transition is now done by scan-tool-cache."
                     << " Use scan-tool-cache instead." << std::endl;
           return scantool::rcInvalidParameter;
-        } //cache transition to current directory structure
-        //file for scan
+        } // cache transition to current directory structure
+        // file for scan
         else if (libstriezel::filesystem::file::exists(param))
         {
           files_scan.insert(param);
-        } //file
+        } // file
         else
         {
-          //unknown or wrong parameter
-          std::cout << "Invalid parameter given: \"" << param << "\"." << std::endl
+          // unknown or wrong parameter
+          std::cerr << "Invalid parameter given: \"" << param << "\"." << std::endl
                     << "Use --help to get a list of valid parameters.\n" << std::endl;
           return scantool::rcInvalidParameter;
-        } //if unknown parameter
-      } //if parameter exists
+        } // if unknown parameter
+      } // if parameter exists
       else
       {
         std::cout << "Parameter at index " << i << " is null pointer." << std::endl;
         return scantool::rcInvalidParameter;
       }
-      ++i;//on to next parameter
-    } //while
-  } //if arguments present
+      ++i; // on to next parameter
+    } // while
+  } // if arguments present
 
   if (key.empty())
   {
-    std::cout << "Error: This program won't work properly without an API key! "
+    std::cerr << "Error: This program won't work properly without an API key! "
               << "Use --apikey to specify the VirusTotal API key." << std::endl;
     return scantool::rcInvalidParameter;
   }
@@ -718,23 +717,23 @@ int main(int argc, char ** argv)
   {
     std::cout << "No file scans requested, stopping here." << std::endl;
     return 0;
-  } //if no requests
+  } // if no requests
 
   // set "false positive" limit, if it was not set
   if (maybeLimit <= 0)
     maybeLimit = 3;
-  //set maximum report age, if it was not set
+  // set maximum report age, if it was not set
   if (maxAgeInDays <= 0)
   {
     maxAgeInDays = cDefaultMaxAge;
     if (!silent)
       std::cout << "Information: Maximum report age was set to " << maxAgeInDays
                 << " days." << std::endl;
-  } //if
+  }
 
   const auto ageLimit = std::chrono::system_clock::now() - std::chrono::hours(24*maxAgeInDays);
 
-  //handle request cache settings
+  // handle request cache settings
   scantool::virustotal::CacheManagerV2 cacheMgr(requestCacheDirVT);
   if (useRequestCache)
   {
@@ -742,66 +741,66 @@ int main(int argc, char ** argv)
     {
       std::cerr << "Error: Could not create request cache directory!" << std::endl;
       return scantool::rcFileError;
-    } //if directory could not be created
+    } // if directory could not be created
     // cache directory is ~/.scan-tool/vt-cache/ or a user-defined location
     requestCacheDirVT = cacheMgr.getCacheDirectory();
     if (!silent)
       std::clog << "Info: Request cache is enabled. "
                 << "Cache directory is " << requestCacheDirVT << "." << std::endl;
-  } //if useRequestCache
+  } // if useRequestCache
 
   totalFiles = files_scan.size();
   processedFiles = 0;
 
-  //install signal handlers
+  // install signal handlers
   #if defined(__linux__) || defined(linux)
   struct sigaction sa;
 
   sa.sa_handler = linux_signal_handler;
   sigemptyset(&sa.sa_mask);
   sa.sa_flags = 0;
-  //Install one for SIGINT ...
+  // Install one for SIGINT ...
   if (sigaction(SIGINT, &sa, nullptr) != 0)
   {
-    std::clog << "Error: Could not set signal handling function for SIGINT!"
+    std::cerr << "Error: Could not set signal handling function for SIGINT!"
               << std::endl;
     return scantool::rcSignalHandlerError;
   }
   // ... and one for SIGTERM.
   if (sigaction(SIGTERM, &sa, nullptr) != 0)
   {
-    std::clog << "Error: Could not set signal handling function for SIGTERM!"
+    std::cerr << "Error: Could not set signal handling function for SIGTERM!"
               << std::endl;
     return scantool::rcSignalHandlerError;
   }
   // ... and one for SIGUSR1, ...
   if (sigaction(SIGUSR1, &sa, nullptr) != 0)
   {
-    std::clog << "Error: Could not set signal handling function for SIGUSR1!"
+    std::cerr << "Error: Could not set signal handling function for SIGUSR1!"
               << std::endl;
     return scantool::rcSignalHandlerError;
   }
   // ... and one for SIGUSR2.
   if (sigaction(SIGUSR2, &sa, nullptr) != 0)
   {
-    std::clog << "Error: Could not set signal handling function for SIGUSR2!"
+    std::cerr << "Error: Could not set signal handling function for SIGUSR2!"
               << std::endl;
     return scantool::rcSignalHandlerError;
   }
   #elif defined(_WIN32)
   if (SetConsoleCtrlHandler((PHANDLER_ROUTINE) windows_signal_handler, TRUE) == 0)
   {
-    std::clog << "Error: Could not set signal handling function for Ctrl+C!"
+    std::cerr << "Error: Could not set signal handling function for Ctrl+C!"
               << std::endl;
     return scantool::rcSignalHandlerError;
-  } //if
+  }
   #else
     #error Unknown operating system! No known signal handling facility.
-  #endif // defined
+  #endif
 
-  //create scanner: pass API key, honour time limits, set silent mode
+  // create scanner: pass API key, honour time limits, set silent mode
   scantool::virustotal::ScannerV2 scanVT(key, true, silent);
-  //time when last scan was queued
+  // time when last scan was queued
   std::chrono::steady_clock::time_point lastQueuedScanTime = std::chrono::steady_clock::now() - std::chrono::hours(24);
 
   std::unique_ptr<scantool::virustotal::ScanStrategy> strategy = nullptr;
@@ -819,60 +818,60 @@ int main(int argc, char ** argv)
     case scantool::virustotal::Strategy::Default:
     case scantool::virustotal::Strategy::None:
     default:
-         //Use default strategy in all other cases.
+         // Use default strategy in all other cases.
          strategy = std::unique_ptr<scantool::virustotal::ScanStrategyDefault>(new scantool::virustotal::ScanStrategyDefault());
          break;
-  } //switch
+  }
 
-  //check, if user wants ZIP handler
+  // check, if user wants ZIP handler
   if (handleZIP)
   {
     strategy->addHandler(std::unique_ptr<scantool::virustotal::ZipHandler>(new scantool::virustotal::ZipHandler(ignoreExtractionErrors)));
   }
-  //check, if user wants 7z handler
+  // check, if user wants 7z handler
   if (handle7Zip)
   {
     strategy->addHandler(std::unique_ptr<scantool::virustotal::Handler7z>(new scantool::virustotal::Handler7z(ignoreExtractionErrors)));
   }
-  //check if user wants tar handler
+  // check if user wants tar handler
   if (handleTar)
   {
     strategy->addHandler(std::unique_ptr<scantool::virustotal::HandlerTar>(new scantool::virustotal::HandlerTar(ignoreExtractionErrors)));
   }
-  //check if user wants gz handler
+  // check if user wants gz handler
   if (handleGzip)
   {
     strategy->addHandler(std::unique_ptr<scantool::virustotal::HandlerGzip>(new scantool::virustotal::HandlerGzip(ignoreExtractionErrors)));
   }
-  //check if user wants Ar handler
+  // check if user wants Ar handler
   if (handleAr)
   {
     strategy->addHandler(std::unique_ptr<scantool::virustotal::HandlerAr>(new scantool::virustotal::HandlerAr(ignoreExtractionErrors)));
   }
-  //check XZ handler
+  // check XZ handler
   if (handleXz)
   {
     strategy->addHandler(std::unique_ptr<scantool::virustotal::HandlerXz>(new scantool::virustotal::HandlerXz(ignoreExtractionErrors)));
   }
-  //check if user wants iso9660 handler
+  // check if user wants iso9660 handler
   if (handleISO9660)
   {
     strategy->addHandler(std::unique_ptr<scantool::virustotal::HandlerISO9660>(new scantool::virustotal::HandlerISO9660(ignoreExtractionErrors)));
   }
-  //check if user wants cabinet handler
+  // check if user wants cabinet handler
   if (handleCab)
   {
     strategy->addHandler(std::unique_ptr<scantool::virustotal::HandlerCab>(new scantool::virustotal::HandlerCab(ignoreExtractionErrors)));
   }
-  //check if user wants InstallShield cabinet handler
+  // check if user wants InstallShield cabinet handler
   if (handleInstallShield)
   {
     strategy->addHandler(std::unique_ptr<scantool::virustotal::HandlerInstallShield>(new scantool::virustotal::HandlerInstallShield(ignoreExtractionErrors)));
   }
-  //check Rar handler
+  // check Rar handler
   if (handleRar)
   {
-    /* Rar handler will always ignore extraction errors, because doe to the
+    /* Rar handler will always ignore extraction errors, because due to the
        proprietary nature of this archive format it is very possible that not
        all files in the archive can be extracted (ca. 50 % chance?).
        So naturally some files will get extraction errors, even if the file
@@ -880,22 +879,22 @@ int main(int argc, char ** argv)
     strategy->addHandler(std::unique_ptr<scantool::virustotal::HandlerRar>(new scantool::virustotal::HandlerRar(true)));
   }
 
-  //iterate over all files for scan requests
+  // iterate over all files for scan requests
   for(const std::string& i : files_scan)
   {
-    //apply strategy to current file
+    // apply strategy to current file
     const int exitCode = strategy->scan(scanVT, i, cacheMgr, requestCacheDirVT,
         useRequestCache, silent, maybeLimit, maxAgeInDays, ageLimit,
         mapHashToReport, mapFileToHash, queued_scans, lastQueuedScanTime,
         largeFiles, processedFiles, totalFiles);
-    //exit early, if an error occurred
+    // exit early, if an error occurred
     if (exitCode != 0)
       return exitCode;
     // increase number of processed files
     ++processedFiles;
-  } //for (range-based)
+  }
 
-  //try to retrieve queued scans
+  // try to retrieve queued scans
   if (!queued_scans.empty())
   {
     const auto duration = std::chrono::steady_clock::now() - lastQueuedScanTime;
@@ -906,7 +905,7 @@ int main(int argc, char ** argv)
                   << std::endl;
       // Wait until 60 seconds since last queued scan are expired.
       std::this_thread::sleep_for(std::chrono::seconds(60) - duration);
-    } //if not enough time elapsed
+    } // if not enough time elapsed
 
     auto qsIter = queued_scans.begin();
     while (qsIter != queued_scans.end())
@@ -918,7 +917,7 @@ int main(int argc, char ** argv)
       {
         if (report.successfulRetrieval())
         {
-          //got report
+          // got report
           if (report.positives == 0)
           {
             if (!silent)
@@ -929,12 +928,12 @@ int main(int argc, char ** argv)
             if (!silent)
               std::clog << filename << " might be infected, got " << report.positives
                         << " positives." << std::endl;
-            //if hash is not given, recalculate it
+            // if hash is not given, recalculate it
             if (report.sha256.empty())
             {
               report.sha256 = SHA256::computeFromFile(filename).toHexString();
-            } //if hash is not present
-            //add file to list of infected files
+            } // if hash is not present
+            // add file to list of infected files
             mapFileToHash[filename] = report.sha256;
             mapHashToReport[report.sha256] = report;
           }
@@ -943,11 +942,11 @@ int main(int argc, char ** argv)
             if (!silent)
               std::clog << filename << " is INFECTED, got " << report.positives
                         << " positives." << std::endl;
-            //add file to list of infected files
+            // add file to list of infected files
             mapFileToHash[filename] = report.sha256;
             mapHashToReport[report.sha256] = report;
-          } //else
-        } //if file was in report database
+          } // else
+        } // if file was in report database
         else if (report.stillInQueue())
         {
           /* Response code -2 means that this stuff is still queued for
@@ -961,21 +960,21 @@ int main(int argc, char ** argv)
           std::cerr << "Error: Got unexpected response code (" << report.response_code
                     << ") from API. No further report retrieval of queued scans." << std::endl;
           break;
-        } //else
+        }
         queued_scans.erase(qsIter);
         qsIter = queued_scans.begin();
-      } //if report could be retrieved
+      } // if report could be retrieved
       else
       {
         if (!silent)
           std::clog << "Warning: Could not get queued scan report for scan ID "
                     << scan_id << " / file " << filename << "!" << std::endl;
         ++qsIter;
-      } //else
-    } //while
-  } //if some scans are/were queued
+      }
+    } // while
+  } // if some scans are/were queued
 
-  //show the summary, e.g. infected files, too large files, and unfinished queued scans
+  // show the summary, e.g. infected files, too large files, and unfinished queued scans
   showSummary(mapFileToHash, mapHashToReport, queued_scans, largeFiles);
 
   return 0;
