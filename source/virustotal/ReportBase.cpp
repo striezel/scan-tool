@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2015, 2016  Dirk Stolle
+    Copyright (C) 2015, 2016, 2021  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -20,20 +20,15 @@
 
 #include "ReportBase.hpp"
 
-namespace scantool
-{
-
-namespace virustotal
+namespace scantool::virustotal
 {
 
 ReportBase::ReportBase()
 : Report(),
   response_code(-1),
   positives(-1),
-  permalink("")
+  permalink(std::string())
 {
 }
-
-} // namespace
 
 } // namespace

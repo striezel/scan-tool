@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2015  Dirk Stolle
+    Copyright (C) 2015, 2021  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -24,15 +24,12 @@
 #include "../Engine.hpp"
 #include <chrono>
 
-namespace scantool
-{
-
-namespace metascan
+namespace scantool::metascan
 {
 
 struct Engine: public scantool::Engine
 {
-  /** \brief Constructor.
+  /** \brief Creates an "empty" engine entry.
    */
   Engine();
 
@@ -40,8 +37,6 @@ struct Engine: public scantool::Engine
   std::string def_time; /**< date of virus definitions of the anti-virus engine */
   std::chrono::milliseconds scan_time;  /**< time in milliseconds required for scan by this AV engine */
 }; // struct Engine
-
-} // namespace
 
 } // namespace
 

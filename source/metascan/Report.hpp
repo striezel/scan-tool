@@ -26,10 +26,7 @@
 #include <vector>
 #include "Engine.hpp"
 
-namespace scantool
-{
-
-namespace metascan
+namespace scantool::metascan
 {
 
 /** \brief Report data for MetaScanOnline. */
@@ -102,8 +99,6 @@ struct Report
    */
   bool notFound() const;
 }; // class
-
-} // namespace
 
 } // namespace
 

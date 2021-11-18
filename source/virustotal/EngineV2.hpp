@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2015, 2016  Dirk Stolle
+    Copyright (C) 2015, 2016, 2021  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,28 +18,23 @@
  -------------------------------------------------------------------------------
 */
 
-#ifndef ENGINEV2_HPP
-#define ENGINEV2_HPP
+#ifndef SCANTOOL_ENGINEV2_HPP
+#define SCANTOOL_ENGINEV2_HPP
 
 #include "../Engine.hpp"
 
-namespace scantool
-{
-
-namespace virustotal
+namespace scantool::virustotal
 {
 
 struct EngineV2: public scantool::Engine
 {
-  ///default constructor
+  /// Creates empty engine entry.
   EngineV2();
 
   std::string version; /**< version of the antivirus engine */
   std::string update;  /**< last update of the antivirus engine */
-}; // struct Engine
+};
 
 } // namespace
 
-} // namespace
-
-#endif // ENGINEV2_HPP
+#endif // SCANTOOL_ENGINEV2_HPP

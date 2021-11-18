@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2015, 2016, 2019  Dirk Stolle
+    Copyright (C) 2015, 2016, 2019, 2021  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -24,10 +24,7 @@
 #include "ReportBase.hpp"
 #include "EngineV2.hpp"
 
-namespace scantool
-{
-
-namespace virustotal
+namespace scantool::virustotal
 {
 
 ///structure for detection report
@@ -85,8 +82,6 @@ struct ReportV2: public ReportBase
   std::string sha1;   /**< SHA1 hash of the file */
   std::string sha256; /**< SHA256 hash of the file */
 }; // struct Report
-
-} // namespace
 
 } // namespace
 

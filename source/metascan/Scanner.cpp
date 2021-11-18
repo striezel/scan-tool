@@ -26,10 +26,7 @@
 #include "../../libstriezel/filesystem/file.hpp"
 #include "../../third-party/simdjson/simdjson.h"
 
-namespace scantool
-{
-
-namespace metascan
+namespace scantool::metascan
 {
 
 Scanner::Scanner(const std::string& apikey, const bool honourTimeLimits, const bool silent, const std::string& certFile)
@@ -108,18 +105,18 @@ std::chrono::milliseconds Scanner::timeBetweenConsecutiveHashLookups() const
 
 bool Scanner::getReport(const std::string& resource, Report& report)
 {
-  //We only want SHA 256 hashes here, no MD5 or SHA 1.
+  // We only want SHA 256 hashes here, no MD5 or SHA 1.
   if (!SHA256::isValidHash(resource))
     return false;
 
   std::string response = "";
   waitForHashLookupLimitExpiration();
-  //send request via cURL
+  // send request via cURL
   Curly cURL;
   cURL.setURL("https://hashlookup.metadefender.com/v2/hash/" + resource);
-  //add API key
+  // add API key
   cURL.addHeader("apikey: " + m_apikey);
-  //indicate that we want more meta data for the file
+  // indicate that we want more meta data for the file
   cURL.addHeader("file_metadata: 1");
 
   if (!m_certFile.empty())
@@ -129,7 +126,7 @@ bool Scanner::getReport(const std::string& resource, Report& report)
       std::cerr << "Error in Scanner::getReport(): Certificate file could not be set." << std::endl;
       return false;
     }
-  } //if certificate file
+  }
 
   if (!cURL.perform(response))
   {
@@ -138,7 +135,7 @@ bool Scanner::getReport(const std::string& resource, Report& report)
   }
   hashLookupWasNow();
 
-  //400: Bad request
+  // 400: Bad request
   if (cURL.getResponseCode() == 400)
   {
     std::cerr << "Error in Scanner::getReport(): Bad request!" << std::endl;
@@ -206,7 +203,7 @@ bool Scanner::rescan(const std::string& file_id, ScanData& scan_data)
       std::cerr << "Error in Scanner::rescan(): Certificate file could not be set." << std::endl;
       return false;
     }
-  } // if certificate file
+  }
 
   // perform request
   if (!cURL.perform(response))
@@ -303,7 +300,7 @@ bool Scanner::scan(const std::string& filename, ScanData& scan_data)
         cURL.addHeader("filename: " + fName + '.' + ext);
       else
         cURL.addHeader("filename: " + fName);
-    } // if
+    }
   } // scope
 
   // set file content as HTTP POST body
@@ -396,7 +393,5 @@ int64_t Scanner::maxScanSize() const noexcept
   // Assume 140 MB like on the web interface.
   return 140 * 1024 * 1024;
 }
-
-} // namespace
 
 } // namespace

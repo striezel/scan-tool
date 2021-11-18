@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2015, 2016, 2019  Dirk Stolle
+    Copyright (C) 2015, 2016, 2019, 2021  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -25,10 +25,7 @@
 #include "Report.hpp"
 #include "../Scanner.hpp"
 
-namespace scantool
-{
-
-namespace metascan
+namespace scantool::metascan
 {
 
 /** \brief Scanner for MetaScanOnline.
@@ -48,7 +45,6 @@ class Scanner: public scantool::Scanner
 
     struct ScanData
     {
-      // default constructor
       ScanData();
 
       std::string data_id; /**< Data ID used for retrieving scan result */
@@ -138,8 +134,6 @@ class Scanner: public scantool::Scanner
     std::string m_apikey; /**< holds the Metadefender Cloud API key */
     std::string m_certFile; /**< certificate file for peer verification */
 }; // class
-
-} // namespace
 
 } // namespace
 

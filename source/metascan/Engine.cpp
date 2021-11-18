@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2015  Dirk Stolle
+    Copyright (C) 2015, 2021  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -20,20 +20,15 @@
 
 #include "Engine.hpp"
 
-namespace scantool
-{
-
-namespace metascan
+namespace scantool::metascan
 {
 
 Engine::Engine()
 : scantool::Engine(),
   scan_result_i(-1),
-  def_time(""),
+  def_time(std::string()),
   scan_time(std::chrono::milliseconds(-1))
 {
 }
-
-} // namespace
 
 } // namespace

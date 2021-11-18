@@ -68,11 +68,11 @@ void showVersion()
 
 /* Four variables that will be used in main() but also in signal handling
    function and are therefore declared as global variables. */
-//maps SHA256 hashes to corresponding report; key = SHA256 hash, value = scan report
+// maps SHA256 hashes to corresponding report; key = SHA256 hash, value = scan report
 std::map<std::string, scantool::metascan::Report> mapHashToReport;
-//maps filename to hash; key = file name, value = SHA256 hash
+// maps filename to hash; key = file name, value = SHA256 hash
 std::map<std::string, std::string> mapFileToHash = std::map<std::string, std::string>();
-//list of files that exceed the file size for scans; ; first = file name, second = file size in octets
+// list of files that exceed the file size for scans; ; first = file name, second = file size in octets
 std::vector<std::pair<std::string, int64_t> > largeFiles;
 // for statistics: total number of files
 std::set<std::string>::size_type totalFiles;
@@ -106,24 +106,24 @@ void linux_signal_handler(int sig)
     default:
         std::clog << sig;
         break;
-  } //switch
+  }
   std::clog << "!" << std::endl;
   if ((sig == SIGTERM) || (SIGINT == sig))
   {
     std::clog << "Only " << processedFiles << " out of " << totalFiles
               << " files were processed." << std::endl;
-    //Show the summary, e.g. infected files, too large files, because user
+    // Show the summary, e.g. infected files, too large files, because user
     // might want to see that despite termination.
     showSummary(mapFileToHash, mapHashToReport, largeFiles);
     std::clog << "Terminating program early due to caught signal." << std::endl;
     std::exit(scantool::rcProgramTerminationBySignal);
-  } //if SIGINT or SIGTERM
+  } // if SIGINT or SIGTERM
   else if ((sig == SIGUSR1) || (SIGUSR2 == sig))
   {
     std::clog << "Current statistics:" << std::endl
               << processedFiles << " out of " << totalFiles
               << " files were processed so far." << std::endl;
-  } //else if SIGUSR1 or SIGUSR2
+  }
 }
 #elif defined(_WIN32)
 /** \brief signal handling function for Windows systems
@@ -143,61 +143,62 @@ BOOL windows_signal_handler(DWORD ctrlSignal)
          std::clog << "INFO: Received Ctrl+C!";
          std::clog << "Only " << processedFiles << " out of " << totalFiles
                    << " files were processed." << std::endl;
-         //Show the summary, e.g. infected files, too large files, because user
+         // Show the summary, e.g. infected files, too large files, because user
          // might want to see that despite termination.
          showSummary(mapFileToHash, mapHashToReport, largeFiles);
          std::clog << "Terminating program early due to caught signal."
                    << std::endl;
          std::exit(scantool::rcProgramTerminationBySignal);
-         return TRUE; //bogus
+         return TRUE; // bogus
          break;
-  } //switch
+  }
   return FALSE;
 }
 #endif
 
 int main(int argc, char ** argv)
 {
-  //string that will hold the API key
+  // string that will hold the API key
   std::string key = "";
-  //whether output will be reduced
+  // whether output will be reduced
   bool silent = false;
-  //flag for burst mode
+  // flag for burst mode
   bool burst = false;
   // limit for "maybe infected"; higher count means infected
   int maybeLimit = 0;
-  //path for custom certificate file
+  // path for custom certificate file
   std::string certificateFile = "";
-  //files that will be checked
+  // files that will be checked
   std::set<std::string> files_scan = std::set<std::string>();
 
-  if ((argc > 1) and (argv != nullptr))
+  if ((argc > 1) && (argv != nullptr))
   {
-    int i=1;
-    while (i<argc)
+    int i = 1;
+    while (i < argc)
     {
       if (argv[i] != nullptr)
       {
         const std::string param = std::string(argv[i]);
-        //help parameter
-        if ((param=="--help") or (param=="-?") or (param=="/?"))
+        // help parameter
+        if ((param == "--help") || (param == "-?") || (param == "/?"))
         {
           showHelp();
           return 0;
-        }//help
-        //version information requested?
-        else if ((param=="--version") or (param=="-v"))
+        }
+        // version information requested?
+        else if ((param == "--version") || (param == "-v"))
         {
           showVersion();
           return 0;
-        } //version
-        else if ((param=="--key") or (param=="--apikey"))
+        }
+        // API key
+        else if ((param == "--key") || (param == "--apikey"))
         {
-          //enough parameters?
-          if ((i+1 < argc) and (argv[i+1] != nullptr))
+          // enough parameters?
+          if ((i+1 < argc) && (argv[i+1] != nullptr))
           {
             key = std::string(argv[i+1]);
-            ++i; //Skip next parameter, because it's used as API key already.
+            ++i; // Skip next parameter, because it's used as API key already.
             #ifdef SCAN_TOOL_DEBUG
             if (!silent)
               std::cout << "API key was set to \"" << key << "\"." << std::endl;
@@ -205,52 +206,55 @@ int main(int argc, char ** argv)
           }
           else
           {
-            std::cout << "Error: You have to enter some text after \""
+            std::cerr << "Error: You have to enter some text after \""
                       << param <<"\"." << std::endl;
             return scantool::rcInvalidParameter;
           }
-        } //API key
-        else if ((param=="--silent") or (param=="-s"))
+        }
+        // silent
+        else if ((param == "--silent") || (param == "-s"))
         {
-          //Has the silent parameter already been set?
+          // Has the silent parameter already been set?
           if (silent)
           {
-            std::cout << "Error: Parameter " << param << " must not occur more than once!"
+            std::cerr << "Error: Parameter " << param << " must not occur more than once!"
                       << std::endl;
             return scantool::rcInvalidParameter;
           }
           silent = true;
-        } //silent
-        else if ((param=="--burst") or (param=="-b"))
+        }
+        // burst mode
+        else if ((param == "--burst") || (param == "-b"))
         {
-          //Has the burst parameter already been set?
+          // Has the burst parameter already been set?
           if (burst)
           {
-            std::cout << "Error: Parameter " << param << " must not occur more than once!"
+            std::cerr << "Error: Parameter " << param << " must not occur more than once!"
                       << std::endl;
             return scantool::rcInvalidParameter;
           }
           burst = true;
-        } //burst mode
-        else if ((param=="--files") or (param=="--list"))
+        }
+        // list of files
+        else if ((param == "--files") || (param == "--list"))
         {
-          //enough parameters?
-          if ((i+1 < argc) and (argv[i+1] != nullptr))
+          // enough parameters?
+          if ((i+1 < argc) && (argv[i+1] != nullptr))
           {
             const std::string listFile = std::string(argv[i+1]);
-            ++i; //Skip next parameter, because it's used as list file already.
+            ++i; // Skip next parameter, because it's used as list file already.
             if (!libstriezel::filesystem::file::exists(listFile))
             {
-              std::cout << "Error: File " << listFile << " does not exist!"
+              std::cerr << "Error: File " << listFile << " does not exist!"
                         << std::endl;
               return scantool::rcFileError;
             }
-            //open file and read file names
+            // open file and read file names
             std::ifstream inFile;
             inFile.open(listFile, std::ios_base::in | std::ios_base::binary);
             if (!inFile.good() || !inFile.is_open())
             {
-              std::cout << "Error: Could not open file " << listFile << "!"
+              std::cerr << "Error: Could not open file " << listFile << "!"
                         << std::endl;
               return scantool::rcFileError;
             }
@@ -266,81 +270,82 @@ int main(int argc, char ** argv)
                   std::cout << "Info: Adding " << nextFile << " to list of files for scan." << std::endl;
                   #endif // SCAN_TOOL_DEBUG
                   files_scan.insert(nextFile);
-                } //if
+                }
                 else
                 {
                   std::cout << "Warning: File " << nextFile << " does not exist, skipping it."
                             << std::endl;
                 }
-              } //if string not empty
-            } //while
+              } // if string not empty
+            } // while
             inFile.close();
-          } //if
+          } // if
           else
           {
-            std::cout << "Error: You have to enter a file name after \""
-                      << param <<"\"." << std::endl;
+            std::cerr << "Error: You have to enter a file name after \""
+                      << param << "\"." << std::endl;
             return scantool::rcInvalidParameter;
-          } //else
-        } //list of files
-        else if ((param=="--certfile") or (param=="--certs") or (param=="--cacert"))
+          }
+        }
+        // certificate file
+        else if ((param == "--certfile") || (param == "--certs") || (param == "--cacert"))
         {
-          //only one file is permitted
+          // only one file is permitted
           if (!certificateFile.empty())
           {
-            std::cout << "Error: You must not specify " << param
+            std::cerr << "Error: You must not specify " << param
                       << " more than once!" << std::endl;
             return scantool::rcInvalidParameter;
           }
-          //enough parameters?
-          if ((i+1 < argc) and (argv[i+1] != nullptr))
+          // enough parameters?
+          if ((i+1 < argc) && (argv[i+1] != nullptr))
           {
             const std::string customCertFile = std::string(argv[i+1]);
-            ++i; //Skip next parameter, because it's used as certificate file already.
+            ++i; // Skip next parameter, because it's used as certificate file already.
             if (!libstriezel::filesystem::file::exists(customCertFile))
             {
-              std::cout << "Error: File " << customCertFile << " does not exist!"
+              std::cerr << "Error: File " << customCertFile << " does not exist!"
                         << std::endl;
               return scantool::rcFileError;
             }
-            //set certificate file name
+            // set certificate file name
             certificateFile = customCertFile;
             if (!silent)
               std::cout << "Using custom certificate file " << customCertFile
                         << " to verify peers." << std::endl;
-          } //if
+          } // if
           else
           {
-            std::cout << "Error: You have to enter a file name after \""
-                      << param <<"\"." << std::endl;
+            std::cerr << "Error: You have to enter a file name after \""
+                      << param << "\"." << std::endl;
             return scantool::rcInvalidParameter;
-          } //else
-        } //certificate file
-        //file for scan
+          }
+        }
+        // file for scan
         else if (libstriezel::filesystem::file::exists(param))
         {
           files_scan.insert(param);
-        } //file
+        }
         else
         {
-          //unknown or wrong parameter
+          // unknown or wrong parameter
           std::cout << "Invalid parameter given: \"" << param << "\"." << std::endl
                     << "Use --help to get a list of valid parameters.\n" << std::endl;
           return scantool::rcInvalidParameter;
-        } //if unknown parameter
-      } //if parameter exists
+        } // if unknown parameter
+      } // if parameter exists
       else
       {
-        std::cout << "Parameter at index " << i << " is null pointer." << std::endl;
+        std::cerr << "Parameter at index " << i << " is null pointer." << std::endl;
         return scantool::rcInvalidParameter;
       }
-      ++i;//on to next parameter
-    } //while
-  } //if arguments present
+      ++i; // on to next parameter
+    } // while
+  } // if arguments present
 
   if (key.empty())
   {
-    std::cout << "Error: This program won't work properly without an API key! "
+    std::cerr << "Error: This program won't work properly without an API key! "
               << "Use --apikey to specify the Metadefender Cloud API key." << std::endl;
     return scantool::rcInvalidParameter;
   }
@@ -348,7 +353,7 @@ int main(int argc, char ** argv)
   {
     std::cout << "No file scans requested, stopping here." << std::endl;
     return 0;
-  } //if no requests
+  } // if no requests
 
   // set "false positive" limit, if it was not set
   if (maybeLimit <= 0)
@@ -357,14 +362,14 @@ int main(int argc, char ** argv)
   totalFiles = files_scan.size();
   processedFiles = 0;
 
-  //install signal handlers
+  // install signal handlers
   #if defined(__linux__) || defined(linux)
   struct sigaction sa;
 
   sa.sa_handler = linux_signal_handler;
   sigemptyset(&sa.sa_mask);
   sa.sa_flags = 0;
-  //Install one for SIGINT ...
+  // Install one for SIGINT ...
   if (sigaction(SIGINT, &sa, nullptr) != 0)
   {
     std::clog << "Error: Could not set signal handling function for SIGINT!"
@@ -398,33 +403,33 @@ int main(int argc, char ** argv)
     std::clog << "Error: Could not set signal handling function for Ctrl+C!"
               << std::endl;
     return scantool::rcSignalHandlerError;
-  } //if
+  }
   #else
     #error Unknown operating system! No known signal handing facility.
-  #endif // defined
+  #endif
 
-  //create scanner: pass API key, honour time limits (if not in burst mode), set silent mode
+  // create scanner: pass API key, honour time limits (if not in burst mode), set silent mode
   scantool::metascan::Scanner scanMSO(key, !burst, silent, certificateFile);
-  //time when last scan was queued
+  // time when last scan was queued
   std::chrono::steady_clock::time_point lastQueuedScanTime = std::chrono::steady_clock::now() - std::chrono::hours(24);
 
-  //iterate over all files for scan requests
+  // iterate over all files for scan requests
   for(const std::string& i : files_scan)
   {
     const SHA256::MessageDigest fileHash = SHA256::computeFromFile(i);
     if (fileHash.isNull())
     {
-      std::cout << "Error: Could not determine SHA256 hash of " << i
+      std::cerr << "Error: Could not determine SHA256 hash of " << i
                 << "!" << std::endl;
       return scantool::rcFileError;
-    } //if no hash
+    }
     const std::string hashString = fileHash.toHexString();
     scantool::metascan::Report report;
     if (scanMSO.getReport(hashString, report))
     {
       if (report.successfulRetrieval())
       {
-        //got report
+        // got report
         if (!scantool::metascan::isInfected(report.scan_all_result_i))
         {
           if (!silent)
@@ -434,14 +439,14 @@ int main(int argc, char ** argv)
         {
           if (!silent)
             std::clog << i << " is INFECTED." << std::endl;
-          //add file to list of infected files
+          // add file to list of infected files
           mapFileToHash[i] = hashString;
           mapHashToReport[hashString] = report;
-        } //else (file is probably infected)
-      } //if file was in report database
+        } // else (file is probably infected)
+      } // if file was in report database
       else if (report.notFound())
       {
-        //no data present for file
+        // no data present for file
         const int64_t fileSize = libstriezel::filesystem::file::getSize64(i);
         if ((fileSize <= scanMSO.maxScanSize()) && (fileSize >= 0))
         {
@@ -452,26 +457,26 @@ int main(int argc, char ** argv)
                       << std::endl;
             return scantool::rcScanError;
           }
-          //remember time of last scan request
+          // remember time of last scan request
           lastQueuedScanTime = std::chrono::steady_clock::now();
           if (!silent)
             std::clog << "Info: File " << i << " was queued for scan. "
                       << "Data ID for later retrieval is " << scan_data.data_id
                       << ". Address for progress requests is "
                       << scan_data.rest_ip << "." << std::endl;
-        } //if file size is below limit
+        } // if file size is below limit
         else
         {
-          //File is too large.
+          // File is too large.
           if (!silent)
             std::cout << "Warning: File " << i << " is "
                       << libstriezel::filesystem::getSizeString(fileSize)
                       << " and exceeds maximum file size for scan! "
                       << "File will be skipped." << std::endl;
-          //save file name + size for later
+          // save file name + size for later
           largeFiles.push_back(std::pair<std::string, int64_t>(i, fileSize));
-        } //else (file too large)
-      } //else if report not found
+        } // else (file too large)
+      } // else if report not found
     }
     else
     {
@@ -480,11 +485,11 @@ int main(int argc, char ** argv)
     }
     // increase number of processed files
     ++processedFiles;
-  } //for (range-based)
+  } // for (range-based)
 
   //TODO: try to retrieve queued scans
 
-  //show the summary, e.g. infected files, too large files
+  // show the summary, e.g. infected files, too large files
   scantool::metascan::showSummary(mapFileToHash, mapHashToReport, largeFiles);
 
   return 0;

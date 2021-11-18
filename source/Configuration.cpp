@@ -25,7 +25,7 @@
 const char Configuration::cCommentCharacter = '#';
 
 Configuration::Configuration()
-: m_apikey("")
+: m_apikey(std::string())
 {
 }
 
@@ -70,13 +70,13 @@ bool Configuration::loadFromFile(const std::string& fileName)
 
     if (!line.empty())
     {
-      //Is it a comment line?
+      // Is it a comment line?
       if (line[0] != cCommentCharacter)
       {
         sep_pos = line.find('=');
         if (sep_pos == std::string::npos || sep_pos == 0)
         {
-          std::cout << "Configuration::loadFromFile: ERROR: Invalid line found: \""
+          std::cerr << "Configuration::loadFromFile: ERROR: Invalid line found: \""
                     << line << "\".\nGeneral format: \"Name of Setting=value\"\n"
                     << "Loading from file cancelled.\n";
           input.close();
@@ -90,7 +90,7 @@ bool Configuration::loadFromFile(const std::string& fileName)
         }
         else
         {
-          std::cout << "Configuration::loadFromFile: ERROR: Unknown entry name found: \""
+          std::cerr << "Configuration::loadFromFile: ERROR: Unknown entry name found: \""
                     << line <<"\".\nKnown entries: apikey.\n";
           input.close();
           return false;

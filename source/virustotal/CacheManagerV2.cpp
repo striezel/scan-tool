@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2015, 2016, 2017  Dirk Stolle
+    Copyright (C) 2015, 2016, 2017, 2021  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -27,10 +27,7 @@
 #include "CacheManagerV2.hpp"
 #include "ReportV2.hpp"
 
-namespace scantool
-{
-
-namespace virustotal
+namespace scantool::virustotal
 {
 
 const int64_t maxCacheFileSize = 1024 * 1024 * 2;
@@ -53,7 +50,7 @@ std::string CacheManagerV2::getDefaultCacheDirectory()
   if (!libstriezel::filesystem::directory::getHome(homeDirectory))
   {
     #if defined(__linux__) || defined(linux)
-    //use /tmp as replacement for home directory
+    // use /tmp as replacement for home directory
     homeDirectory = "/tmp/";
     #elif defined(_WIN32)
     // Use C:\Windows\Temp as temporary replacement on Windows systems.
@@ -463,7 +460,5 @@ uint_least32_t CacheManagerV2::transition16To256()
   } // for
   return moved_files;
 }
-
-} // namespace
 
 } // namespace

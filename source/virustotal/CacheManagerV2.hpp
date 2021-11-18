@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2015, 2016  Dirk Stolle
+    Copyright (C) 2015, 2016, 2021  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -24,10 +24,7 @@
 #include <cstdint>
 #include <string>
 
-namespace scantool
-{
-
-namespace virustotal
+namespace scantool::virustotal
 {
 
 /** CacheManagerV2 can be used to manage the local request cache for
@@ -179,8 +176,6 @@ class CacheManagerV2
 
     std::string m_CacheRoot; /**< path to the chosen root cache directory */
 }; // class
-
-} // namespace
 
 } // namespace
 

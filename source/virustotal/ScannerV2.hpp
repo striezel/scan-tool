@@ -26,10 +26,7 @@
 #include "../Scanner.hpp"
 #include "ReportV2.hpp"
 
-namespace scantool
-{
-
-namespace virustotal
+namespace scantool::virustotal
 {
 
 /** \brief Scanner for VirusTotal API V2.
@@ -134,8 +131,6 @@ class ScannerV2: public scantool::Scanner
   private:
     std::string m_apikey; /**< holds the VirusTotal API key */
 }; // class
-
-} // namespace
 
 } // namespace
 

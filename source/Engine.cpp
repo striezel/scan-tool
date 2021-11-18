@@ -24,9 +24,9 @@ namespace scantool
 {
 
 Engine::Engine()
-: engine(""),
+: engine(std::string()),
   detected(false),
-  result("")
+  result(std::string())
 {
 }
 

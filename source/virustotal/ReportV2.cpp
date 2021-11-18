@@ -23,19 +23,18 @@
 #include "../../third-party/simdjson/simdjson.h"
 #include "../StringToTimeT.hpp"
 
-namespace scantool
-{
-
-namespace virustotal
+namespace scantool::virustotal
 {
 
 ReportV2::ReportV2()
 : ReportBase(),
-  verbose_msg(""),
-  resource(""),
-  scan_id(""),
+  verbose_msg(std::string()),
+  resource(std::string()),
+  scan_id(std::string()),
   total(-1),
-  md5(""), sha1(""), sha256("")
+  md5(std::string()),
+  sha1(std::string()),
+  sha256(std::string())
 {
 }
 
@@ -175,7 +174,5 @@ bool ReportV2::stillInQueue() const noexcept
   /* Response code -2 means that this stuff is still queued for analysis. */
   return (response_code == -2);
 }
-
-} // namespace
 
 } // namespace

@@ -27,10 +27,7 @@
 #include "../../libstriezel/filesystem/file.hpp"
 #include "../../third-party/simdjson/simdjson.h"
 
-namespace scantool
-{
-
-namespace virustotal
+namespace scantool::virustotal
 {
 
 ScannerV2::ScannerV2(const std::string& apikey, const bool honourTimeLimits, const bool silent)
@@ -411,7 +408,5 @@ int64_t ScannerV2::maxScanSize() const noexcept
   // Maximum allowed scan size is 32 MB.
   return 32 * 1024 * 1024;
 }
-
-} // namespace
 
 } // namespace

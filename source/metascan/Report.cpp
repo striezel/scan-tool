@@ -22,10 +22,7 @@
 #include <iostream>
 #include "../../third-party/simdjson/simdjson.h"
 
-namespace scantool
-{
-
-namespace metascan
+namespace scantool::metascan
 {
 
 Report::Report()
@@ -302,9 +299,7 @@ bool Report::successfulRetrieval() const
 bool Report::notFound() const
 {
   // simple way to check for "not found"
-  return (data_id.empty() || scan_details.empty());
+  return data_id.empty() || scan_details.empty();
 }
-
-} // namespace
 
 } // namespace

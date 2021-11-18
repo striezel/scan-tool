@@ -24,7 +24,7 @@
 
 bool stringToTimeT(const std::string& dateStr, std::time_t& tp)
 {
-  //date format in string should be "YYYY-MM-DD HH:mm:ss"
+  // date format in string should be "YYYY-MM-DD HH:mm:ss"
   unsigned int year = 0;
   if (!stringToUnsignedInt(dateStr.substr(0,4), year))
     return false;
@@ -55,20 +55,20 @@ bool stringToTimeT(const std::string& dateStr, std::time_t& tp)
     return false;
 
   struct tm theTM;
-  theTM.tm_year = year - 1900; //years since 1900
-  theTM.tm_mon = month - 1; //months since January
-  theTM.tm_mday = day; //day of the month
+  theTM.tm_year = year - 1900; // years since 1900
+  theTM.tm_mon = month - 1; // months since January
+  theTM.tm_mday = day; // day of the month
   theTM.tm_hour = hour;
   theTM.tm_min = minute;
   theTM.tm_sec = second;
-  //wday and yday are not known
+  // wday and yday are not known
   theTM.tm_yday = 0;
   theTM.tm_wday = 0;
-  //DST information is not available
+  // DST information is not available
   theTM.tm_isdst = -1;
 
   const std::time_t t = std::mktime(&theTM);
-  //Did conversion fail?
+  // Did conversion fail?
   if (t == -1)
     return false;
 

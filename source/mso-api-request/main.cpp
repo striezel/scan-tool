@@ -62,60 +62,62 @@ void showVersion()
 
 int main(int argc, char ** argv)
 {
-  //path for custom certificate file
+  // path for custom certificate file
   std::string certificateFile = "";
-  //string that will hold the API key
+  // string that will hold the API key
   std::string key = "";
-  //resources that will be queried
+  // resources that will be queried
   std::unordered_set<std::string> resources_report = std::unordered_set<std::string>();
-  //file IDs for which a rescan will be requested
+  // file IDs for which a rescan will be requested
   std::unordered_set<std::string> file_IDs_rescan = std::unordered_set<std::string>();
-  //files for which an upload and scan is requested
+  // files for which an upload and scan is requested
   std::unordered_set<std::string> files_scan = std::unordered_set<std::string>();
 
-  if ((argc > 1) and (argv != nullptr))
+  if ((argc > 1) && (argv != nullptr))
   {
-    int i=1;
-    while (i<argc)
+    int i = 1;
+    while (i < argc)
     {
       if (argv[i] != nullptr)
       {
         const std::string param = std::string(argv[i]);
-        //help parameter
-        if ((param=="--help") or (param=="-?") or (param=="/?"))
+        // help parameter
+        if ((param == "--help") || (param == "-?") || (param == "/?"))
         {
           showHelp();
           return 0;
-        }//help
-        //version information requested?
-        else if ((param=="--version") or (param=="-v"))
+        }
+        // version information requested?
+        else if ((param == "--version") || (param == "-v"))
         {
           showVersion();
           return 0;
-        } //version
-        else if ((param=="--key") or (param=="--apikey"))
+        }
+        // API key
+        else if ((param == "--key") || (param == "--apikey"))
         {
-          //enough parameters?
-          if ((i+1 < argc) and (argv[i+1] != nullptr))
+          // enough parameters?
+          if ((i+1 < argc) && (argv[i+1] != nullptr))
           {
             key = std::string(argv[i+1]);
-            ++i; //skip next parameter, because it's used as API key already
+            ++i; // skip next parameter, because it's used as API key already
             std::cout << "API key was set to \"" << key << "\"." << std::endl;
           }
           else
           {
-            std::cout << "Error: You have to enter some text after \""
-                      << param <<"\"." << std::endl;
+            std::cerr << "Error: You have to enter some text after \""
+                      << param << "\"." << std::endl;
             return scantool::rcInvalidParameter;
           }
-        }//API key
-        else if ((param=="--report") or (param=="--resource"))
+        }
+        // resource report
+        else if ((param == "--report") || (param == "--resource"))
         {
-          //enough parameters?
-          if ((i+1 < argc) and (argv[i+1] != nullptr))
+          // enough parameters?
+          if ((i+1 < argc) && (argv[i+1] != nullptr))
           {
             const std::string next_resource = std::string(argv[i+1]);
-            ++i; //skip next parameter, because it's used as resource identifier already
+            ++i; // skip next parameter, because it's used as resource identifier already
             if (resources_report.find(next_resource) == resources_report.end())
             {
               std::cout << "Adding resource " << next_resource
@@ -125,18 +127,19 @@ int main(int argc, char ** argv)
           }
           else
           {
-            std::cout << "Error: You have to enter a resource ID after \""
+            std::cerr << "Error: You have to enter a resource ID after \""
                       << param << "\"." << std::endl;
             return scantool::rcInvalidParameter;
           }
-        }//resource report
-        else if ((param=="--re") or (param=="--rescan"))
+        }
+        // rescan
+        else if ((param == "--re") || (param == "--rescan"))
         {
-          //enough parameters?
-          if ((i+1 < argc) and (argv[i+1] != nullptr))
+          // enough parameters?
+          if ((i+1 < argc) && (argv[i+1] != nullptr))
           {
             const std::string next_file_ID = std::string(argv[i+1]);
-            ++i; //Skip next parameter, because it's used as file identifier already
+            ++i; // Skip next parameter, because it's used as file identifier already
             if (file_IDs_rescan.find(next_file_ID) == file_IDs_rescan.end())
             {
               std::cout << "Adding file ID " << next_file_ID
@@ -146,18 +149,19 @@ int main(int argc, char ** argv)
           }
           else
           {
-            std::cout << "Error: You have to enter a file ID after \""
+            std::cerr << "Error: You have to enter a file ID after \""
                       << param << "\"." << std::endl;
             return scantool::rcInvalidParameter;
           }
-        }//rescan
-        else if ((param=="--file") or (param=="--scan"))
+        }
+        // scan file
+        else if ((param == "--file") || (param == "--scan"))
         {
-          //enough parameters?
-          if ((i+1 < argc) and (argv[i+1] != nullptr))
+          // enough parameters?
+          if ((i+1 < argc) && (argv[i+1] != nullptr))
           {
             const std::string next_file = std::string(argv[i+1]);
-            ++i; //Skip next parameter, because it's used as filename already.
+            ++i; // Skip next parameter, because it's used as filename already.
             if (files_scan.find(next_file) == files_scan.end())
             {
               std::cout << "Adding file " << next_file
@@ -167,84 +171,85 @@ int main(int argc, char ** argv)
           }
           else
           {
-            std::cout << "Error: You have to enter a file name after \""
+            std::cerr << "Error: You have to enter a file name after \""
                       << param << "\"." << std::endl;
             return scantool::rcInvalidParameter;
           }
-        }//scan file
-        else if ((param=="--certfile") or (param=="--certs") or (param=="--cacert"))
+        }
+        // certificate file
+        else if ((param == "--certfile") || (param == "--certs") || (param == "--cacert"))
         {
-          //only one file is permitted
+          // only one file is permitted
           if (!certificateFile.empty())
           {
-            std::cout << "Error: You must not specify " << param
+            std::cerr << "Error: You must not specify " << param
                       << " more than once!" << std::endl;
             return scantool::rcInvalidParameter;
           }
-          //enough parameters?
-          if ((i+1 < argc) and (argv[i+1] != nullptr))
+          // enough parameters?
+          if ((i+1 < argc) && (argv[i+1] != nullptr))
           {
             const std::string customCertFile = std::string(argv[i+1]);
-            ++i; //Skip next parameter, because it's used as certificate file already.
+            ++i; // Skip next parameter, because it's used as certificate file already.
             if (!libstriezel::filesystem::file::exists(customCertFile))
             {
-              std::cout << "Error: File " << customCertFile << " does not exist!"
+              std::cerr << "Error: File " << customCertFile << " does not exist!"
                         << std::endl;
               return scantool::rcFileError;
             }
-            //set certificate file name
+            // set certificate file name
             certificateFile = customCertFile;
             std::cout << "Using custom certificate file " << customCertFile
                       << " to verify peers." << std::endl;
-          } //if
+          }
           else
           {
-            std::cout << "Error: You have to enter a file name after \""
-                      << param <<"\"." << std::endl;
+            std::cerr << "Error: You have to enter a file name after \""
+                      << param << "\"." << std::endl;
             return scantool::rcInvalidParameter;
-          } //else
-        } //certificate file
+          }
+        }
         else
         {
-          //unknown or wrong parameter
+          // unknown or wrong parameter
           std::cout << "Invalid parameter given: \"" << param << "\"." << std::endl
                     << "Use --help to get a list of valid parameters.\n";
           return scantool::rcInvalidParameter;
         }
-      }//parameter exists
+      } // parameter exists
       else
       {
-        std::cout << "Parameter at index " << i << " is null pointer." << std::endl;
+        std::cerr << "Parameter at index " << i << " is null pointer." << std::endl;
         return scantool::rcInvalidParameter;
       }
-      ++i;//on to next parameter
-    }//while
-  }//if arguments present
+      ++i; // on to next parameter
+    } // while
+  } // if arguments present
 
   if (key.empty())
   {
-    std::cout << "Error: This program won't work properly without an API key! "
+    std::cerr << "Error: This program won't work properly without an API key! "
               << "Use --apikey to specify the MetaDefender Cloud API key."
               << std::endl;
     return scantool::rcInvalidParameter;
   }
   if (resources_report.empty() && file_IDs_rescan.empty() && files_scan.empty())
   {
-    std::cout << "No resources for report retrieval, file IDs for rescan or "
+    std::cerr << "No resources for report retrieval, file IDs for rescan or "
               << "files to scan were given. Exiting." << std::endl;
     return scantool::rcInvalidParameter;
-  } //if no resources
+  }
 
-  //initialize scanner instance
+  // initialize scanner instance
   scantool::metascan::Scanner scanMSO(key, true, false, certificateFile);
 
-  //iterate over all resources for rescan requests
+  // iterate over all resources for rescan requests
   for(const std::string& i : file_IDs_rescan)
   {
     scantool::metascan::Scanner::ScanData scan_data;
     if (!scanMSO.rescan(i, scan_data))
     {
-      std::cout << "Error: Could not initiate rescan for file ID \""
+      std::cerr << "Error: Could not initiate rescan for file ID \""
                 << i << "\"!" << std::endl;
       return scantool::rcScanError;
     }
@@ -252,15 +257,15 @@ int main(int argc, char ** argv)
               << "Data ID for later retrieval is " << scan_data.data_id << "."
               << " Address for progress requests is " << scan_data.rest_ip
               << "."  << std::endl;
-  } //for (range-based)
+  }
 
-  //iterate over all resources for report requests
+  // iterate over all resources for report requests
   for(const std::string& i : resources_report)
   {
     scantool::metascan::Report report;
     if (!scanMSO.getReport(i, report))
     {
-      std::cout << "Error: Could not retrieve report!" << std::endl;
+      std::cerr << "Error: Could not retrieve report!" << std::endl;
       return scantool::rcScanError;
     }
     std::cout << std::endl;
@@ -285,20 +290,20 @@ int main(int argc, char ** argv)
         if (e.detected)
         {
           std::cout << "    " << e.engine << " found " << e.result << std::endl;
-        } //if engine detected threat
-      } //for (range-based loop over all engines in report)
-    } //if at least one engine found a threat
+        }
+      } // for (range-based loop over all engines in report)
+    } // if at least one engine found a threat
     else
       std::cout << "  No threat was found for this resource." << std::endl;
-  } //for (range-based) over all resources
+  } // for (range-based) over all resources
 
-  //iterate over all files for scan requests
+  // iterate over all files for scan requests
   for(const std::string& i : files_scan)
   {
     scantool::metascan::Scanner::ScanData scan_data;
     if (!scanMSO.scan(i, scan_data))
     {
-      std::cout << "Error: Could not initiate scan for \""
+      std::cerr << "Error: Could not initiate scan for \""
                 << i << "\"!" << std::endl;
       return scantool::rcScanError;
     }
@@ -306,7 +311,7 @@ int main(int argc, char ** argv)
               << "Data ID for later retrieval is " << scan_data.data_id << "."
               << " Address for progress requests is " << scan_data.rest_ip
               << "."  << std::endl;
-  } //for (range-based)
+  }
 
   return 0;
 }

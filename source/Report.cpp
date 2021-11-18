@@ -24,7 +24,7 @@ namespace scantool
 {
 
 Report::Report()
-: scan_date(""),
+: scan_date(std::string()),
   scan_date_t(static_cast<std::time_t>(-1)),
   scans(std::vector<EnginePtr>())
 {
@@ -35,4 +35,4 @@ bool Report::hasTime_t() const
   return (static_cast<std::time_t>(-1) != scan_date_t);
 }
 
-} //namespace
+} // namespace
