@@ -23,7 +23,7 @@ installed libraries.
 It also helps to have Git, a distributed version control system, on your build
 system to get the latest source code directly from the Git repository.
 
-All of that can usually be installed be typing
+All of that can usually be installed by typing
 
     apt-get install cmake g++ git libarchive-dev libcurl4-gnutls-dev \
     libzip-dev zlib1g-dev pkg-config
