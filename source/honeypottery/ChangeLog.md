@@ -1,5 +1,9 @@
 # ChangeLog for honeypottery
 
+## Next Version (2025-??-??)
+
+The simdjson libary has been updated from version 1.0.2 to version 3.13.0.
+
 ## Version 0.0.7 (2021-11-18)
 
 The C++ standard used during compilation has been raised from C++14 to C++17.

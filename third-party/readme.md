@@ -7,6 +7,6 @@ the GPL v3.
 
 Currently, the following libraries are here:
 
-* **simdjson**: simdjson: parsing gigabytes of JSON per second, version 1.0.2,
+* **simdjson**: simdjson: parsing gigabytes of JSON per second, version 3.13.0,
   by Daniel Lemire <https://github.com/simdjson/simdjson>,
   licensed under the Apache License 2.0 <https://opensource.org/licenses/Apache-2.0>

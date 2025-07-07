@@ -1,5 +1,9 @@
 # ChangeLog for vt-api-request
 
+## Next Version (2025-??-??)
+
+The simdjson libary has been updated from version 1.0.2 to version 3.13.0.
+
 ## Version 1.0.5 (2021-11-18)
 
 The C++ standard used during compilation has been raised from C++14 to C++17.
