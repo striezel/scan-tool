@@ -4,7 +4,19 @@ on: push
 
 jobs:
   clang:
-    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - version: 11
+            os: ubuntu-22.04
+          - version: 14
+            os: ubuntu-24.04
+          - version: 18
+            os: ubuntu-24.04
+          - version: 19
+            os: ubuntu-24.04
+    runs-on: ${{ matrix.os }}
     steps:
       # Checks-out the repository under $GITHUB_WORKSPACE.
       - uses: actions/checkout@v4
@@ -13,11 +25,11 @@ jobs:
       - name: Install Debian packages
         run: |
           sudo apt-get update
-          sudo apt-get install -y catch clang-10 cmake git libarchive-dev libcurl4-gnutls-dev libunshield-dev libzip-dev pkg-config
-      - name: Build
+          sudo apt-get install -y catch clang-${{ matrix.version }} cmake git libarchive-dev libcurl4-gnutls-dev libunshield-dev libzip-dev pkg-config
+      - name: Build with Clang ${{ matrix.version }}
         run: |
-          export CXX=clang++-10
-          export CC=clang-10
+          export CXX=clang++-${{ matrix.version }}
+          export CC=clang-${{ matrix.version }}
           cd $GITHUB_WORKSPACE
           mkdir build
           cd build
