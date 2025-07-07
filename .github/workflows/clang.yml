@@ -1,4 +1,4 @@
-name: GitHub CI with Clang
+name: Clang
 
 on: push
 
