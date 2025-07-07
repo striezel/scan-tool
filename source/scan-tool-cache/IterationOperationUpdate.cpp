@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2016, 2019  Dirk Stolle
+    Copyright (C) 2016, 2019, 2025  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -22,10 +22,7 @@
 #include <iostream>
 #include "../../libstriezel/filesystem/file.hpp"
 
-namespace scantool
-{
-
-namespace virustotal
+namespace scantool::virustotal
 {
 
 IterationOperationUpdate::IterationOperationUpdate(const std::string& apikey, const bool silent, const std::chrono::system_clock::time_point& ageLimit, const std::string& cacheDir)
@@ -108,7 +105,5 @@ ScannerV2& IterationOperationUpdate::scanner()
 {
   return scannerVT;
 }
-
-} // namespace
 
 } // namespace

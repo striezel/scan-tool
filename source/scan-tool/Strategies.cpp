@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2016, 2017  Dirk Stolle
+    Copyright (C) 2016, 2017, 2025  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -20,10 +20,7 @@
 
 #include "Strategies.hpp"
 
-namespace scantool
-{
-
-namespace virustotal
+namespace scantool::virustotal
 {
 
 std::string strategyToString(const Strategy s)
@@ -61,7 +58,5 @@ Strategy stringToStrategy(const std::string& str)
   return Strategy::None;
 }
 
-} //namespace
-
-} //namespace
+} // namespace
 

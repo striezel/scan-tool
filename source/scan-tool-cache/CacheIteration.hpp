@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2016  Dirk Stolle
+    Copyright (C) 2016, 2025  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -24,19 +24,12 @@
 #include <string>
 #include "IterationOperation.hpp"
 
-namespace scantool
-{
-
-namespace virustotal
+namespace scantool::virustotal
 {
 
 class CacheIteration
 {
   public:
-    /// Constructor.
-    CacheIteration();
-
-
     /** \brief Iterates over all files in the request cache.
      *
      * \param cacheDir  the root directory of the request cache
@@ -46,8 +39,6 @@ class CacheIteration
      */
     bool iterate(const std::string& cacheDir, IterationOperation& op);
 }; // class
-
-} // namespace
 
 } // namespace
 

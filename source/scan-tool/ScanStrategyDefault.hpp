@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2016  Dirk Stolle
+    Copyright (C) 2016, 2025  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -23,10 +23,7 @@
 
 #include "ScanStrategy.hpp"
 
-namespace scantool
-{
-
-namespace virustotal
+namespace scantool::virustotal
 {
 
 /** \brief class that implements the default scan strategy
@@ -70,9 +67,7 @@ class ScanStrategyDefault: public ScanStrategy
               std::vector<std::pair<std::string, int64_t> >& largeFiles,
               std::set<std::string>::size_type& processedFiles,
               std::set<std::string>::size_type& totalFiles) override;
-}; //class
-
-} //namespace
+}; // class
 
 } //namespace
 

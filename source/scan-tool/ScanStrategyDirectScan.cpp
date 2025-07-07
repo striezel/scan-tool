@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2016  Dirk Stolle
+    Copyright (C) 2016, 2025  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -25,10 +25,7 @@
 #include "../../libstriezel/hash/sha256/sha256.hpp"
 #include "../ReturnCodes.hpp"
 
-namespace scantool
-{
-
-namespace virustotal
+namespace scantool::virustotal
 {
 
 ScanStrategyDirectScan::ScanStrategyDirectScan()
@@ -95,6 +92,4 @@ int ScanStrategyDirectScan::scan(ScannerV2& scanVT, const std::string& fileName,
   return 0;
 }
 
-} //namespace
-
-} //namespace
+} // namespace

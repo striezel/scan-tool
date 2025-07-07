@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2017  Dirk Stolle
+    Copyright (C) 2017, 2025  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -24,10 +24,7 @@
 #include "HandlerGeneric.hpp"
 #include "../../libstriezel/archive/7z/archive.hpp"
 
-namespace scantool
-{
-
-namespace virustotal
+namespace scantool::virustotal
 {
 
 struct SevenZipDetection
@@ -36,12 +33,10 @@ struct SevenZipDetection
   {
     return libstriezel::sevenZip::archive::is7z(fn);
   }
-}; //struct
+}; // struct
 
 typedef HandlerGeneric<libstriezel::sevenZip::archive, SevenZipDetection> Handler7z;
 
-} //namespace
-
-} //namespace
+} // namespace
 
 #endif // SCANTOOL_VT_HANDLER7Z_HPP

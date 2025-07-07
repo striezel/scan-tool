@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2016, 2019  Dirk Stolle
+    Copyright (C) 2016, 2019, 2025  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -22,10 +22,7 @@
 #include "../../libstriezel/filesystem/file.hpp"
 #include "../virustotal/ReportV2.hpp"
 
-namespace scantool
-{
-
-namespace virustotal
+namespace scantool::virustotal
 {
 
 IterationOperationStatistics::IterationOperationStatistics(const std::chrono::system_clock::time_point& ageLimit)
@@ -121,7 +118,5 @@ uint_least32_t IterationOperationStatistics::oldReports() const
 {
   return m_oldReports;
 }
-
-} // namespace
 
 } // namespace

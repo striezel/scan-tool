@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2017  Dirk Stolle
+    Copyright (C) 2017, 2025  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -24,10 +24,7 @@
 #include "HandlerGeneric.hpp"
 #include "../../libstriezel/archive/rar/archive.hpp"
 
-namespace scantool
-{
-
-namespace virustotal
+namespace scantool::virustotal
 {
 
 struct RarDetection
@@ -36,12 +33,10 @@ struct RarDetection
   {
     return libstriezel::rar::archive::isRar(fn);
   }
-}; //struct
+}; // struct
 
 typedef HandlerGeneric<libstriezel::rar::archive, RarDetection> HandlerRar;
 
-} //namespace
-
-} //namespace
+} // namespace
 
 #endif // SCANTOOL_VT_HANDLERRAR_HPP

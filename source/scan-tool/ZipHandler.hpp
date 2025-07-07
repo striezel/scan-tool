@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2016  Dirk Stolle
+    Copyright (C) 2016, 2025  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -26,10 +26,7 @@
 #include "../virustotal/ScannerV2.hpp"
 #include "Handler.hpp"
 
-namespace scantool
-{
-
-namespace virustotal
+namespace scantool::virustotal
 {
 
 class ZipHandler: public Handler
@@ -90,10 +87,8 @@ class ZipHandler: public Handler
     void ignoreExtractionErrors(const bool ignore);
   private:
     bool m_IgnoreExtractionErrors; /**< whether to continue, if extraction fails */
-}; //class
+}; // class
 
-} //namespace
-
-} //namespace
+} // namespace
 
 #endif // SCANTOOL_VT_ZIPHANDLER_HPP

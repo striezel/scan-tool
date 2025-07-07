@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2015, 2016, 2017  Dirk Stolle
+    Copyright (C) 2015, 2016, 2017, 2025  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -25,10 +25,7 @@
 #include "../../libstriezel/hash/sha256/sha256.hpp"
 #include "../ReturnCodes.hpp"
 
-namespace scantool
-{
-
-namespace virustotal
+namespace scantool::virustotal
 {
 
 ScanStrategyDefault::ScanStrategyDefault()
@@ -49,14 +46,14 @@ int ScanStrategyDefault::scan(ScannerV2& scanVT, const std::string& fileName,
               std::set<std::string>::size_type& processedFiles,
               std::set<std::string>::size_type& totalFiles)
 {
-  //apply any handlers
+  // apply any handlers
   const int handlerCode = applyHandlers(scanVT, fileName, cacheMgr, requestCacheDirVT,
       useRequestCache, silent, maybeLimit, maxAgeInDays, ageLimit, mapHashToReport,
       mapFileToHash, queued_scans, lastQueuedScanTime, largeFiles,
       processedFiles, totalFiles);
   if (handlerCode != 0)
     return handlerCode;
-  //go on with normal strategy
+  // go on with normal strategy
   const SHA256::MessageDigest fileHash = SHA256::computeFromFile(fileName);
   if (fileHash.isNull())
   {
@@ -178,6 +175,4 @@ int ScanStrategyDefault::scan(ScannerV2& scanVT, const std::string& fileName,
   return 0;
 }
 
-} //namespace
-
-} //namespace
+} // namespace

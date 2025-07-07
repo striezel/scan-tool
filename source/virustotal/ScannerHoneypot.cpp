@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2015, 2016, 2021  Dirk Stolle
+    Copyright (C) 2015, 2016, 2021, 2025  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -23,10 +23,7 @@
 #include "../../third-party/simdjson/simdjson.h"
 #include "../Curly.hpp"
 
-namespace scantool
-{
-
-namespace virustotal
+namespace scantool::virustotal
 {
 
 ScannerHoneypot::ScannerHoneypot(const std::string& apikey, const bool honourTimeLimits, const bool silent)
@@ -239,7 +236,5 @@ int64_t ScannerHoneypot::maxScanSize() const noexcept
   // Maximum allowed scan size should be 32 MB.
   return 32 * 1024 * 1024;
 }
-
-} // namespace
 
 } // namespace

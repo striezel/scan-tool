@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2016  Dirk Stolle
+    Copyright (C) 2016, 2025  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -21,13 +21,10 @@
 #ifndef METASCANDEFINITIONS_HPP
 #define METASCANDEFINITIONS_HPP
 
-namespace scantool
+namespace scantool::metascan
 {
 
-namespace metascan
-{
-
-/** \brief checks whether a scan_result_i value indicates infection of a file
+/** \brief Checks whether a scan_result_i value indicates infection of a file.
  *
  * \param scan_result_i  the value of JSON's scan_result_i
  * \return Returns true, if the code indicates a virus infection.
@@ -36,8 +33,6 @@ namespace metascan
 
 bool isInfected(const int scan_result_i);
 
-} //namespace
-
-} //namespace
+} // namespace
 
 #endif // METASCANDEFINITIONS_HPP

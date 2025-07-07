@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2016  Dirk Stolle
+    Copyright (C) 2016, 2025  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -24,15 +24,8 @@
 #include "../../libstriezel/filesystem/file.hpp"
 #include "../virustotal/CacheManagerV2.hpp"
 
-namespace scantool
+namespace scantool::virustotal
 {
-
-namespace virustotal
-{
-
-CacheIteration::CacheIteration()
-{
-}
 
 bool CacheIteration::iterate(const std::string& cacheDir, IterationOperation& op)
 {
@@ -77,7 +70,5 @@ bool CacheIteration::iterate(const std::string& cacheDir, IterationOperation& op
   } // for (first char)
   return true;
 }
-
-} // namespace
 
 } // namespace

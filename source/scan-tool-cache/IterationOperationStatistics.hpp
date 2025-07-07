@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2016  Dirk Stolle
+    Copyright (C) 2016, 2025  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -26,10 +26,7 @@
 #include <cstdint>
 #include <ctime>
 
-namespace scantool
-{
-
-namespace virustotal
+namespace scantool::virustotal
 {
 
 /** Collects while iterating over the cache. */
@@ -65,8 +62,6 @@ class IterationOperationStatistics: public IterationOperation
     std::chrono::system_clock::time_point m_ageLimit; /**< age limit for "old" reports */
     uint_least32_t m_oldReports; /**< number of old reports */
 }; // class
-
-} // namespace
 
 } // namespace
 

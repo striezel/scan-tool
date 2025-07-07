@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2016  Dirk Stolle
+    Copyright (C) 2016, 2025  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -26,10 +26,7 @@
 #include "../virustotal/ScannerV2.hpp"
 #include "Handler.hpp"
 
-namespace scantool
-{
-
-namespace virustotal
+namespace scantool::virustotal
 {
 
 /** \brief base class for scan strategies
@@ -120,10 +117,8 @@ class ScanStrategy
               std::set<std::string>::size_type& totalFiles);
   private:
     std::vector<std::unique_ptr<Handler> > m_Handlers; /**< list of active handlers */
-}; //class
+}; // class
 
-} //namespace
-
-} //namespace
+} // namespace
 
 #endif // SCANTOOL_VT_SCANSTRATEGY_HPP

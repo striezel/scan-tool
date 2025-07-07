@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2015, 2016  Dirk Stolle
+    Copyright (C) 2015, 2016, 2025  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -28,10 +28,7 @@
 #include <vector>
 #include "../virustotal/ScannerV2.hpp"
 
-namespace scantool
-{
-
-namespace virustotal
+namespace scantool::virustotal
 {
 
 /** \brief shows the summary of a scan-tool run
@@ -46,8 +43,6 @@ void showSummary(const std::map<std::string, std::string>& mapFileToHash,
                  const std::unordered_map<std::string, std::string>& queued_scans,
                  std::vector<std::pair<std::string, int64_t> >& largeFiles);
 
-} //namespace
-
-} //namespace
+} // namespace
 
 #endif // SCANTOOL_SUMMARY_HPP

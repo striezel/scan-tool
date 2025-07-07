@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2016  Dirk Stolle
+    Copyright (C) 2016, 2025  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -21,10 +21,7 @@
 #ifndef SCANTOOL_VT_CACHEOPERATION_HPP
 #define SCANTOOL_VT_CACHEOPERATION_HPP
 
-namespace scantool
-{
-
-namespace virustotal
+namespace scantool::virustotal
 {
 
 ///enumeration for possible cache operations
@@ -34,8 +31,6 @@ enum class CacheOperation { None, //none yet
                             Statistics, //cache statistics
                             Update //update existing files
                           };
-
-} //namespace
 
 } //namespace
 

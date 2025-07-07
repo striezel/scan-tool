@@ -29,10 +29,7 @@
 #include "../metascan/Report.hpp"
 #include "../metascan/Scanner.hpp"
 
-namespace scantool
-{
-
-namespace metascan
+namespace scantool::metascan
 {
 
 /** \brief shows the summary of a scan-tool-mso run
@@ -45,8 +42,6 @@ void showSummary(const std::map<std::string, std::string>& mapFileToHash,
                  std::map<std::string, Report>& mapHashToReport,
                  std::vector<std::pair<std::string, int64_t> >& largeFiles);
 
-} //namespace
-
-} //namespace
+} // namespace
 
 #endif // SCANTOOL_MSO_SUMMARY_HPP

@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2016  Dirk Stolle
+    Copyright (C) 2016, 2025  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -20,10 +20,7 @@
 
 #include "ScanStrategy.hpp"
 
-namespace scantool
-{
-
-namespace virustotal
+namespace scantool::virustotal
 {
 
 ScanStrategy::ScanStrategy()
@@ -56,11 +53,9 @@ int ScanStrategy::applyHandlers(ScannerV2& scanVT, const std::string& fileName,
         largeFiles, processedFiles, totalFiles);
     if (rc != 0)
       return rc;
-  } //for
-  //All handlers are done.
+  }
+  // All handlers are done.
   return 0;
 }
-
-} //namespace
 
 } //namespace

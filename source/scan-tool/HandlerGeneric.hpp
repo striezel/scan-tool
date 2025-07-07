@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of scan-tool.
-    Copyright (C) 2016  Dirk Stolle
+    Copyright (C) 2016, 2025  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -31,10 +31,7 @@
 #include "Handler.hpp"
 #include "ScanStrategy.hpp"
 
-namespace scantool
-{
-
-namespace virustotal
+namespace scantool::virustotal
 {
 
 template<class ArcT, typename isArc>
@@ -201,8 +198,6 @@ void HandlerGeneric<ArcT, isArc>::ignoreExtractionErrors(const bool ignore)
   m_IgnoreExtractionErrors = ignore;
 }
 
-} //namespace
-
-} //namespace
+} // namespace
 
 #endif // SCANTOOL_VT_HANDLERGENERIC_HPP

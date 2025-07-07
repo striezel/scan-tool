@@ -26,10 +26,7 @@
 #include "../ReturnCodes.hpp"
 #include "ScanStrategy.hpp"
 
-namespace scantool
-{
-
-namespace virustotal
+namespace scantool::virustotal
 {
 
 ZipHandler::ZipHandler(const bool ignoreErrors)
@@ -139,6 +136,4 @@ void ZipHandler::ignoreExtractionErrors(const bool ignore)
   m_IgnoreExtractionErrors = ignore;
 }
 
-} //namespace
-
-} //namespace
+} // namespace

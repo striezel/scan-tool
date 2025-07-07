@@ -23,10 +23,7 @@
 #include <iostream>
 #include "../../libstriezel/filesystem/file.hpp"
 
-namespace scantool
-{
-
-namespace metascan
+namespace scantool::metascan
 {
 
 void showSummary(const std::map<std::string, std::string>& mapFileToHash,
@@ -79,6 +76,4 @@ void showSummary(const std::map<std::string, std::string>& mapFileToHash,
   } //if there are some "large" files
 }
 
-} //namespace
-
-} //namespace
+} // namespace
