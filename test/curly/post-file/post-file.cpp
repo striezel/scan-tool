@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of the scan-tool test suite.
-    Copyright (C) 2015, 2016, 2021  Dirk Stolle
+    Copyright (C) 2015, 2016, 2021, 2025  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -68,12 +68,12 @@ int main()
   {
     std::cerr << "Error: Temporary file could not be opened." << std::endl;
     libstriezel::filesystem::file::remove(tmpFileName);
-    return false;
+    return 1;
   }
   const std::string content = "This is some random data.\nHave fun with that.";
   output.write(&content[0], content.length());
   if (!output.good())
-    return false;
+    return 1;
   output.close();
 
   // add the temporary file
