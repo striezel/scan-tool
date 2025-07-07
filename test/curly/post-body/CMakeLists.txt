@@ -1,4 +1,3 @@
-# We might support earlier versions, too, but try to use a more recent one.
 cmake_minimum_required (VERSION 3.8...3.31)
 
 # test binary for Curly POST request with predefined body
@@ -9,13 +8,13 @@ set(test_curly_post_body_sources
     ../../../third-party/simdjson/simdjson.cpp
     post-body.cpp)
 
-if (CMAKE_COMPILER_IS_GNUCC)
-    add_definitions (-Wall -O2 -fexceptions)
-endif (CMAKE_COMPILER_IS_GNUCC)
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    add_definitions (-Wall -Wextra -Wpedantic -pedantic-errors -Wshadow -O2 -fexceptions)
+
+    set( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -s" )
+endif ()
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-set( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -s" )
 
 add_executable(test_curly_post_body ${test_curly_post_body_sources})
 
