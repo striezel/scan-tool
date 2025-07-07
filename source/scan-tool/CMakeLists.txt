@@ -81,14 +81,13 @@ else ()
 endif (LIBZIP_FOUND)
 
 # find libarchive
-set(libarchive_DIR "../../libstriezel/cmake/" )
-find_package (libarchive)
-if (LIBARCHIVE_FOUND)
-  include_directories(${LIBARCHIVE_INCLUDE_DIRS})
-  target_link_libraries (scan-tool ${LIBARCHIVE_LIBRARIES})
+find_package (LibArchive)
+if (LibArchive_FOUND)
+  include_directories(${LibArchive_INCLUDE_DIRS})
+  target_link_libraries (scan-tool ${LibArchive_LIBRARIES})
 else ()
   message ( FATAL_ERROR "libarchive was not found!" )
-endif (LIBARCHIVE_FOUND)
+endif (LibArchive_FOUND)
 
 # find libz
 find_package (ZLIB)
