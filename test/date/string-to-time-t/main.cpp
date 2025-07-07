@@ -22,9 +22,6 @@
 #include <vector>
 #include "../../../source/StringToTimeT.hpp"
 
-const int secsInHour = 3600;
-const int secsInDay  = 86400;
-
 const std::vector<std::string> testCases =
     {
         {"1970-01-01 00:00:00"},
