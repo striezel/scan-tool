@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of the scan-tool test suite.
-    Copyright (C) 2016, 2021  Dirk Stolle
+    Copyright (C) 2016, 2021, 2025  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,8 +18,10 @@
  -------------------------------------------------------------------------------
 */
 
+#include <chrono>
 #include <fstream>
 #include <iostream>
+#include <thread>
 #include <vector>
 #include "../../../third-party/simdjson/simdjson.h"
 #include "../../../source/Curly.hpp"
@@ -93,10 +95,26 @@ int main()
 
     // perform request
     std::string response = "";
-    if (!postBody.perform(response))
+    unsigned int attempts = 0;
+    constexpr unsigned int max_attempts = 3;
+    for ( ; ; )
     {
-      std::cout << "Error: Could not perform post request!" << std::endl;
-      return 1;
+      if (!postBody.perform(response))
+      {
+        std::cout << "Error: Could not perform post request!" << std::endl;
+        return 1;
+      }
+      ++attempts;
+      if ((attempts >= max_attempts) || (postBody.getResponseCode() == 200))
+      {
+        break;
+      }
+      if ((postBody.getResponseCode() == 502) && (attempts < max_attempts))
+      {
+        std::cout << "Info: Server seems to have a problem. "
+                  << "I'll wait a few seconds and try again.\n";
+        std::this_thread::sleep_for(std::chrono::seconds(2));
+      }
     }
 
     // check HTTP status code
@@ -136,7 +154,7 @@ int main()
     // check against original value
     if (data.get<std::string_view>().value() != elem)
     {
-      std::cerr << "Error: Value of data is not \""<< elem << "\", but \""
+      std::cerr << "Error: Value of data is not \"" << elem << "\", but \""
                 << data.get<std::string_view>().value() << "\" instead!\n";
       std::cerr << "Response:" << std::endl << response << std::endl << std::endl;
       return 1;
