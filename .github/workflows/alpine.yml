@@ -33,3 +33,10 @@ jobs:
         run: |
           cd "$GITHUB_WORKSPACE/build"
           ctest -V
+      - name: Build with statically linked standard libraries
+        run: |
+          cd "$GITHUB_WORKSPACE"
+          mkdir build_static_std_libs
+          cd build_static_std_libs
+          cmake ../ -DENABLE_LTO=ON -DENABLE_STATIC_STANDARD_LIBRARIES=ON
+          make -j4
