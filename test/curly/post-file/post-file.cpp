@@ -49,7 +49,11 @@ int main()
   post.addPostField("foo", "bar");
   post.addPostField("ping", "pong");
   // add the file
+  #if defined(_WIN32)
+  if (!post.addFile("nul", "fieldname"))
+  #else
   if (!post.addFile("/dev/null", "fieldname"))
+  #endif
   {
     std::cout << "Error: Could not add file to request data!" << std::endl;
     return 1;
@@ -79,7 +83,7 @@ int main()
   // add the temporary file
   if (!post.addFile(tmpFileName, "tempfile"))
   {
-    std::cout << "Error: Could not add file to request data!" << std::endl;
+    std::cout << "Error: Could not add file " << tmpFileName << " to request data!" << std::endl;
     libstriezel::filesystem::file::remove(tmpFileName);
     return 1;
   }

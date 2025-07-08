@@ -221,7 +221,7 @@ BOOL windows_signal_handler(DWORD ctrlSignal)
          showSummary(mapFileToHash, mapHashToReport, queued_scans, largeFiles);
          std::clog << "Terminating program early due to caught signal."
                    << std::endl;
-         std::exit(rcProgramTerminationBySignal);
+         std::exit(scantool::rcProgramTerminationBySignal);
          return TRUE; //bogus
          break;
   } //switch
