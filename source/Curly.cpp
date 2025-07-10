@@ -45,7 +45,7 @@ size_t writeCallbackString(char *ptr, size_t size, size_t nmemb, void *userdata)
 struct StringData
 {
   // size_type should be an unsigned integer, because that way the check for
-  // negative values at runtime can be eliminated.
+  // negative values at run time can be eliminated.
   static_assert(std::is_integral_v<std::string::size_type>
              && std::is_unsigned_v<std::string::size_type>);
   std::string::size_type dataOffset;
