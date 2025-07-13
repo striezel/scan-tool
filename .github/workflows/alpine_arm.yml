@@ -1,0 +1,59 @@
+name: Alpine on ARM
+
+on: push
+
+jobs:
+  alpine_arm:
+    runs-on: ubuntu-24.04-arm
+    container:
+      image: 'alpine:3.22'
+      # Needed for Monkey-patch step.
+      volumes:
+        - /:/host
+
+    steps:
+      - name: Install and prepare Git
+        run: |
+          apk update && apk upgrade
+          apk add git
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      - name: Monkey-patch Alpine Node.js into runner
+        # This step is required because the actions refuse to run on ARM 64
+        # while in a container. So the OS ID is changed and the host's Node.js
+        # binary is replaced with the one from the container.
+        # Works for now, but may fail when Node or other stuff gets updated on
+        # the runner's side.
+        run: |
+          apk add nodejs
+          sed -i 's~ID=alpine~ID=nopine~g' /etc/os-release
+          cd /host/home/runner/runners/*/externals/
+          rm -rf node20/*
+          mkdir node20/bin
+          ln -s /usr/bin/node node20/bin/node
+      # Checks-out the repository under $GITHUB_WORKSPACE.
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: 'recursive'
+      - name: Install packages
+        run: |
+          apk update
+          apk add catch2 cmake curl-dev g++ libarchive-dev libzip-dev make pkgconf unshield-dev
+      - name: Build
+        run: |
+          cd "$GITHUB_WORKSPACE"
+          mkdir build
+          cd build
+          cmake ../
+          cmake --build . -j4
+      - name: Run tests
+        run: |
+          cd "$GITHUB_WORKSPACE/build"
+          ctest -V
+      - name: Build with statically linked standard libraries
+        run: |
+          cd "$GITHUB_WORKSPACE"
+          mkdir build_static_std_libs
+          cd build_static_std_libs
+          cmake ../ -DENABLE_LTO=ON -DENABLE_STATIC_STANDARD_LIBRARIES=ON
+          make -j4
