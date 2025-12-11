@@ -52,9 +52,19 @@ jobs:
           cd build
           cmake ../
           cmake --build . -j4
+      - name: Start local httpbin instance for tests
+        run: |
+          apk add py3-gunicorn py3-httpbin grep
+          gunicorn --bind=127.0.0.1:8080 httpbin:app --daemon
+          while ! netstat -tna | grep LISTEN | grep --silent 8080
+          do
+              echo Waiting for httpbin server to start ...
+              sleep 5
+          done
       - name: Run tests
         run: |
           cd "$GITHUB_WORKSPACE/build"
+          export USE_LOCAL_HTTPBIN=yes
           ctest -V
       - name: Build with statically linked standard libraries
         run: |

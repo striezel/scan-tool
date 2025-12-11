@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of the scan-tool test suite.
-    Copyright (C) 2015, 2016, 2021  Dirk Stolle
+    Copyright (C) 2015, 2016, 2021, 2025  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,16 +18,23 @@
  -------------------------------------------------------------------------------
 */
 
+#include <cstdlib> // for std::getenv()
 #include <iostream>
 #include <utility>
 #include <vector>
 #include "../../../third-party/simdjson/simdjson.h"
 #include "../../../source/Curly.hpp"
 
+bool useLocalHttpbin()
+{
+  return std::getenv("USE_LOCAL_HTTPBIN") != nullptr;
+}
+
 int main()
 {
   Curly get;
-  get.setURL("https://httpbin.org/headers");
+  const std::string httpbin_url = useLocalHttpbin() ? "http://127.0.0.1:8080" : "https://httpbin.org";
+  get.setURL(httpbin_url + "/headers");
   // test headers
   const std::vector<std::pair<std::string, bool> > testHeaders = {
       { "Foo: bar", true},

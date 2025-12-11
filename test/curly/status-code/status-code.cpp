@@ -19,16 +19,23 @@
 */
 
 #include <chrono>
+#include <cstdlib> // for std::getenv()
 #include <iostream>
 #include <thread>
 #include <vector>
 #include "../../../libstriezel/common/StringUtils.hpp"
 #include "../../../source/Curly.hpp"
 
+bool useLocalHttpbin()
+{
+  return std::getenv("USE_LOCAL_HTTPBIN") != nullptr;
+}
+
 int main()
 {
   // basic URL for status code tests
-  const std::string baseURL = "https://httpbin.org/status/";
+  const std::string httpbin_url = useLocalHttpbin() ? "http://127.0.0.1:8080" : "https://httpbin.org";
+  const std::string baseURL = httpbin_url + "/status/";
 
   // vector of status codes that will be used in the test
   const std::vector<int> testCodes = {

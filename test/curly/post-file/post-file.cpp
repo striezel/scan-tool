@@ -18,12 +18,18 @@
  -------------------------------------------------------------------------------
 */
 
+#include <cstdlib> // for std::getenv()
 #include <fstream>
 #include <iostream>
 #include <vector>
 #include "../../../third-party/simdjson/simdjson.h"
 #include "../../../libstriezel/filesystem/file.hpp"
 #include "../../../source/Curly.hpp"
+
+bool useLocalHttpbin()
+{
+  return std::getenv("USE_LOCAL_HTTPBIN") != nullptr;
+}
 
 int main()
 {
@@ -37,7 +43,8 @@ int main()
     return 1;
   }
   // set URL
-  const std::string HeadToThisPlaceSecurely = "https://httpbin.org/post";
+  const std::string httpbin_url = useLocalHttpbin() ? "http://127.0.0.1:8080" : "https://httpbin.org";
+  const std::string HeadToThisPlaceSecurely = httpbin_url + "/post";
   post.setURL(HeadToThisPlaceSecurely);
   // ... and check new value
   if (post.getURL() != HeadToThisPlaceSecurely)

@@ -18,6 +18,7 @@
  -------------------------------------------------------------------------------
 */
 
+#include <cstdlib> // for std::getenv()
 #include <chrono>
 #include <fstream>
 #include <iostream>
@@ -26,12 +27,18 @@
 #include "../../../third-party/simdjson/simdjson.h"
 #include "../../../source/Curly.hpp"
 
+bool useLocalHttpbin()
+{
+  return std::getenv("USE_LOCAL_HTTPBIN") != nullptr;
+}
+
 int main()
 {
   // This is a test for setting POST body directly,
 
   // basic URL
-  const std::string HeadToThisPlaceSecurely = "https://httpbin.org/post";
+  const std::string httpbin_url = useLocalHttpbin() ? "http://127.0.0.1:8080" : "https://httpbin.org";
+  const std::string HeadToThisPlaceSecurely = httpbin_url +"/post";
 
   // test data
   /* Note: The version of libjsoncpp that is used with Debian 7 ("wheezy") and
