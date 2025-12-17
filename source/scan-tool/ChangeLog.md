@@ -2,7 +2,7 @@
 
 ## Next Version (2025-??-??)
 
-The simdjson libary has been updated from version 1.0.2 to version 3.13.0.
+The simdjson library has been updated from version 1.0.2 to version 3.13.0.
 
 ## Version 0.51 (2021-11-18)
 
@@ -20,20 +20,20 @@ The C++ standard used during compilation has been raised from C++11 to C++14.
 Most compilers should support that by now.
 
 ## Version 0.49 (2017-06-05)
-  - add InstallShield Cabinet handler: If told via the commend line
+  - add InstallShield Cabinet handler: If told via the command line
     option --installshield, scan-tool will extract InstallShield Cabinet
     archives and scan each contained file individually before scanning the
     archive itself.
 
 ## Version 0.48 (2017-06-04)
-  - add Rar handler: If told via the commend line option --rar, scan-tool will
+  - add Rar handler: If told via the command line option --rar, scan-tool will
     extract Roschal archives and scan each contained file individually before
     scanning the archive itself. However, due to the proprietary nature of the
     archive format, it is possible that not all files can be extracted from
     the archive.
 
 ## Version 0.47 (2017-06-03)
-  - add 7-Zip handler: If told via the commend line option --7zip, scan-tool
+  - add 7-Zip handler: If told via the command line option --7zip, scan-tool
     will extract 7-Zip archives and scan each contained file individually
     before scanning the archive itself.
 
@@ -134,7 +134,7 @@ Most compilers should support that by now.
   - improve rescan requests
 
     Actually use rescan API for rescanning files instead of submitting the
-    whole file again. This is faster and saves bandwith.
+    whole file again. This is faster and saves bandwidth.
 
 ## Version 0.24 (2015-12-29)
   - (Linux only) show progress when SIGUSR1 or SIGUSR2 is received
@@ -177,7 +177,7 @@ Most compilers should support that by now.
     unaffected.
 
 ## Version 0.16 (2015-12-05)
-  - scan-tool: trigger re-scan of a file, if the latest report exeeds a certain
+  - scan-tool: trigger re-scan of a file, if the latest report exceeds a certain
     maximum age. User can specify the maximum age in days via command line.
 
 ## Version 0.15 (2015-11-15)
@@ -211,7 +211,7 @@ Most compilers should support that by now.
   - show scan date in list of infected files
 
 ## Version 0.07 (2015-08-22)
-  - make progam even less verbose when run with --silent option
+  - make program even less verbose when run with --silent option
 
 ## Version 0.06 (2015-08-22)
   - retrieve reports of files that were queued for scan at the end, before the
