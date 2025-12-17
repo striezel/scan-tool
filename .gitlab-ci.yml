@@ -11,9 +11,16 @@ build:
   before_script:
     - apt-get update
     - apt-get -y install cmake catch libarchive-dev libcurl4-gnutls-dev libunshield-dev libzip-dev
+    - apt-get install -y gunicorn python3-httpbin net-tools
   script:
+    # build
     - mkdir ./build
     - cd ./build
     - cmake ../
     - make -j4
+    # start local httpbin instance for tests
+    - gunicorn --bind=127.0.0.1:8080 httpbin:app --daemon
+    - while ! netstat -tna | grep LISTEN | grep --silent 8080; do echo Waiting for httpbin server to start ... ; sleep 5; done
+    # tests
+    - export USE_LOCAL_HTTPBIN=1
     - ctest -V
